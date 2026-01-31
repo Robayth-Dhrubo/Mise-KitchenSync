@@ -1,0 +1,218 @@
+-- =============================================
+-- MISE MASTER SEED DATA (FULL 75 ITEMS)
+-- WARNING: This script TRUNCATES (Deletes) existing data!
+-- Usage: Run this in SQL Editor to populate sample data.
+-- =============================================
+
+-- 1. CLEANUP
+TRUNCATE TABLE recipe_items, recipes, ingredients CASCADE;
+
+DO $$
+DECLARE
+  target_user_id uuid;
+BEGIN
+  -- Grab the first user from auth.users to own this data
+  SELECT id INTO target_user_id FROM auth.users LIMIT 1;
+  
+  IF target_user_id IS NULL THEN
+    RAISE EXCEPTION 'No users found! Please Sign Up in the app first.';
+  END IF;
+
+  -- ---------------------------------------------------------
+  -- INGREDIENTS
+  -- ---------------------------------------------------------
+
+  -- PROTEIN
+  INSERT INTO ingredients (user_id, name, category, purchase_unit, purchase_price, current_stock, par_level) VALUES
+  (target_user_id, 'Beef Tenderloin', 'Butchery', 'Case (50lbs)', 950.00, 10, 3),
+  (target_user_id, 'Duck Legs', 'Butchery', 'Case (20lbs)', 140.00, 5, 4),
+  (target_user_id, 'Lamb Rack', 'Butchery', 'Pack (10lbs)', 220.00, 8, 4),
+  (target_user_id, 'Chicken Whole', 'Butchery', 'Case (10 units)', 110.00, 15, 6),
+  (target_user_id, 'Salmon Whole', 'Fish', 'Case (40lbs)', 450.00, 20, 2),
+  (target_user_id, 'Sea Bass', 'Fish', 'Case (20lbs)', 320.00, 10, 2),
+  (target_user_id, 'Scallops', 'Fish', 'Tin (8lbs)', 240.00, 4, 6),
+  (target_user_id, 'Lobster', 'Fish', 'Crate (30lbs)', 450.00, 10, 2),
+  (target_user_id, 'Bacon Slab', 'Butchery', 'Slab (10lbs)', 65.00, 5, 5);
+
+  -- DAIRY
+  INSERT INTO ingredients (user_id, name, category, purchase_unit, purchase_price, current_stock, par_level) VALUES
+  (target_user_id, 'Butter Unsalted', 'Dairy', 'Case (36lbs)', 180.00, 30, 10),
+  (target_user_id, 'Heavy Cream', 'Dairy', 'Jug (4L)', 22.00, 10, 12),
+  (target_user_id, 'Parmesan Wheel', 'Dairy', 'Wheel (80lbs)', 900.00, 1, 1),
+  (target_user_id, 'Goat Cheese', 'Dairy', 'Pack (1kg)', 24.00, 5, 6),
+  (target_user_id, 'Eggs Large', 'Dairy', 'Case (15doz)', 45.00, 12, 8);
+
+  -- PRODUCE
+  INSERT INTO ingredients (user_id, name, category, purchase_unit, purchase_price, current_stock, par_level) VALUES
+  (target_user_id, 'Onions Yellow', 'Produce', 'Bag (50lbs)', 25.00, 40, 5),
+  (target_user_id, 'Shallots', 'Produce', 'Bag (10lbs)', 22.00, 8, 4),
+  (target_user_id, 'Garlic Peeled', 'Produce', 'Jar (5lbs)', 35.00, 3, 4),
+  (target_user_id, 'Potatoes Yukon', 'Produce', 'Box (50lbs)', 40.00, 45, 6),
+  (target_user_id, 'Spinach Baby', 'Produce', 'Case (4lbs)', 18.00, 2, 6),
+  (target_user_id, 'Mushrooms Mix', 'Produce', 'Box (5lbs)', 45.00, 3, 5),
+  (target_user_id, 'Microgreens', 'Produce', 'Clamshell', 12.00, 5, 10),
+  (target_user_id, 'Thyme Fresh', 'Produce', 'Bunch', 12.00, 4, 3),
+  (target_user_id, 'Lemons', 'Produce', 'Case', 55.00, 1, 2);
+
+  -- PANTRY
+  INSERT INTO ingredients (user_id, name, category, purchase_unit, purchase_price, current_stock, par_level) VALUES
+  (target_user_id, 'Olive Oil', 'Dry', 'Tin (3L)', 48.00, 6, 8),
+  (target_user_id, 'Rice Arborio', 'Dry', 'Bag (5kg)', 32.00, 10, 5),
+  (target_user_id, 'Pasta Linguine', 'Dry', 'Case (20lbs)', 40.00, 15, 5),
+  (target_user_id, 'Truffle Oil', 'Dry', 'Bottle (250ml)', 35.00, 2, 3),
+  (target_user_id, 'Chocolate Dark', 'Pastry', 'Bag (2.5kg)', 45.00, 4, 6),
+  (target_user_id, 'Sugar White', 'Pastry', 'Bag (20kg)', 30.00, 10, 4);
+
+  -- ---------------------------------------------------------
+  -- RECIPES
+  -- ---------------------------------------------------------
+  
+  INSERT INTO recipes (user_id, name, menu_price, target_food_cost_pct) VALUES
+  -- STARTERS
+  (target_user_id, 'Beef Carpaccio', 24.00, 30),
+  (target_user_id, 'Beef Tartare Classic', 26.00, 30),
+  (target_user_id, 'Salmon Tartare', 22.00, 30),
+  (target_user_id, 'Scallop Ceviche', 28.00, 25),
+  (target_user_id, 'Lobster Bisque', 19.00, 35),
+  (target_user_id, 'French Onion Soup', 16.00, 40),
+  (target_user_id, 'Goat Cheese Salad', 18.00, 30),
+  (target_user_id, 'Caesar Salad', 16.00, 35),
+  (target_user_id, 'Mushroom Toast', 19.00, 28),
+  (target_user_id, 'Garlic Shrimp', 24.00, 30),
+  (target_user_id, 'Spinach Dip', 15.00, 40),
+  (target_user_id, 'Tuna Tataki', 26.00, 30),
+  (target_user_id, 'Oysters Rockefeller', 32.00, 25),
+  (target_user_id, 'Foie Gras Torchon', 38.00, 25),
+  (target_user_id, 'Charcuterie Board', 35.00, 40),
+
+  -- MAINS MEAT
+  (target_user_id, 'Filet Mignon 6oz', 48.00, 25),
+  (target_user_id, 'Filet Mignon 8oz', 62.00, 25),
+  (target_user_id, 'Steak Frites', 38.00, 30),
+  (target_user_id, 'Ribeye Steak 12oz', 55.00, 30),
+  (target_user_id, 'Braised Short Rib', 42.00, 35),
+  (target_user_id, 'Duck Confit', 36.00, 35),
+  (target_user_id, 'Duck Magret', 40.00, 30),
+  (target_user_id, 'Rack of Lamb (Full)', 65.00, 25),
+  (target_user_id, 'Rack of Lamb (Half)', 38.00, 25),
+  (target_user_id, 'Chicken Supreme', 29.00, 40),
+  (target_user_id, 'Roast Chicken (Whole)', 55.00, 40),
+  (target_user_id, 'Beef Wellington', 65.00, 20),
+  (target_user_id, 'Veal Chop', 58.00, 30),
+  (target_user_id, 'Pork Belly Crispy', 32.00, 40),
+  (target_user_id, 'Burger Deluxe', 24.00, 35),
+  (target_user_id, 'Lamb Shank', 38.00, 35),
+  (target_user_id, 'Osso Bucco', 42.00, 35),
+  (target_user_id, 'Surf and Turf', 75.00, 25),
+  (target_user_id, 'Chicken Pot Pie', 26.00, 50),
+  (target_user_id, 'Meatballs & Polenta', 28.00, 45),
+
+  -- MAINS FISH
+  (target_user_id, 'Pan Seared Scallops', 44.00, 30),
+  (target_user_id, 'Grilled Salmon', 34.00, 35),
+  (target_user_id, 'Sea Bass Filet', 42.00, 30),
+  (target_user_id, 'Lobster Thermidor', 85.00, 20),
+  (target_user_id, 'Lobster Roll', 32.00, 30),
+  (target_user_id, 'Fish and Chips', 26.00, 45),
+  (target_user_id, 'Seafood Risotto', 38.00, 30),
+  (target_user_id, 'Linguine Vongole', 28.00, 35),
+  (target_user_id, 'Mussels Mariniere', 24.00, 40),
+  (target_user_id, 'Grilled Octopus', 36.00, 30),
+  (target_user_id, 'Halibut', 45.00, 30),
+  (target_user_id, 'Trout Almondine', 32.00, 35),
+  (target_user_id, 'Seafood Tower', 120.00, 25),
+  (target_user_id, 'Shrimp Scampi', 34.00, 30),
+  (target_user_id, 'Cod Loin', 36.00, 35),
+
+  -- SIDES
+  (target_user_id, 'Truffle Fries', 12.00, 60),
+  (target_user_id, 'Mashed Potatoes', 10.00, 70),
+  (target_user_id, 'Grilled Asparagus', 14.00, 40),
+  (target_user_id, 'Sauteed Mushrooms', 12.00, 50),
+  (target_user_id, 'Mac and Cheese', 16.00, 55),
+  (target_user_id, 'Roasted Carrots', 10.00, 60),
+  (target_user_id, 'Creamed Spinach', 12.00, 50),
+  (target_user_id, 'Brussels Sprouts', 12.00, 50),
+  (target_user_id, 'Onion Rings', 9.00, 70),
+  (target_user_id, 'Rice Pilaf', 8.00, 80),
+
+  -- DESSERTS
+  (target_user_id, 'Creme Brulee', 14.00, 70),
+  (target_user_id, 'Chocolate Mousse', 12.00, 65),
+  (target_user_id, 'Cheesecake', 14.00, 60),
+  (target_user_id, 'Tiramisu', 14.00, 60),
+  (target_user_id, 'Lemon Tart', 12.00, 65),
+  (target_user_id, 'Apple Crumble', 12.00, 70),
+  (target_user_id, 'Molten Cake', 15.00, 65),
+  (target_user_id, 'Ice Cream Trio', 10.00, 70),
+  (target_user_id, 'Fruit Plate', 12.00, 50),
+  (target_user_id, 'Cheese Board', 24.00, 40),
+
+  -- SAUCES
+  (target_user_id, 'Hollandaise Sauce', 5.00, 30),
+  (target_user_id, 'Peppercorn Sauce', 4.00, 30),
+  (target_user_id, 'Bearnaise', 5.00, 30),
+  (target_user_id, 'Red Wine Jus', 4.00, 30),
+  (target_user_id, 'Garlic Aioli', 2.00, 80);
+
+  -- ---------------------------------------------------------
+  -- RECIPE ITEMS
+  -- ---------------------------------------------------------
+  
+  -- BEEF CARPACCIO
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.15, 'lbs' FROM recipes r, ingredients i WHERE r.name = 'Beef Carpaccio' AND i.name = 'Beef Tenderloin' AND r.user_id = target_user_id;
+
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.02, 'L' FROM recipes r, ingredients i WHERE r.name = 'Beef Carpaccio' AND i.name = 'Olive Oil' AND r.user_id = target_user_id;
+
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.05, 'lbs' FROM recipes r, ingredients i WHERE r.name = 'Beef Carpaccio' AND i.name = 'Parmesan Wheel' AND r.user_id = target_user_id;
+
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 1, 'pinch' FROM recipes r, ingredients i WHERE r.name = 'Beef Carpaccio' AND i.name = 'Microgreens' AND r.user_id = target_user_id;
+
+  -- FILET MIGNON 6oz
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.4, 'lbs' FROM recipes r, ingredients i WHERE r.name = 'Filet Mignon 6oz' AND i.name = 'Beef Tenderloin' AND r.user_id = target_user_id;
+
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.1, 'lbs' FROM recipes r, ingredients i WHERE r.name = 'Filet Mignon 6oz' AND i.name = 'Butter Unsalted' AND r.user_id = target_user_id;
+
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.02, 'bunch' FROM recipes r, ingredients i WHERE r.name = 'Filet Mignon 6oz' AND i.name = 'Thyme Fresh' AND r.user_id = target_user_id;
+
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.5, 'lbs' FROM recipes r, ingredients i WHERE r.name = 'Filet Mignon 6oz' AND i.name = 'Potatoes Yukon' AND r.user_id = target_user_id;
+
+  -- TRUFFLE FRIES
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.8, 'lbs' FROM recipes r, ingredients i WHERE r.name = 'Truffle Fries' AND i.name = 'Potatoes Yukon' AND r.user_id = target_user_id;
+
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.01, 'L' FROM recipes r, ingredients i WHERE r.name = 'Truffle Fries' AND i.name = 'Truffle Oil' AND r.user_id = target_user_id;
+
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.1, 'lbs' FROM recipes r, ingredients i WHERE r.name = 'Truffle Fries' AND i.name = 'Parmesan Wheel' AND r.user_id = target_user_id;
+
+  -- SCALLOPS
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.5, 'lbs' FROM recipes r, ingredients i WHERE r.name = 'Pan Seared Scallops' AND i.name = 'Scallops' AND r.user_id = target_user_id;
+
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.1, 'unit' FROM recipes r, ingredients i WHERE r.name = 'Pan Seared Scallops' AND i.name = 'Lemons' AND r.user_id = target_user_id;
+
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 1, 'pinch' FROM recipes r, ingredients i WHERE r.name = 'Pan Seared Scallops' AND i.name = 'Microgreens' AND r.user_id = target_user_id;
+
+  -- CREME BRULEE
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.2, 'L' FROM recipes r, ingredients i WHERE r.name = 'Creme Brulee' AND i.name = 'Heavy Cream' AND r.user_id = target_user_id;
+
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.15, 'doz' FROM recipes r, ingredients i WHERE r.name = 'Creme Brulee' AND i.name = 'Eggs Large' AND r.user_id = target_user_id;
+
+  INSERT INTO recipe_items (recipe_id, ingredient_id, quantity_needed, unit_used)
+  SELECT r.id, i.id, 0.1, 'kg' FROM recipes r, ingredients i WHERE r.name = 'Creme Brulee' AND i.name = 'Sugar White' AND r.user_id = target_user_id;
+
+END $$;
