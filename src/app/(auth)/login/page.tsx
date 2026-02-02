@@ -49,8 +49,11 @@ export default function LoginPage() {
             .eq('id', (await supabase.auth.getUser()).data.user?.id)
             .single()
 
-        if (profile?.role === 'foh') {
-            router.push('/pos')
+        // Redirect based on role
+        if (profile?.role === 'admin') {
+            router.push('/admin/team')
+        } else if (profile?.role === 'foh') {
+            router.push('/front-desk')
         } else {
             router.push('/dashboard')
         }
@@ -63,17 +66,17 @@ export default function LoginPage() {
             <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-emerald-600/10 rounded-full blur-[140px] animate-pulse" />
             <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-600/5 rounded-full blur-[120px]" />
 
-            <div className="w-full max-w-md relative z-10 space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div className="w-full max-w-md relative z-10 space-y-8">
                 <div className="text-center space-y-6">
                     <Link href="/" className="inline-block group">
-                        <div className="mx-auto w-20 h-20 bg-white/5 border border-white/10 rounded-3xl flex items-center justify-center shadow-2xl rotate-3 group-hover:rotate-12 transition-all duration-500">
+                        <div className="mx-auto w-20 h-20 bg-emerald-600 rounded-3xl flex items-center justify-center shadow-2xl shadow-emerald-600/20 rotate-3 group-hover:rotate-12 transition-all duration-500">
                             <ChefHat className="w-10 h-10 text-white" />
                         </div>
                     </Link>
                     <div className="space-y-2">
-                        <h1 className="text-5xl font-black text-white italic tracking-tighter font-display">Staff Auth.</h1>
+                        <h1 className="text-5xl font-black text-white tracking-tighter font-display">Welcome Back</h1>
                         <p className="text-neutral-500 font-bold text-xs uppercase tracking-[0.3em]">
-                            Mise Operating System • Build v4.0.2
+                            Mise Service System
                         </p>
                     </div>
                 </div>
@@ -89,11 +92,11 @@ export default function LoginPage() {
                             )}
 
                             <div className="space-y-3">
-                                <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-600 ml-1">Personnel Email</Label>
+                                <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-600 ml-1">Email Address</Label>
                                 <Input
                                     id="email"
                                     type="email"
-                                    placeholder="IDENTIFY STAFF..."
+                                    placeholder="name@restaurant.com"
                                     {...register('email')}
                                     className="h-14 bg-black/40 border-white/5 rounded-2xl text-white font-bold placeholder:text-neutral-800 focus:border-emerald-500/50 transition-all shadow-inner"
                                 />
@@ -103,7 +106,7 @@ export default function LoginPage() {
                             </div>
 
                             <div className="space-y-3">
-                                <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-600 ml-1">Access Protocol</Label>
+                                <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-600 ml-1">Password</Label>
                                 <Input
                                     id="password"
                                     type="password"
@@ -118,23 +121,27 @@ export default function LoginPage() {
 
                             <Button
                                 type="submit"
-                                className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-lg italic tracking-tighter rounded-2xl shadow-xl shadow-emerald-500/20 transition-all active:scale-95"
+                                className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-lg tracking-tighter rounded-2xl shadow-xl shadow-emerald-500/20 transition-all active:scale-95"
                                 disabled={isLoading}
                             >
                                 {isLoading ? (
                                     <div className="flex items-center gap-3">
                                         <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                        AUTHORIZING...
+                                        Signing In...
                                     </div>
                                 ) : (
-                                    'INVOKE ACCESS'
+                                    'Sign In'
                                 )}
                             </Button>
                         </form>
 
-                        <div className="text-center">
-                            <Link href="/signup" className="text-[10px] text-neutral-600 font-black uppercase tracking-[0.2em] hover:text-emerald-500 transition-colors">
-                                Decommission Account • <span className="text-neutral-400">Request Credentials</span>
+                        <div className="text-center flex justify-center items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em]">
+                            <Link href="/report-issue" className="text-neutral-600 hover:text-red-500 transition-colors">
+                                Help
+                            </Link>
+                            <span className="text-neutral-700">•</span>
+                            <Link href="/signup" className="text-neutral-400 hover:text-emerald-500 transition-colors">
+                                Create Account
                             </Link>
                         </div>
                     </CardContent>

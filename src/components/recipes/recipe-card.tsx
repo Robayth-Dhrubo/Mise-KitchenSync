@@ -42,6 +42,8 @@ export interface RecipeWithCost {
     total_cost: number
     food_cost_pct: number
     margin_status: 'excellent' | 'good' | 'warning' | 'danger'
+    is_available: boolean
+    is_in_stock: boolean
 }
 
 interface RecipeCardProps {
@@ -52,6 +54,29 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
     const router = useRouter()
     const supabase = createClient()
     const [isDeleting, setIsDeleting] = useState(false)
+    const [isUpdating, setIsUpdating] = useState(false)
+
+    const toggleAvailability = async (e: React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        setIsUpdating(true)
+        try {
+            const { error } = await supabase
+                .from('recipes')
+                .update({ is_available: !recipe.is_available })
+                .eq('id', recipe.id)
+
+            if (error) throw error
+
+            toast.success(recipe.is_available ? 'Dish deactivated' : 'Dish reactivated')
+            router.refresh()
+        } catch (error) {
+            console.error('Error updating availability:', error)
+            toast.error('Sync failed')
+        } finally {
+            setIsUpdating(false)
+        }
+    }
 
     const handleDelete = async () => {
         setIsDeleting(true)
@@ -79,7 +104,10 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 
     return (
         <Link href={`/menu/${recipe.id}`}>
-            <Card className="glass-card hover:border-emerald-500/30 transition-all duration-500 cursor-pointer h-full group relative overflow-hidden flex flex-col hover:-translate-y-2">
+            <Card className={cn(
+                "glass-card hover:border-emerald-500/30 transition-all duration-500 cursor-pointer h-full group relative overflow-hidden flex flex-col hover:-translate-y-2",
+                !recipe.is_available && "opacity-60 grayscale-[0.5]"
+            )}>
                 {/* Visual Accent */}
                 <div className={cn(
                     "absolute top-0 left-0 w-full h-1",
@@ -90,18 +118,30 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
 
                 <CardHeader className="p-8 pb-4">
                     <div className="flex items-start justify-between gap-4 mb-2">
-                        <CardTitle className="text-2xl font-black text-white italic group-hover:text-emerald-400 transition-colors pr-8 leading-tight font-display">
+                        <CardTitle className="text-2xl font-black text-white group-hover:text-emerald-400 transition-colors pr-8 leading-tight font-display">
                             {recipe.name}
                         </CardTitle>
-                        <Badge
-                            className={cn(
-                                "h-7 px-3 font-black uppercase text-[10px] tracking-widest border-0 rounded-lg",
-                                getMarginBgClass(recipe.margin_status).replace('bg-', 'bg-').replace('/10', '/20'),
-                                getMarginColorClass(recipe.margin_status)
+                        <div className="flex flex-col items-end gap-2">
+                            <Badge
+                                className={cn(
+                                    "h-7 px-3 font-black uppercase text-[10px] tracking-widest border-0 rounded-lg",
+                                    getMarginBgClass(recipe.margin_status).replace('bg-', 'bg-').replace('/10', '/20'),
+                                    getMarginColorClass(recipe.margin_status)
+                                )}
+                            >
+                                {formatPercentage(recipe.food_cost_pct)}
+                            </Badge>
+                            {!recipe.is_available && (
+                                <Badge className="bg-red-500/20 text-red-500 border-0 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md">
+                                    OFF AIR
+                                </Badge>
                             )}
-                        >
-                            {formatPercentage(recipe.food_cost_pct)}
-                        </Badge>
+                            {!recipe.is_in_stock && (
+                                <Badge className="bg-yellow-500/20 text-yellow-500 border-0 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md">
+                                    OUT OF STOCK
+                                </Badge>
+                            )}
+                        </div>
                     </div>
                     {recipe.description && (
                         <p className="text-sm text-neutral-500 font-medium line-clamp-2 leading-relaxed">
@@ -126,7 +166,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                                         <Trash2 className="w-8 h-8 text-red-500" />
                                     </div>
                                     <div className="space-y-2">
-                                        <AlertDialogTitle className="text-3xl font-black text-white italic tracking-tighter">Decommission Asset?</AlertDialogTitle>
+                                        <AlertDialogTitle className="text-3xl font-black text-white tracking-tighter">Decommission Asset?</AlertDialogTitle>
                                         <AlertDialogDescription className="text-neutral-500 font-medium">
                                             This action is irreversible. "{recipe.name}" will be purged from the vault.
                                         </AlertDialogDescription>
@@ -173,14 +213,29 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                         </div>
                     </div>
 
-                    <div className="mt-6 flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-neutral-600">Net Margin</span>
-                        <span className={cn(
-                            "text-xl font-black italic tabular-nums",
-                            getMarginColorClass(recipe.margin_status)
-                        )}>
-                            {formatCurrency(recipe.menu_price - recipe.total_cost)}
-                        </span>
+                    <div className="mt-8 flex items-center justify-between gap-4">
+                        <Button
+                            onClick={toggleAvailability}
+                            disabled={isUpdating}
+                            variant="ghost"
+                            className={cn(
+                                "flex-1 h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all gap-2",
+                                recipe.is_available
+                                    ? "bg-red-500/5 text-neutral-500 hover:bg-red-500 hover:text-white"
+                                    : "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white"
+                            )}
+                        >
+                            {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : recipe.is_available ? 'Deactivate Dish' : 'Set Live'}
+                        </Button>
+                        <div className="flex flex-col items-end">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-600">Net Margin</span>
+                            <span className={cn(
+                                "text-xl font-black tabular-nums font-display",
+                                getMarginColorClass(recipe.margin_status)
+                            )}>
+                                {formatCurrency(recipe.menu_price - recipe.total_cost)}
+                            </span>
+                        </div>
                     </div>
                 </CardContent>
             </Card>

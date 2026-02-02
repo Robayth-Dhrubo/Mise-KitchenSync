@@ -45,17 +45,21 @@ export default function SignupPage() {
             return
         }
 
-        // Create profile
+        // Update profile with restaurant name (trigger already created basic profile)
         if (authData.user) {
+            // Small delay to let trigger complete
+            await new Promise(resolve => setTimeout(resolve, 500))
+
             const { error: profileError } = await supabase
                 .from('profiles')
-                .upsert({
-                    id: authData.user.id,
+                .update({
                     restaurant_name: data.restaurantName,
                 })
+                .eq('id', authData.user.id)
 
             if (profileError) {
-                console.error('Profile creation error:', profileError)
+                console.error('Profile update error:', profileError)
+                // Continue anyway - profile exists from trigger
             }
         }
 
@@ -77,7 +81,7 @@ export default function SignupPage() {
                     <div>
                         <CardTitle className="text-2xl font-bold text-white">Create your account</CardTitle>
                         <CardDescription className="text-neutral-400">
-                            Start managing your kitchen profitably
+                            Start managing your service profitably
                         </CardDescription>
                     </div>
                 </CardHeader>

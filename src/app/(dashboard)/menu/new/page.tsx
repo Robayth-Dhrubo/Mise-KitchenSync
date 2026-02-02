@@ -16,6 +16,11 @@ import {
     ArrowLeft,
     Save,
     Package,
+    ChevronDown,
+    ChevronUp,
+    Camera,
+    Image as ImageIcon,
+    Loader2,
 } from 'lucide-react'
 
 import {
@@ -23,7 +28,6 @@ import {
     formatCurrency,
     formatPercentage,
     getMarginColorClass,
-    getMarginBgClass,
     ALL_UNITS,
 } from '@/lib/calculations'
 import { type Ingredient } from '@/lib/types/database'
@@ -50,6 +54,7 @@ import {
 } from '@/components/ui/dialog'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 interface RecipeFormData {
     name: string
@@ -57,16 +62,56 @@ interface RecipeFormData {
     menu_price: number
     prep_time_minutes: number | null
     target_food_cost_pct: number
+    image_url: string
+    category: string
     items: { ingredient_id: string; quantity_needed: number; unit_used: string }[]
 }
-
-import { cn } from '@/lib/utils'
 
 export default function NewRecipePage() {
     const router = useRouter()
     const supabase = createClient()
     const queryClient = useQueryClient()
     const [isAddIngredientOpen, setIsAddIngredientOpen] = useState(false)
+    const [showAdvanced, setShowAdvanced] = useState(false)
+    const [isUploading, setIsUploading] = useState(false)
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        setIsUploading(true)
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) throw new Error('Not authenticated')
+
+            const fileExt = file.name.split('.').pop()
+            const fileName = `${user.id}/${Math.random()}.${fileExt}`
+            const filePath = `dish-images/${fileName}`
+
+            // Try to upload
+            const { error: uploadError } = await supabase.storage
+                .from('recipes')
+                .upload(filePath, file)
+
+            if (uploadError) {
+                // If bucket doesn't exist, this might fail. In a real app we'd ensure bucket exists.
+                throw uploadError
+            }
+
+            // Get public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('recipes')
+                .getPublicUrl(filePath)
+
+            setValue('image_url', publicUrl)
+            toast.success('Image uploaded successfully')
+        } catch (error: any) {
+            console.error('Error uploading image:', error)
+            toast.error('Upload failed: ' + error.message)
+        } finally {
+            setIsUploading(false)
+        }
+    }
 
     // Add ingredient mutation
     const addIngredientMutation = useMutation({
@@ -107,6 +152,7 @@ export default function NewRecipePage() {
         handleSubmit,
         control,
         watch,
+        setValue,
         formState: { errors },
     } = useForm<RecipeFormData>({
         defaultValues: {
@@ -115,6 +161,8 @@ export default function NewRecipePage() {
             menu_price: 0,
             prep_time_minutes: null,
             target_food_cost_pct: 30,
+            image_url: '',
+            category: 'main',
             items: [{ ingredient_id: '', quantity_needed: 0, unit_used: 'g' }],
         },
     })
@@ -172,6 +220,8 @@ export default function NewRecipePage() {
                     menu_price: data.menu_price,
                     prep_time_minutes: data.prep_time_minutes,
                     target_food_cost_pct: data.target_food_cost_pct,
+                    image_url: data.image_url,
+                    category: data.category
                 })
                 .select()
                 .single()
@@ -196,7 +246,7 @@ export default function NewRecipePage() {
             return recipe
         },
         onSuccess: () => {
-            toast.success('Recipe synchronized with vault')
+            toast.success('Dish synchronized with vault')
             router.push('/menu')
         },
         onError: (error) => {
@@ -210,11 +260,9 @@ export default function NewRecipePage() {
 
     return (
         <div className="space-y-12 relative pb-24">
-            {/* Ambient Background Glows */}
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-600/5 rounded-full blur-[140px] -z-10" />
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[120px] -z-10" />
 
-            {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="flex items-center gap-6">
                     <Link href="/menu">
@@ -223,10 +271,9 @@ export default function NewRecipePage() {
                         </Button>
                     </Link>
                     <div className="space-y-1">
-                        <h1 className="text-5xl font-black text-white tracking-tighter italic">Recipe Studio.</h1>
-                        <p className="text-neutral-500 font-bold text-sm uppercase tracking-widest flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                            Algorithmic Blueprinting • Real-time Alpha
+                        <h1 className="text-3xl font-bold text-white tracking-tight">Add New Dish</h1>
+                        <p className="text-neutral-500 text-sm">
+                            Create a menu item and upload a photo for your guests
                         </p>
                     </div>
                 </div>
@@ -234,208 +281,280 @@ export default function NewRecipePage() {
 
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="grid gap-8 lg:grid-cols-3">
-                    {/* Main Form */}
                     <div className="lg:col-span-2 space-y-8">
-                        {/* Basic Info */}
                         <Card className="glass-card">
                             <CardHeader className="p-8 border-b border-white/5">
-                                <CardTitle className="text-xl font-black text-white italic flex items-center gap-3">
+                                <CardTitle className="text-lg font-semibold text-white flex items-center gap-3">
                                     <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                        <ChefHat className="w-5 h-5 text-emerald-500" />
+                                        <ImageIcon className="w-5 h-5 text-emerald-500" />
                                     </div>
-                                    Asset Parameters
+                                    Dish Details
                                 </CardTitle>
                             </CardHeader>
                             <CardContent className="p-8 space-y-8">
-                                <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-600">Recipe Identity</Label>
-                                    <Input
-                                        {...register('name')}
-                                        placeholder="E.G. WAGYU TARTARE 01"
-                                        className="h-16 bg-black/40 border-white/5 rounded-2xl text-xl font-black text-white placeholder:text-neutral-800 focus:border-emerald-500/50 transition-all"
-                                    />
-                                    {errors.name && (
-                                        <p className="text-red-500 text-xs font-bold uppercase tracking-widest">{errors.name.message}</p>
-                                    )}
+                                <div className="grid md:grid-cols-3 gap-8">
+                                    <div className="md:col-span-1 space-y-3">
+                                        <Label className="text-xs text-neutral-500">Dish Photo</Label>
+                                        <div className="aspect-square rounded-2xl bg-black/40 border-2 border-dashed border-white/5 flex flex-col items-center justify-center relative overflow-hidden group hover:border-emerald-500/30 transition-all">
+                                            {isUploading ? (
+                                                <div className="flex flex-col items-center gap-2 text-emerald-500 animate-pulse">
+                                                    <Loader2 className="w-8 h-8 animate-spin" />
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest">Uploading...</span>
+                                                </div>
+                                            ) : watch('image_url') ? (
+                                                <>
+                                                    <img src={watch('image_url')} alt="Preview" className="w-full h-full object-cover" />
+                                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="sm"
+                                                            onClick={() => setValue('image_url', '')}
+                                                            className="text-red-500 hover:text-red-400 font-bold uppercase text-[10px]"
+                                                        >
+                                                            Remove
+                                                        </Button>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div className="flex flex-col items-center gap-2 text-neutral-600">
+                                                    <Camera className="w-8 h-8" />
+                                                    <span className="text-[10px] font-bold uppercase tracking-widest">Click to Upload</span>
+                                                </div>
+                                            )}
+                                            <Input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleImageUpload}
+                                                disabled={isUploading}
+                                                className="absolute inset-0 opacity-0 cursor-pointer"
+                                            />
+                                        </div>
+                                        {watch('image_url') && (
+                                            <p className="text-[10px] text-emerald-500 font-bold uppercase tracking-widest text-center">Image Uploaded</p>
+                                        )}
+                                    </div>
+
+                                    <div className="md:col-span-2 space-y-6">
+                                        <div className="space-y-3">
+                                            <Label className="text-xs text-neutral-500">Dish Name</Label>
+                                            <Input
+                                                {...register('name', { required: 'Dish name is required' })}
+                                                placeholder="e.g. Chicken Parmesan"
+                                                className="h-16 bg-black/40 border-white/5 rounded-2xl text-xl font-black text-white placeholder:text-neutral-800 focus:border-emerald-500/50 transition-all"
+                                            />
+                                            {errors.name && (
+                                                <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest px-1">{errors.name.message}</p>
+                                            )}
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-3">
+                                                <Label className="text-xs text-neutral-500">Menu Price ($)</Label>
+                                                <Input
+                                                    type="number"
+                                                    step="0.01"
+                                                    {...register('menu_price', { valueAsNumber: true })}
+                                                    className="h-14 bg-black/40 border-white/5 rounded-xl text-lg font-black text-white"
+                                                />
+                                            </div>
+                                            <div className="space-y-3">
+                                                <Label className="text-xs text-neutral-500">Category</Label>
+                                                <Select
+                                                    value={watch('category')}
+                                                    onValueChange={(val) => setValue('category', val)}
+                                                >
+                                                    <SelectTrigger className="h-14 bg-black/40 border-white/5 rounded-xl text-white font-bold">
+                                                        <SelectValue />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="bg-neutral-900 border-white/5">
+                                                        <SelectItem value="starter">Starter</SelectItem>
+                                                        <SelectItem value="main">Main Course</SelectItem>
+                                                        <SelectItem value="side">Side Dish</SelectItem>
+                                                        <SelectItem value="dessert">Dessert</SelectItem>
+                                                        <SelectItem value="drink">Drink</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div className="space-y-3">
-                                    <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-600">Conceptual Brief (Optional)</Label>
+                                    <Label className="text-xs text-neutral-500">Description (Optional)</Label>
                                     <Textarea
                                         {...register('description')}
-                                        placeholder="Define the aesthetic and technical execution..."
-                                        rows={4}
-                                        className="bg-black/40 border-white/5 rounded-2xl text-white font-medium placeholder:text-neutral-800 focus:border-emerald-500/50 transition-all resize-none shadow-inner"
+                                        placeholder="Briefly describe this dish for your guests..."
+                                        rows={3}
+                                        className="bg-black/40 border-white/5 rounded-2xl text-white font-medium placeholder:text-neutral-800 focus:border-emerald-500/50 transition-all resize-none"
                                     />
                                 </div>
-
-                                <div className="grid grid-cols-3 gap-6">
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-600 font-black">Market price ($)</Label>
-                                        <Input
-                                            type="number"
-                                            inputMode="decimal"
-                                            step="0.01"
-                                            min="0"
-                                            {...register('menu_price', { valueAsNumber: true })}
-                                            className="h-14 bg-black/40 border-white/5 rounded-xl text-lg font-black text-white focus:border-emerald-500/50"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-600 font-black">Execution (min)</Label>
-                                        <Input
-                                            type="number"
-                                            min="1"
-                                            {...register('prep_time_minutes', { valueAsNumber: true })}
-                                            className="h-14 bg-black/40 border-white/5 rounded-xl text-lg font-black text-white focus:border-emerald-500/50"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-3">
-                                        <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-600 font-black">Alpha Target (%)</Label>
-                                        <Input
-                                            type="number"
-                                            min="1"
-                                            max="100"
-                                            {...register('target_food_cost_pct', { valueAsNumber: true })}
-                                            className="h-14 bg-black/40 border-white/5 rounded-xl text-lg font-black text-white focus:border-emerald-500/50"
-                                        />
-                                    </div>
-                                </div>
                             </CardContent>
                         </Card>
 
-                        {/* Ingredients */}
-                        <Card className="glass-card">
-                            <CardHeader className="p-8 border-b border-white/5">
-                                <div className="flex items-center justify-between">
-                                    <CardTitle className="text-xl font-black text-white italic flex items-center gap-3">
-                                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                                            <Package className="w-5 h-5 text-blue-500" />
-                                        </div>
-                                        Material Componentry
-                                    </CardTitle>
-                                    <div className="flex gap-2">
-                                        <Dialog open={isAddIngredientOpen} onOpenChange={setIsAddIngredientOpen}>
-                                            <DialogTrigger asChild>
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => setShowAdvanced(!showAdvanced)}
+                            className="w-full h-12 border border-dashed border-white/5 rounded-xl text-neutral-500 hover:text-white hover:bg-white/5 flex items-center justify-between px-6"
+                        >
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Advanced: Ingredient & Cost Tracking</span>
+                            {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                        </Button>
+
+                        {showAdvanced && (
+                            <div className="space-y-8 animate-in slide-in-from-top-4 duration-500">
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div className="space-y-3">
+                                        <Label className="text-xs text-neutral-500">Prep Time (min)</Label>
+                                        <Input
+                                            type="number"
+                                            {...register('prep_time_minutes', { valueAsNumber: true })}
+                                            className="h-14 bg-black/40 border-white/5 rounded-xl text-lg font-black text-white"
+                                        />
+                                    </div>
+                                    <div className="space-y-3">
+                                        <Label className="text-xs text-neutral-500">Target Food Cost (%)</Label>
+                                        <Input
+                                            type="number"
+                                            {...register('target_food_cost_pct', { valueAsNumber: true })}
+                                            className="h-14 bg-black/40 border-white/5 rounded-xl text-lg font-black text-white"
+                                        />
+                                    </div>
+                                </div>
+
+                                <Card className="glass-card">
+                                    <CardHeader className="p-8 border-b border-white/5">
+                                        <div className="flex items-center justify-between">
+                                            <CardTitle className="text-lg font-semibold text-white flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                                                    <Package className="w-5 h-5 text-blue-500" />
+                                                </div>
+                                                Ingredients
+                                            </CardTitle>
+                                            <div className="flex gap-2">
+                                                <Dialog open={isAddIngredientOpen} onOpenChange={setIsAddIngredientOpen}>
+                                                    <DialogTrigger asChild>
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            className="h-10 px-4 text-emerald-500 font-bold uppercase text-[10px] bg-emerald-500/5 hover:bg-emerald-500/10 rounded-xl"
+                                                        >
+                                                            <Plus className="w-3 h-3 mr-2" />
+                                                            Add New Ingredient
+                                                        </Button>
+                                                    </DialogTrigger>
+                                                    <DialogContent className="bg-neutral-900 border-white/5 backdrop-blur-3xl rounded-[40px] p-8">
+                                                        <DialogHeader>
+                                                            <DialogTitle className="text-xl font-bold text-white mb-4">Add Ingredient</DialogTitle>
+                                                        </DialogHeader>
+                                                        <IngredientForm
+                                                            onSubmit={(data) => addIngredientMutation.mutate(data)}
+                                                            isLoading={addIngredientMutation.isPending}
+                                                        />
+                                                    </DialogContent>
+                                                </Dialog>
                                                 <Button
                                                     type="button"
                                                     variant="ghost"
-                                                    className="h-10 px-4 text-emerald-500 font-black uppercase text-[10px] tracking-widest bg-emerald-500/5 hover:bg-emerald-500/10 rounded-xl"
+                                                    onClick={() => append({ ingredient_id: '', quantity_needed: 0, unit_used: 'g' })}
+                                                    className="h-10 px-4 text-white/40 font-bold uppercase text-[10px] bg-white/5 hover:bg-white/10 rounded-xl"
                                                 >
                                                     <Plus className="w-3 h-3 mr-2" />
-                                                    Register New Material
-                                                </Button>
-                                            </DialogTrigger>
-                                            <DialogContent className="bg-neutral-900 border-white/5 backdrop-blur-3xl rounded-[40px] p-8">
-                                                <DialogHeader>
-                                                    <DialogTitle className="text-3xl font-black text-white italic tracking-tighter mb-4">Quick Registration.</DialogTitle>
-                                                </DialogHeader>
-                                                <IngredientForm
-                                                    onSubmit={(data) => addIngredientMutation.mutate(data)}
-                                                    isLoading={addIngredientMutation.isPending}
-                                                />
-                                            </DialogContent>
-                                        </Dialog>
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            onClick={() => append({ ingredient_id: '', quantity_needed: 0, unit_used: 'g' })}
-                                            className="h-10 px-4 text-white/40 font-black uppercase text-[10px] tracking-widest bg-white/5 hover:bg-white/10 rounded-xl"
-                                        >
-                                            <Plus className="w-3 h-3 mr-2" />
-                                            Append Entry
-                                        </Button>
-                                    </div>
-                                </div>
-                            </CardHeader>
-                            <CardContent className="p-8">
-                                {(!ingredients || ingredients.length === 0) ? (
-                                    <div className="text-center py-24">
-                                        <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6">
-                                            <AlertTriangle className="w-12 h-12 text-yellow-500/20" />
-                                        </div>
-                                        <p className="text-neutral-500 font-bold uppercase tracking-widest text-xs">Ledger Offline</p>
-                                        <Link href="/pantry">
-                                            <Button variant="link" className="text-emerald-500 font-black mt-2">
-                                                INITIALIZE PANTRY ASSETS
-                                            </Button>
-                                        </Link>
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4">
-                                        {fields.map((field, index) => (
-                                            <div key={field.id} className="flex gap-4 items-center animate-in fade-in slide-in-from-left-4 duration-300">
-                                                <div className="flex-1">
-                                                    <Select
-                                                        value={items[index]?.ingredient_id || ''}
-                                                        onValueChange={(value) => {
-                                                            const currentItems = [...items]
-                                                            currentItems[index] = { ...currentItems[index], ingredient_id: value }
-                                                        }}
-                                                    >
-                                                        <SelectTrigger className="h-14 bg-black/40 border-white/5 rounded-xl text-white font-bold uppercase tracking-widest px-6">
-                                                            <SelectValue placeholder="SELECT MATERIAL..." />
-                                                        </SelectTrigger>
-                                                        <SelectContent className="bg-neutral-900/90 border-white/5 backdrop-blur-3xl rounded-xl">
-                                                            {ingredients.map((ingredient) => (
-                                                                <SelectItem key={ingredient.id} value={ingredient.id} className="font-bold uppercase py-3">
-                                                                    {ingredient.name}
-                                                                </SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
-                                                <div className="w-32">
-                                                    <Input
-                                                        type="number"
-                                                        step="0.01"
-                                                        placeholder="QTY"
-                                                        {...register(`items.${index}.quantity_needed`, { valueAsNumber: true })}
-                                                        className="h-14 bg-black/40 border-white/5 rounded-xl text-center font-black text-lg text-white"
-                                                    />
-                                                </div>
-
-                                                <div className="w-32">
-                                                    <Select
-                                                        value={items[index]?.unit_used || 'g'}
-                                                        onValueChange={(value) => {
-                                                            const currentItems = [...items]
-                                                            currentItems[index] = { ...currentItems[index], unit_used: value }
-                                                        }}
-                                                    >
-                                                        <SelectTrigger className="h-14 bg-black/40 border-white/5 rounded-xl text-white font-bold uppercase tracking-widest px-6">
-                                                            <SelectValue />
-                                                        </SelectTrigger>
-                                                        <SelectContent className="bg-neutral-900/90 border-white/5 backdrop-blur-3xl rounded-xl">
-                                                            {ALL_UNITS.map((unit) => (
-                                                                <SelectItem key={unit} value={unit} className="font-bold uppercase py-3">{unit}</SelectItem>
-                                                            ))}
-                                                        </SelectContent>
-                                                    </Select>
-                                                </div>
-
-                                                <Button
-                                                    type="button"
-                                                    variant="ghost"
-                                                    size="icon"
-                                                    onClick={() => remove(index)}
-                                                    disabled={fields.length === 1}
-                                                    className="h-14 w-14 text-neutral-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-colors"
-                                                >
-                                                    <Trash2 className="w-5 h-5" />
+                                                    Add Row
                                                 </Button>
                                             </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
+                                        </div>
+                                    </CardHeader>
+                                    <CardContent className="p-8">
+                                        {(!ingredients || ingredients.length === 0) ? (
+                                            <div className="text-center py-24">
+                                                <div className="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                                                    <AlertTriangle className="w-12 h-12 text-yellow-500/20" />
+                                                </div>
+                                                <p className="text-neutral-500 text-sm">No ingredients yet</p>
+                                                <Link href="/pantry">
+                                                    <Button variant="link" className="text-emerald-500 font-bold mt-2">
+                                                        Add Ingredients First
+                                                    </Button>
+                                                </Link>
+                                            </div>
+                                        ) : (
+                                            <div className="space-y-4">
+                                                {fields.map((field, index) => (
+                                                    <div key={field.id} className="flex gap-4 items-center animate-in fade-in slide-in-from-left-4 duration-300">
+                                                        <div className="flex-1">
+                                                            <Select
+                                                                value={items[index]?.ingredient_id || ''}
+                                                                onValueChange={(value) => {
+                                                                    const currentItems = [...items]
+                                                                    currentItems[index] = { ...currentItems[index], ingredient_id: value }
+                                                                    setValue('items', currentItems)
+                                                                }}
+                                                            >
+                                                                <SelectTrigger className="h-14 bg-black/40 border-white/5 rounded-xl text-white font-bold px-6">
+                                                                    <SelectValue placeholder="Select ingredient..." />
+                                                                </SelectTrigger>
+                                                                <SelectContent className="bg-neutral-900/90 border-white/5 backdrop-blur-3xl rounded-xl">
+                                                                    {ingredients.map((ingredient) => (
+                                                                        <SelectItem key={ingredient.id} value={ingredient.id} className="font-bold uppercase py-3">
+                                                                            {ingredient.name}
+                                                                        </SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+
+                                                        <div className="w-32">
+                                                            <Input
+                                                                type="number"
+                                                                step="0.01"
+                                                                placeholder="QTY"
+                                                                {...register(`items.${index}.quantity_needed`, { valueAsNumber: true })}
+                                                                className="h-14 bg-black/40 border-white/5 rounded-xl text-center font-black text-lg text-white"
+                                                            />
+                                                        </div>
+
+                                                        <div className="w-32">
+                                                            <Select
+                                                                value={items[index]?.unit_used || 'g'}
+                                                                onValueChange={(value) => {
+                                                                    const currentItems = [...items]
+                                                                    currentItems[index] = { ...currentItems[index], unit_used: value }
+                                                                    setValue('items', currentItems)
+                                                                }}
+                                                            >
+                                                                <SelectTrigger className="h-14 bg-black/40 border-white/5 rounded-xl text-white font-bold px-6">
+                                                                    <SelectValue />
+                                                                </SelectTrigger>
+                                                                <SelectContent className="bg-neutral-900/90 border-white/5 backdrop-blur-3xl rounded-xl">
+                                                                    {ALL_UNITS.map((unit) => (
+                                                                        <SelectItem key={unit} value={unit} className="font-bold uppercase py-3">{unit}</SelectItem>
+                                                                    ))}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
+
+                                                        <Button
+                                                            type="button"
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => remove(index)}
+                                                            disabled={fields.length === 1}
+                                                            className="h-14 w-14 text-neutral-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl transition-colors"
+                                                        >
+                                                            <Trash2 className="w-5 h-5" />
+                                                        </Button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </CardContent>
+                                </Card>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Preview Panel */}
                     <div className="lg:col-span-1">
                         <div className="sticky top-8 space-y-6">
                             <Card className={cn(
@@ -443,38 +562,38 @@ export default function NewRecipePage() {
                                 costPreview?.is_profitable ? "border-emerald-500/20" : costPreview ? "border-red-500/20" : ""
                             )}>
                                 <CardHeader className="p-8 border-b border-white/5">
-                                    <CardTitle className="text-xl font-black text-white italic flex items-center gap-3">
+                                    <CardTitle className="text-lg font-semibold text-white flex items-center gap-3">
                                         <div className={cn(
                                             "w-10 h-10 rounded-xl flex items-center justify-center",
                                             costPreview ? "bg-emerald-500/10 text-emerald-500" : "bg-white/5 text-white/20"
                                         )}>
                                             <TrendingUp className="w-5 h-5" />
                                         </div>
-                                        Matrix Intelligence
+                                        Cost Preview
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent className="p-8">
                                     {!costPreview ? (
                                         <div className="text-center py-12">
                                             <DollarSign className="w-12 h-12 text-white/5 mx-auto mb-6" />
-                                            <p className="text-neutral-600 font-bold uppercase tracking-widest text-[10px] leading-relaxed">
-                                                Pending synchronization.<br />Add materials to engage calculations.
+                                            <p className="text-neutral-500 text-sm">
+                                                Add ingredients to see cost calculations
                                             </p>
                                         </div>
                                     ) : (
                                         <div className="space-y-8">
                                             <div className="space-y-4">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-neutral-600">Total Material Cost</span>
-                                                    <span className="text-2xl font-black text-white italic tabular-nums">
+                                                    <span className="text-xs text-neutral-500">Total Cost</span>
+                                                    <span className="text-xl font-bold text-white tabular-nums">
                                                         {formatCurrency(costPreview.total_cost)}
                                                     </span>
                                                 </div>
 
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-neutral-600">Projected Margin</span>
+                                                    <span className="text-xs text-neutral-500">Profit</span>
                                                     <span className={cn(
-                                                        "text-2xl font-black italic tabular-nums",
+                                                        "text-xl font-bold tabular-nums",
                                                         getMarginColorClass(costPreview.margin_status)
                                                     )}>
                                                         {formatCurrency(costPreview.gross_margin_dollars)}
@@ -485,10 +604,10 @@ export default function NewRecipePage() {
                                             <div className="pt-8 border-t border-white/5 space-y-6">
                                                 <div className="flex items-center justify-between">
                                                     <span className="text-[10px] font-black uppercase tracking-widest text-neutral-600 flex items-center gap-2">
-                                                        <Percent className="w-3 h-3" /> Alpha Performance
+                                                        <Percent className="w-3 h-3" /> Food Cost %
                                                     </span>
                                                     <span className={cn(
-                                                        "text-3xl font-black italic tabular-nums tracking-tighter",
+                                                        "text-2xl font-bold tabular-nums",
                                                         getMarginColorClass(costPreview.margin_status)
                                                     )}>
                                                         {formatPercentage(costPreview.food_cost_percentage)}
@@ -499,17 +618,17 @@ export default function NewRecipePage() {
                                                     <div className="p-6 rounded-2xl bg-red-500/10 border border-red-500/20 shadow-2xl shadow-red-500/10 animate-pulse">
                                                         <div className="flex items-center gap-3 text-red-500 mb-2">
                                                             <AlertTriangle className="w-5 h-5" />
-                                                            <span className="text-xs font-black uppercase tracking-widest">THRESHOLD WARNING</span>
+                                                            <span className="text-xs font-bold uppercase">OVER BUDGET</span>
                                                         </div>
-                                                        <p className="text-xs text-red-500/80 font-bold leading-relaxed">
-                                                            Target {targetFoodCostPct}% exceeded by {(costPreview.food_cost_percentage - (targetFoodCostPct || 0)).toFixed(1)}%. Financial viability compromised.
+                                                        <p className="text-xs text-red-500/80">
+                                                            Target {targetFoodCostPct}% exceeded. Consider adjusting ingredients or price.
                                                         </p>
                                                     </div>
                                                 ) : (
                                                     <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 shadow-2xl shadow-emerald-500/10">
                                                         <div className="flex items-center gap-3 text-emerald-500">
                                                             <TrendingUp className="w-5 h-5" />
-                                                            <span className="text-xs font-black uppercase tracking-widest">PERFORMANCE OPTIMAL</span>
+                                                            <span className="text-xs font-bold uppercase">ON TARGET</span>
                                                         </div>
                                                     </div>
                                                 )}
@@ -522,17 +641,17 @@ export default function NewRecipePage() {
                             <Button
                                 type="submit"
                                 disabled={saveMutation.isPending}
-                                className="w-full h-20 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xl italic tracking-tighter rounded-[32px] transition-all shadow-2xl shadow-emerald-500/20 active:scale-95 group"
+                                className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-lg rounded-xl transition-all shadow-lg active:scale-95 group"
                             >
                                 {saveMutation.isPending ? (
                                     <div className="flex items-center gap-3">
                                         <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                        SYNCING...
+                                        Creating Dish...
                                     </div>
                                 ) : (
                                     <div className="flex items-center gap-3">
                                         <Save className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                                        SYNCHRONIZE ASSET
+                                        Create Dish
                                     </div>
                                 )}
                             </Button>

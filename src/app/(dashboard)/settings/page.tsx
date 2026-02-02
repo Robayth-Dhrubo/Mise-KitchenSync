@@ -94,11 +94,16 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="space-y-6 max-w-2xl">
+        <div className="p-8 space-y-6 max-w-2xl mx-auto">
             {/* Header */}
-            <div>
-                <h1 className="text-3xl font-bold text-white">Settings</h1>
-                <p className="text-neutral-400 mt-1">Manage your account and restaurant preferences</p>
+            <div className="flex items-center gap-4">
+                <div className="p-3 bg-emerald-500/10 rounded-xl">
+                    <SettingsIcon className="w-8 h-8 text-emerald-500" />
+                </div>
+                <div>
+                    <h1 className="text-3xl font-bold text-white tracking-tight">Settings</h1>
+                    <p className="text-zinc-500 text-sm mt-1">Manage your account and restaurant preferences</p>
+                </div>
             </div>
 
             {/* Account Info */}
@@ -207,7 +212,7 @@ export default function SettingsPage() {
                         </div>
                         <div className="flex justify-between">
                             <span className="text-neutral-500">Tagline</span>
-                            <span className="text-neutral-300">The Operating System for Profitable Kitchens</span>
+                            <span className="text-neutral-300">The Operating System for Profitable Service Operations</span>
                         </div>
                     </div>
                 </CardContent>

@@ -10,13 +10,54 @@ TRUNCATE TABLE recipe_items, recipes, ingredients CASCADE;
 DO $$
 DECLARE
   target_user_id uuid;
+  test_email text := 'admin@mise.local';
 BEGIN
-  -- Grab the first user from auth.users to own this data
+  -- Try to grab the first user from auth.users
   SELECT id INTO target_user_id FROM auth.users LIMIT 1;
   
+  -- If no users exist, create a test admin user
   IF target_user_id IS NULL THEN
-    RAISE EXCEPTION 'No users found! Please Sign Up in the app first.';
+    target_user_id := gen_random_uuid();
+    
+    -- Create auth user
+    INSERT INTO auth.users (
+      id, 
+      instance_id,
+      email, 
+      encrypted_password, 
+      email_confirmed_at,
+      created_at,
+      updated_at,
+      raw_app_meta_data,
+      raw_user_meta_data,
+      aud,
+      role
+    ) VALUES (
+      target_user_id,
+      '00000000-0000-0000-0000-000000000000',
+      test_email,
+      crypt('Admin123!', gen_salt('bf')),
+      now(),
+      now(),
+      now(),
+      '{"provider":"email","providers":["email"]}',
+      '{}',
+      'authenticated',
+      'authenticated'
+    );
+    
+    RAISE NOTICE 'Created test admin: admin@mise.local / Admin123!';
+  ELSE
+    -- Get the email of existing user
+    SELECT email INTO test_email FROM auth.users WHERE id = target_user_id;
   END IF;
+
+  -- Create or update profile (UPSERT)
+  INSERT INTO public.profiles (id, email, role, restaurant_name)
+  VALUES (target_user_id, test_email, 'admin', 'Mise Demo Kitchen')
+  ON CONFLICT (id) DO UPDATE SET role = 'admin', restaurant_name = 'Mise Demo Kitchen';
+
+  RAISE NOTICE 'Using user: % as admin', test_email;
 
   -- ---------------------------------------------------------
   -- INGREDIENTS

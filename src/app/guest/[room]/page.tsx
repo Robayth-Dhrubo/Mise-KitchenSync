@@ -14,7 +14,7 @@ export default async function GuestPage({ params }: { params: Promise<{ room: st
         console.error('Error fetching hotel profile:', userError)
         return (
             <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center">
-                <h1 className="text-3xl font-black text-white italic font-display mb-4">Vault Access Denied.</h1>
+                <h1 className="text-3xl font-black text-white font-display mb-4">Vault Access Denied.</h1>
                 <p className="text-neutral-500 max-w-sm mb-8">No active hospitality intelligence profile found in the cluster.</p>
             </div>
         )
@@ -22,7 +22,20 @@ export default async function GuestPage({ params }: { params: Promise<{ room: st
 
     const { data: recipes } = await supabase
         .from('recipes')
-        .select('*')
+        .select(`
+            *,
+            recipe_items (
+                quantity_needed,
+                unit_used,
+                ingredient:ingredients (
+                    name,
+                    purchase_price,
+                    purchase_unit,
+                    current_stock,
+                    conversion_ratio
+                )
+            )
+        `)
         .eq('user_id', firstUser.id)
         .order('menu_price', { ascending: false })
 

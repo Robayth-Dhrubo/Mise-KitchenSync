@@ -29,7 +29,7 @@ export default function GuestLoginPage() {
                         <Hotel className="w-8 h-8 text-white transition-transform group-hover:rotate-12" />
                     </div>
                     <div className="space-y-2">
-                        <h1 className="text-5xl font-black text-white tracking-tighter leading-tight italic font-display">Digital Menu.</h1>
+                        <h1 className="text-5xl font-black text-white tracking-tighter leading-tight font-display">Digital Menu.</h1>
                         <p className="text-neutral-500 font-medium text-lg tracking-tight">Curated dining at your station.</p>
                     </div>
                 </div>
@@ -48,7 +48,7 @@ export default function GuestLoginPage() {
                         </div>
                         <Button
                             type="submit"
-                            className="w-full h-20 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xl rounded-[32px] transition-all shadow-xl shadow-emerald-500/20 active:scale-95 flex items-center justify-center gap-3 group italic font-display"
+                            className="w-full h-20 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xl rounded-[32px] transition-all shadow-xl shadow-emerald-500/20 active:scale-95 flex items-center justify-center gap-3 group font-display"
                             disabled={!roomNumber.trim()}
                         >
                             INVOKE MENU
@@ -59,7 +59,9 @@ export default function GuestLoginPage() {
                     <div className="flex flex-col items-center gap-4">
                         <div className="h-px w-12 bg-neutral-800" />
                         <div className="flex justify-center gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-neutral-600">
-                            <span className="flex items-center gap-2 italic uppercase">MISE OPERATING SYSTEM • BUILD v4.0.2</span>
+                            <a href="/" className="flex items-center gap-2 uppercase hover:text-emerald-500 transition-colors">
+                                Powered by Mise
+                            </a>
                         </div>
                     </div>
                 </div>

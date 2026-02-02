@@ -14,7 +14,20 @@ export default async function PosPage() {
 
     const { data: recipes } = await supabase
         .from('recipes')
-        .select('*')
+        .select(`
+            *,
+            recipe_items (
+                quantity_needed,
+                unit_used,
+                ingredient:ingredients (
+                    name,
+                    purchase_price,
+                    purchase_unit,
+                    current_stock,
+                    conversion_ratio
+                )
+            )
+        `)
         .eq('user_id', user.id)
         .order('name', { ascending: true })
 
@@ -25,7 +38,7 @@ export default async function PosPage() {
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-600/5 rounded-full blur-[120px] -z-10" />
 
             <div className="space-y-1">
-                <h1 className="text-5xl font-black text-white tracking-tighter italic">Terminal.</h1>
+                <h1 className="text-5xl font-black text-white tracking-tighter font-display">Terminal.</h1>
                 <p className="text-neutral-500 font-bold text-sm uppercase tracking-widest flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                     Front of House Transaction Interface

@@ -146,7 +146,7 @@ export function IngredientForm({
             <Button
                 type="submit"
                 disabled={isLoading || !formData.name}
-                className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-lg italic tracking-tighter rounded-2xl shadow-xl shadow-emerald-500/20 transition-all active:scale-95 mt-4"
+                className="w-full h-16 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-lg tracking-tighter rounded-2xl shadow-xl shadow-emerald-500/20 transition-all active:scale-95 mt-4"
             >
                 {isLoading ? (
                     <div className="flex items-center gap-3">

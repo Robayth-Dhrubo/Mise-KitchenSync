@@ -83,7 +83,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                         </Button>
                     </Link>
                     <div className="space-y-1">
-                        <h1 className="text-5xl font-black text-white tracking-tighter italic flex items-center gap-4">
+                        <h1 className="text-5xl font-black text-white tracking-tighter flex items-center gap-4">
                             {recipe.name}.
                             <Badge className={cn(
                                 "h-8 px-4 border-0 text-[10px] font-black uppercase tracking-widest rounded-lg",
@@ -110,7 +110,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                     {/* Ingredients Table */}
                     <Card className="glass-card">
                         <CardHeader className="p-8 border-b border-white/5">
-                            <CardTitle className="text-xl font-black text-white italic flex items-center gap-3">
+                            <CardTitle className="text-xl font-black text-white flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                                     <ChefHat className="w-5 h-5 text-emerald-500" />
                                 </div>
@@ -129,7 +129,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                                             <div className="text-neutral-400 font-bold uppercase tracking-widest text-xs">
                                                 {item.quantity_needed} {item.unit_used}
                                             </div>
-                                            <div className="text-white font-black text-xl italic tracking-tighter w-24 text-right">
+                                            <div className="text-white font-black text-xl tracking-tighter w-24 text-right">
                                                 {formatCurrency(item.cost)}
                                             </div>
                                         </div>
@@ -139,9 +139,9 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                                 <div className="mt-8 pt-8 border-t border-white/5 flex items-center justify-between">
                                     <div className="space-y-1">
                                         <div className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Cumulative Unit Cost</div>
-                                        <div className="text-2xl font-black text-white italic tracking-tighter">Manufacturing Total</div>
+                                        <div className="text-2xl font-black text-white tracking-tighter">Manufacturing Total</div>
                                     </div>
-                                    <div className="text-4xl font-black text-emerald-500 italic tracking-tighter tabular-nums">
+                                    <div className="text-4xl font-black text-emerald-500 tracking-tighter tabular-nums">
                                         {formatCurrency(totalCost)}
                                     </div>
                                 </div>
@@ -158,13 +158,13 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
                                     <TrendingUp className="w-5 h-5 text-purple-500" />
                                 </div>
-                                <CardTitle className="text-xl font-black text-white italic">Profit Matrix</CardTitle>
+                                <CardTitle className="text-xl font-black text-white">Profit Matrix</CardTitle>
                             </div>
                         </CardHeader>
                         <CardContent className="p-8 space-y-10">
                             <div className="space-y-2">
                                 <div className="text-[10px] font-black text-neutral-600 uppercase tracking-[0.2em]">Market Valuation</div>
-                                <div className="text-5xl font-black text-white italic tracking-tighter tabular-nums">{formatCurrency(recipe.menu_price)}</div>
+                                <div className="text-5xl font-black text-white tracking-tighter tabular-nums">{formatCurrency(recipe.menu_price)}</div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-8 py-8 border-y border-white/5">
@@ -173,7 +173,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                                         <TrendingUp className="w-3 h-3" /> Net Alpha
                                     </div>
                                     <div className={cn(
-                                        "text-2xl font-black italic tracking-tighter tabular-nums",
+                                        "text-2xl font-black tracking-tighter tabular-nums",
                                         getMarginColorClass(marginStatus as any)
                                     )}>
                                         {formatCurrency(profit)}
@@ -183,7 +183,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                                     <div className="text-[10px] font-black text-neutral-600 uppercase tracking-widest flex items-center gap-2">
                                         <Clock className="w-3 h-3" /> Execution
                                     </div>
-                                    <div className="text-2xl font-black text-white italic tracking-tighter tabular-nums">
+                                    <div className="text-2xl font-black text-white tracking-tighter tabular-nums">
                                         {recipe.prep_time_minutes || '--'}m
                                     </div>
                                 </div>
@@ -193,7 +193,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                                 <div className="flex justify-between items-end">
                                     <div className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Margin Efficiency</div>
                                     <div className={cn(
-                                        "text-4xl font-black italic tracking-tighter tabular-nums",
+                                        "text-4xl font-black tracking-tighter tabular-nums",
                                         getMarginColorClass(marginStatus as any)
                                     )}>
                                         {recipe.menu_price > 0 ? Math.round((profit / recipe.menu_price) * 100) : 0}%

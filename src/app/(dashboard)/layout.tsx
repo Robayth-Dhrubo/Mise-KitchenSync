@@ -1,5 +1,7 @@
+'use client'
+
+import { NavContent } from '@/components/layout/nav-content'
 import { MobileNav } from '@/components/layout/mobile-nav'
-import { DesktopSidebar } from '@/components/layout/desktop-sidebar'
 
 export default function DashboardLayout({
     children,
@@ -7,18 +9,18 @@ export default function DashboardLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className="min-h-screen bg-black overflow-x-hidden">
-            {/* Desktop Sidebar */}
-            <div className="fixed inset-y-0 z-50">
-                <DesktopSidebar />
-            </div>
+        <div className="flex min-h-screen bg-neutral-950">
+            {/* Left Sidebar - Always visible on lg+ screens */}
+            <aside className="hidden lg:block fixed left-0 top-0 w-64 h-screen z-50">
+                <NavContent />
+            </aside>
 
-            {/* Mobile Header */}
+            {/* Mobile Navigation */}
             <MobileNav />
 
-            {/* Main Content */}
-            <main className="lg:pl-72 pt-16 lg:pt-0 min-h-screen relative">
-                <div className="p-6 md:p-12 max-w-[1600px] mx-auto animate-fade-in">
+            {/* Main Content Area */}
+            <main className="flex-1 lg:ml-64 pt-16 lg:pt-0 min-h-screen overflow-y-auto">
+                <div className="p-6 lg:p-8 max-w-[1920px] mx-auto">
                     {children}
                 </div>
             </main>

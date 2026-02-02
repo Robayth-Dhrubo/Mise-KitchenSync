@@ -45,6 +45,29 @@ export function calculateRecipeCost(
 }
 
 /**
+ * Check if a recipe should be considered "In Stock" based on required ingredients.
+ * Returns true if every ingredient has current_stock >= quantity_needed.
+ */
+export function isRecipeInStock(items: RecipeItemWithIngredient[]): boolean {
+    if (!items || items.length === 0) return true // No ingredients? Always in stock (e.g. water)
+
+    return items.every(item => {
+        // Essential Fix: Compare stock in base units (current_stock * conversion_ratio)
+        // vs usage units (quantity_needed). 
+
+        // If ingredient data is missing or corrupted, we default to "In Stock" 
+        // to avoid blocking sales due to data errors.
+        if (!item.ingredient) return true
+
+        const currentStock = item.ingredient.current_stock ?? 0
+        const ratio = item.ingredient.conversion_ratio ?? 1
+
+        const stockInBaseUnits = currentStock * ratio
+        return stockInBaseUnits >= item.quantity_needed
+    })
+}
+
+/**
  * Format currency with the user's preferred symbol
  */
 export function formatCurrency(amount: number, symbol: string = '$'): string {

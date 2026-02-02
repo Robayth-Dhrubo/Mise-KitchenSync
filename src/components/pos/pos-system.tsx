@@ -14,12 +14,12 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 
 import { type Recipe } from '@/lib/types/database'
+import { isRecipeInStock } from '@/lib/calculations'
+import { cn } from '@/lib/utils'
 
 interface PosProps {
-    recipes: Recipe[]
+    recipes: any[]
 }
-
-import { cn } from '@/lib/utils'
 
 export default function PosSystem({ recipes }: PosProps) {
     const router = useRouter()
@@ -63,11 +63,37 @@ export default function PosSystem({ recipes }: PosProps) {
         return matchesSearch && matchesCategory
     })
 
-    const addToCart = (recipe: Recipe) => {
+    const addToCart = (recipe: any) => {
+        const inStock = isRecipeInStock(recipe.recipe_items || [])
+        if (!recipe.is_available) {
+            toast.error('Asset currently deactivated')
+            return
+        }
+        if (!inStock) {
+            toast.error('Item is out of stock')
+            return
+        }
         setCart(prev => ({
             ...prev,
             [recipe.id]: { recipe, quantity: (prev[recipe.id]?.quantity || 0) + 1 }
         }))
+    }
+
+    const toggleAvailability = async (recipe: Recipe) => {
+        try {
+            const { error } = await supabase
+                .from('recipes')
+                .update({ is_available: !recipe.is_available })
+                .eq('id', recipe.id)
+
+            if (error) throw error
+
+            toast.success(recipe.is_available ? 'Dish deactivated' : 'Dish reactivated')
+            router.refresh()
+        } catch (error) {
+            console.error('Error updating availability:', error)
+            toast.error('Sync failed')
+        }
     }
 
     const removeFromCart = (id: string) => {
@@ -148,32 +174,75 @@ export default function PosSystem({ recipes }: PosProps) {
                             />
                         </div>
                         <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 overflow-y-auto pr-2 custom-scrollbar">
-                            {filteredRecipes.map((recipe) => (
-                                <button
-                                    key={recipe.id}
-                                    onClick={() => addToCart(recipe)}
-                                    className="glass-card p-6 text-left hover:border-blue-500/30 transition-all active:scale-95 group relative overflow-hidden"
-                                >
-                                    <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
-                                            <Plus className="w-4 h-4" />
+                            {filteredRecipes.map((recipe) => {
+                                const inStock = isRecipeInStock(recipe.recipe_items || [])
+                                const isAvailable = recipe.is_available !== false && inStock
+
+                                return (
+                                    <div
+                                        key={recipe.id}
+                                        className={cn(
+                                            "glass-card p-6 text-left transition-all relative overflow-hidden flex flex-col justify-between h-full",
+                                            !isAvailable ? "opacity-40 border-red-500/20" : "hover:border-blue-500/30 group cursor-pointer shadow-xl shadow-black/20"
+                                        )}
+                                        onClick={() => isAvailable && addToCart(recipe)}
+                                    >
+                                        {!isAvailable && (
+                                            <div className="absolute inset-0 bg-red-500/5 z-0 pointer-events-none" />
+                                        )}
+                                        <div className="relative z-10">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <Badge className={cn(
+                                                    "h-7 px-3 font-black uppercase text-[8px] tracking-widest border-0 rounded-lg",
+                                                    recipe.is_available ? "bg-white/5 text-neutral-500" : "bg-red-500/20 text-red-500"
+                                                )}>
+                                                    {recipe.is_available ? categorize(recipe) : 'OFF AIR'}
+                                                </Badge>
+                                                <div className="flex flex-col items-end gap-1">
+                                                    <span className={cn(
+                                                        "font-black tracking-tighter tabular-nums text-lg",
+                                                        isAvailable ? "text-blue-500" : "text-neutral-600"
+                                                    )}>${recipe.menu_price}</span>
+                                                    {!inStock && (
+                                                        <Badge className="bg-yellow-500/20 text-yellow-500 border-0 text-[6px] font-black uppercase tracking-widest px-1 py-0.5 rounded-sm">
+                                                            SOLD OUT
+                                                        </Badge>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <h3 className="font-black text-white text-lg leading-tight tracking-tight uppercase group-hover:translate-x-1 transition-transform mb-4">{recipe.name}</h3>
+                                        </div>
+
+                                        <div className="relative z-10 mt-auto pt-4 border-t border-white/5 flex gap-2">
+                                            <Button
+                                                size="sm"
+                                                variant="ghost"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    toggleAvailability(recipe);
+                                                }}
+                                                className={cn(
+                                                    "flex-1 h-8 rounded-lg text-[8px] font-black uppercase tracking-widest",
+                                                    recipe.is_available ? "text-neutral-600 hover:text-red-500 hover:bg-red-500/10" : "text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10"
+                                                )}
+                                            >
+                                                {recipe.is_available ? 'Disable' : 'Enable'}
+                                            </Button>
+                                            {isAvailable && (
+                                                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all">
+                                                    <Plus className="w-4 h-4" />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
-                                    <div className="flex justify-between items-start mb-4">
-                                        <Badge className="bg-white/5 text-neutral-500 border-white/5 text-[8px] font-black uppercase tracking-widest">
-                                            {categorize(recipe)}
-                                        </Badge>
-                                        <span className="font-black text-blue-500 italic tracking-tighter tabular-nums text-lg">${recipe.menu_price}</span>
-                                    </div>
-                                    <h3 className="font-black text-white text-lg leading-tight tracking-tight uppercase group-hover:translate-x-1 transition-transform">{recipe.name}</h3>
-                                </button>
-                            ))}
+                                )
+                            })}
                         </div>
-                    </div>
+                    </div >
 
                     <Card className="w-full lg:w-[450px] glass-card flex flex-col overflow-hidden border-white/10 shadow-2xl">
                         <CardHeader className="p-8 border-b border-white/5">
-                            <CardTitle className="text-xl font-black text-white italic flex items-center gap-4">
+                            <CardTitle className="text-xl font-black text-white flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
                                     <ShoppingCart className="w-5 h-5 text-blue-500" />
                                 </div>
@@ -210,7 +279,7 @@ export default function PosSystem({ recipes }: PosProps) {
                                                     </button>
                                                 </div>
                                             </div>
-                                            <div className="text-xl font-black text-white italic tracking-tighter tabular-nums">
+                                            <div className="text-xl font-black text-white tracking-tighter tabular-nums">
                                                 ${(item.recipe.menu_price * item.quantity).toFixed(2)}
                                             </div>
                                         </div>
@@ -222,14 +291,14 @@ export default function PosSystem({ recipes }: PosProps) {
                             <div className="flex justify-between items-end">
                                 <div className="space-y-1">
                                     <div className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Market Value Total</div>
-                                    <div className="text-2xl font-black text-white italic tracking-tighter uppercase">Cumulative bill</div>
+                                    <div className="text-2xl font-black text-white tracking-tighter uppercase">Cumulative bill</div>
                                 </div>
-                                <div className="text-5xl font-black text-blue-500 italic tracking-tighter tabular-nums leading-none">
+                                <div className="text-5xl font-black text-blue-500 tracking-tighter tabular-nums leading-none">
                                     ${subtotal.toFixed(2)}
                                 </div>
                             </div>
                             <Button
-                                className="w-full h-20 bg-blue-600 hover:bg-blue-500 text-white font-black text-xl italic tracking-tighter rounded-[32px] transition-all shadow-2xl shadow-blue-500/20 active:scale-95 group"
+                                className="w-full h-20 bg-blue-600 hover:bg-blue-500 text-white font-black text-xl tracking-tighter rounded-[32px] transition-all shadow-2xl shadow-blue-500/20 active:scale-95 group"
                                 disabled={Object.keys(cart).length === 0 || checkoutMutation.isPending}
                                 onClick={() => checkoutMutation.mutate()}
                             >
@@ -247,7 +316,7 @@ export default function PosSystem({ recipes }: PosProps) {
                             </Button>
                         </div>
                     </Card>
-                </div>
+                </div >
             ) : (
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 overflow-y-auto pr-2 custom-scrollbar pb-24">
                     {liveOrders.map(order => (
@@ -265,9 +334,9 @@ export default function PosSystem({ recipes }: PosProps) {
                                 <div className="flex justify-between items-start mb-6">
                                     <div className="space-y-1">
                                         <div className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Target Entity</div>
-                                        <h4 className="text-xl font-black text-white italic tracking-tighter uppercase">{order.table_or_room ? `Room ${order.table_or_room}` : 'Staff Auth'}</h4>
+                                        <h4 className="text-xl font-black text-white tracking-tighter uppercase">{order.table_or_room ? `Room ${order.table_or_room}` : 'Staff Auth'}</h4>
                                     </div>
-                                    <div className="text-2xl font-black text-emerald-500 italic tracking-tighter tabular-nums">${order.total_amount}</div>
+                                    <div className="text-2xl font-black text-emerald-500 tracking-tighter tabular-nums">${order.total_amount}</div>
                                 </div>
                                 <div className="space-y-3">
                                     <div className="text-[10px] font-black text-neutral-700 uppercase tracking-widest">Ledger Manifest</div>
@@ -288,6 +357,6 @@ export default function PosSystem({ recipes }: PosProps) {
                     ))}
                 </div>
             )}
-        </div>
+        </div >
     )
 }

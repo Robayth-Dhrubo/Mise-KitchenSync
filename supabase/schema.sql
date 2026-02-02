@@ -5,9 +5,11 @@
 -- 1. Profiles (Extends Supabase Auth)
 create table if not exists public.profiles (
   id uuid references auth.users on delete cascade not null primary key,
+  email text,
   restaurant_name text,
   currency_symbol text default '$',
-  role text default 'chef'
+  role text default 'foh', -- Default to FOH for security
+  created_at timestamp with time zone default timezone('utc'::text, now())
 );
 
 -- 2. Ingredients (The "Pantry")
@@ -35,6 +37,7 @@ create table if not exists public.recipes (
   target_food_cost_pct numeric default 30,
   image_url text,
   allergies text[], -- NEW: Array of allergens
+  is_available boolean default true, -- NEW: Global availability toggle
   created_at timestamp with time zone default timezone('utc'::text, now())
 );
 
@@ -67,13 +70,31 @@ create table if not exists public.suppliers (
   created_at timestamp with time zone default timezone('utc'::text, now())
 );
 
--- 7. Shopping List (Smart Orders)
+-- 6b. Vendor Products (Links vendors to ingredients with pricing)
+create table if not exists public.vendor_products (
+  id uuid default gen_random_uuid() primary key,
+  user_id uuid references auth.users not null,
+  vendor_id uuid references public.suppliers on delete cascade not null,
+  ingredient_id uuid references public.ingredients on delete cascade not null,
+  vendor_sku text,                -- Vendor's product code
+  vendor_price numeric not null,  -- Price from this vendor
+  unit text not null,             -- e.g., "case", "lb", "each"
+  pack_size text,                 -- e.g., "6 x 1lb bags"
+  is_preferred boolean default false,
+  last_updated timestamp with time zone default timezone('utc'::text, now())
+);
+
+-- 7. Shopping List (Smart Orders) - Now with vendor tracking
 create table if not exists public.shopping_list (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references auth.users not null,
   ingredient_id uuid references public.ingredients not null,
+  vendor_id uuid references public.suppliers,  -- Which vendor this was ordered from
+  vendor_price numeric,                         -- Price at time of order
   quantity_to_order numeric not null,
-  status text default 'pending', -- 'pending', 'ordered'
+  status text default 'pending', -- 'pending', 'ordered', 'received'
+  expected_delivery_date date,                  -- When the order is expected to arrive
+  received_date date,                           -- When the order was actually received
   created_at timestamp with time zone default timezone('utc'::text, now())
 );
 
@@ -107,6 +128,7 @@ alter table public.recipes enable row level security;
 alter table public.recipe_items enable row level security;
 alter table public.sales_logs enable row level security;
 alter table public.suppliers enable row level security;
+alter table public.vendor_products enable row level security;
 alter table public.shopping_list enable row level security;
 alter table public.orders enable row level security;
 alter table public.order_items enable row level security;
@@ -144,6 +166,12 @@ create policy "Users can insert own suppliers" on suppliers for insert with chec
 create policy "Users can update own suppliers" on suppliers for update using (auth.uid() = user_id);
 create policy "Users can delete own suppliers" on suppliers for delete using (auth.uid() = user_id);
 
+-- Vendor Products Policies
+create policy "Users can view own vendor products" on vendor_products for select using (auth.uid() = user_id);
+create policy "Users can insert own vendor products" on vendor_products for insert with check (auth.uid() = user_id);
+create policy "Users can update own vendor products" on vendor_products for update using (auth.uid() = user_id);
+create policy "Users can delete own vendor products" on vendor_products for delete using (auth.uid() = user_id);
+
 -- Shopping List Policies
 create policy "Users can view own shopping list" on shopping_list for select using (auth.uid() = user_id);
 create policy "Users can insert own shopping list" on shopping_list for insert with check (auth.uid() = user_id);
@@ -168,8 +196,8 @@ create policy "Users can insert own order items" on order_items for insert with 
 create or replace function public.handle_new_user()
 returns trigger as $$
 begin
-  insert into public.profiles (id)
-  values (new.id);
+  insert into public.profiles (id, email, role)
+  values (new.id, new.email, 'foh');
   return new;
 end;
 $$ language plpgsql security definer;

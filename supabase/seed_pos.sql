@@ -1,6 +1,7 @@
 -- =============================================
 -- MISE POS SEED DATA (2,000 ORDERS)
 -- Simulates customer activity over the last 30 days
+-- PREREQUISITE: Run seed.sql first to create user and menu items!
 -- =============================================
 
 DO $$
@@ -16,9 +17,11 @@ DECLARE
 BEGIN
   -- 1. Setup
   SELECT id INTO target_user_id FROM auth.users LIMIT 1;
-  IF target_user_id IS NULL THEN RAISE EXCEPTION 'No users found!'; END IF;
+  IF target_user_id IS NULL THEN 
+    RAISE EXCEPTION 'No users found! Run seed.sql first to create user and menu data.'; 
+  END IF;
 
-  -- Boost stock so the 2000 orders don't hit -5000 immediately (optional but better)
+  -- Boost stock so the 2000 orders don't hit -5000 immediately
   UPDATE ingredients SET current_stock = current_stock + 1000 WHERE user_id = target_user_id;
 
   -- 2. Generation Loop
@@ -28,7 +31,7 @@ BEGIN
     order_date := now() - (random_days_ago || ' days')::interval - (floor(random() * 24) || ' hours')::interval;
 
     -- Create Order
-    INSERT INTO public.orders (user_id, table_number, status, created_at)
+    INSERT INTO public.orders (user_id, table_or_room, status, created_at)
     VALUES (target_user_id, floor(random() * 40 + 1)::text, 'paid', order_date)
     RETURNING id INTO current_order_id;
 

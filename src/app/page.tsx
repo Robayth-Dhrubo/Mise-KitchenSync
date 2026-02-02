@@ -1,147 +1,216 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
-import { ChefHat, Hotel, Zap, ArrowRight, Shield, Star, Sparkles } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ChefHat, Hotel, Terminal, ArrowRight, Shield, CheckCircle, BarChart3, Menu, X } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 
 export default function LandingPage() {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
   return (
-    <div className="min-h-screen bg-black overflow-hidden relative selection:bg-emerald-500/30">
-      {/* Dynamic Background */}
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="absolute top-0 -left-1/4 w-[1200px] h-[1200px] bg-emerald-600/10 rounded-full blur-[160px] animate-pulse pointer-events-none" />
-        <div className="absolute bottom-0 -right-1/4 w-[1000px] h-[1000px] bg-blue-600/10 rounded-full blur-[160px] pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-600/5 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay pointer-events-none" />
-      </div>
+    <div className="min-h-screen bg-background relative selection:bg-chart-1 selection:text-black font-sans">
+      {/* Subtle Grid Background - Tech Feel */}
+      <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+      <div className="absolute inset-0 z-0 bg-background/90 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(16,185,129,0.15),rgba(255,255,255,0))] pointer-events-none" />
 
       {/* Navigation */}
-      <nav className="relative z-20 border-b border-white/5 backdrop-blur-3xl">
-        <div className="max-w-7xl mx-auto px-8 h-24 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-emerald-500/40 rotate-6 group cursor-pointer hover:rotate-12 transition-all">
-              <ChefHat className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-3xl font-black text-white tracking-tighter italic font-display">Mise.</span>
+      <nav className="relative z-50 border-b border-white/10 bg-background/80 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform">
+                <ChefHat className="w-6 h-6 text-black" />
+              </div>
+              <span className="text-2xl font-bold text-foreground tracking-tight font-display">Mise.</span>
+            </Link>
           </div>
 
-          <div className="hidden md:flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">
-            <Link href="#features" className="hover:text-white transition-all">Assets</Link>
-            <Link href="#solutions" className="hover:text-white transition-all">Network</Link>
-            <Link href="/login" className="px-8 py-3 rounded-2xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all shadow-xl">Secure Access</Link>
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-8 text-sm font-black uppercase tracking-widest text-muted-foreground">
+            <Link href="/guest" className="text-emerald-400 hover:text-emerald-300 transition-colors text-[10px]">Guest Portal</Link>
+            <Link href="/signup" className="hover:text-white transition-colors text-[10px]">Register</Link>
+            <Link href="/login" className="px-6 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-white font-bold hover:bg-zinc-800 transition-all shadow-sm text-[10px]">
+              Staff Login
+            </Link>
           </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="md:hidden p-2 text-white hover:bg-zinc-800 rounded-lg transition-colors"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
+
+        {/* Mobile Nav Overlay */}
+        {isMobileMenuOpen && (
+          <div className="absolute top-20 left-0 w-full bg-background border-b border-white/10 p-6 flex flex-col gap-4 shadow-2xl md:hidden animate-in slide-in-from-top-2 text-[10px] font-black uppercase tracking-widest">
+            <Link
+              href="/guest"
+              className="text-emerald-400 hover:text-emerald-300 py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Guest Portal
+            </Link>
+            <Link
+              href="/signup"
+              className="text-white hover:text-emerald-500 py-2"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Register
+            </Link>
+            <Link
+              href="/login"
+              className="text-black bg-white py-3 rounded-lg text-center mt-2 hover:bg-zinc-200"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Staff Login
+            </Link>
+          </div>
+        )}
       </nav>
 
-      <main className="relative z-10 px-8 pt-24 pb-48 max-w-7xl mx-auto">
+      <main className="relative z-10 px-6 pt-20 pb-32 max-w-7xl mx-auto">
         {/* Hero Section */}
-        <div className="text-center mb-32 max-w-5xl mx-auto">
-          <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-10 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <Sparkles className="w-4 h-4 text-emerald-400" />
-            <span className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em]">Hospitality Intelligence Alpha</span>
+        <div className="text-center mb-24 max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 mb-8">
+            <span className="w-2 h-2 rounded-full bg-chart-1 animate-pulse" />
+            <span className="text-sm font-medium text-zinc-300 uppercase tracking-widest font-black text-[10px]">Mise OS v4.0 is live</span>
           </div>
 
-          <h1 className="text-7xl md:text-[120px] font-black text-white tracking-tighter mb-10 leading-[0.85] italic font-display">
-            The Master key for <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-b from-white via-white/80 to-white/20">Modern Hotels.</span>
+          <h1 className="text-5xl md:text-7xl font-bold text-foreground tracking-tight mb-8 leading-tight font-display uppercase">
+            Control Your <br />
+            <span className="text-chart-1">Service Costs.</span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-neutral-500 max-w-2xl mx-auto mb-16 leading-relaxed font-medium">
-            Architecting the future of hospitality through unified real-time data synthesis and algorithmic kitchen efficiency.
+          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-12 leading-relaxed">
+            The operating system for profitable restaurants. Track inventory, calculate real food costs, and stop losing money on waste.
           </p>
+
+          <div className="flex flex-col md:flex-row items-center justify-center gap-6">
+            <Link href="/login" className="px-10 py-5 rounded-2xl bg-emerald-600 text-white font-black text-xl hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-500/20 w-full md:w-auto uppercase tracking-tighter">
+              Staff Login
+            </Link>
+            <Link href="/guest" className="px-10 py-5 rounded-2xl bg-zinc-900 border border-white/10 text-white font-black text-xl hover:bg-zinc-800 transition-all shadow-xl w-full md:w-auto uppercase tracking-tighter">
+              Guest Login
+            </Link>
+          </div>
         </div>
 
-        {/* Portal Cards Section */}
-        <div className="grid md:grid-cols-3 gap-10 relative">
-          {/* Guest Portal */}
-          <Link href="/guest" className="group relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/20 to-emerald-700/20 rounded-[48px] opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-700" />
-            <Card className="h-full glass-card border-white/5 hover:border-emerald-500/30 transition-all duration-700 overflow-hidden relative group-hover:-translate-y-4">
-              <CardContent className="p-12 flex flex-col items-center text-center">
-                <div className="w-28 h-28 rounded-[36px] bg-emerald-500/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-700 shadow-inner">
-                  <Hotel className="w-14 h-14 text-emerald-500" />
-                </div>
-                <h3 className="text-4xl font-black text-white italic tracking-tighter mb-6 font-display">Guest Alpha</h3>
-                <p className="text-neutral-500 leading-relaxed mb-10 font-bold uppercase text-[10px] tracking-widest">
-                  LUXURY DIGITAL MANIFEST • ROOM SERVICE 2.0
-                </p>
-                <div className="mt-auto w-full flex items-center justify-between p-6 bg-white/5 rounded-3xl group-hover:bg-emerald-600 transition-all duration-700 group-hover:text-white text-neutral-400 border border-white/5">
-                  <span className="font-black uppercase text-[10px] tracking-widest">Invoke Portal</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-all" />
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-
-          {/* FOH Portal */}
-          <Link href="/login" className="group relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-blue-700/20 rounded-[48px] opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-700" />
-            <Card className="h-full glass-card border-white/5 hover:border-blue-500/30 transition-all duration-700 overflow-hidden relative group-hover:-translate-y-4 shadow-2xl">
-              <CardContent className="p-12 flex flex-col items-center text-center">
-                <div className="w-28 h-28 rounded-[36px] bg-blue-500/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-700 shadow-inner">
-                  <Zap className="w-14 h-14 text-blue-500" />
-                </div>
-                <h3 className="text-4xl font-black text-white italic tracking-tighter mb-6 font-display">Terminal FOH</h3>
-                <p className="text-neutral-500 leading-relaxed mb-10 font-bold uppercase text-[10px] tracking-widest">
-                  SYNCHRONIZED POS • BILLING MATRIX
-                </p>
-                <div className="mt-auto w-full flex items-center justify-between p-6 bg-white/5 rounded-3xl group-hover:bg-blue-600 transition-all duration-700 group-hover:text-white text-neutral-400 border border-white/5">
-                  <span className="font-black uppercase text-[10px] tracking-widest">Staff Auth</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-all" />
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-
-          {/* Chef Portal */}
-          <Link href="/login" className="group relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/20 to-purple-700/20 rounded-[48px] opacity-0 group-hover:opacity-100 blur-2xl transition-all duration-700" />
-            <Card className="h-full glass-card border-white/5 hover:border-purple-500/30 transition-all duration-700 overflow-hidden relative group-hover:-translate-y-4">
-              <CardContent className="p-12 flex flex-col items-center text-center">
-                <div className="w-28 h-28 rounded-[36px] bg-purple-500/10 flex items-center justify-center mb-10 group-hover:scale-110 transition-transform duration-700 shadow-inner">
-                  <ChefHat className="w-14 h-14 text-purple-500" />
-                </div>
-                <h3 className="text-4xl font-black text-white italic tracking-tighter mb-6 font-display">Command 01</h3>
-                <p className="text-neutral-500 leading-relaxed mb-10 font-bold uppercase text-[10px] tracking-widest">
-                  BUSINESS INTELLIGENCE • INVENTORY SYNC
-                </p>
-                <div className="mt-auto w-full flex items-center justify-between p-6 bg-white/5 rounded-3xl group-hover:bg-purple-600 transition-all duration-700 group-hover:text-white text-neutral-400 border border-white/5">
-                  <span className="font-black uppercase text-[10px] tracking-widest">Access Command</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-all" />
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        </div>
-
-        {/* Confidence Badge */}
-        <div className="mt-48 flex flex-col items-center gap-8 opacity-20 hover:opacity-100 transition-all duration-700">
-          <div className="flex items-center gap-16 text-neutral-500">
-            <div className="flex items-center gap-3">
-              <Shield className="w-5 h-5" />
-              <span className="font-black uppercase tracking-[0.3em] text-[10px]">Vault Secured</span>
+        {/* Features Section */}
+        <div id="features" className="mt-32 scroll-mt-24">
+          <h2 className="text-4xl font-bold text-white text-center mb-16 font-display uppercase">System Architecture</h2>
+          <div className="grid md:grid-cols-3 gap-12 text-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-2">
+                <Shield className="w-8 h-8 text-chart-1" />
+              </div>
+              <h3 className="text-xl font-bold text-white uppercase">Enterprise Security</h3>
+              <p className="text-zinc-400 leading-relaxed">
+                Bank-grade encryption for all financial and guest data. Vault secured.
+              </p>
             </div>
-            <div className="flex items-center gap-3">
-              <Star className="w-5 h-5" />
-              <span className="font-black uppercase tracking-[0.3em] text-[10px]">Cinque Stelle</span>
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-2">
+                <BarChart3 className="w-8 h-8 text-chart-1" />
+              </div>
+              <h3 className="text-xl font-bold text-white uppercase">Real-time Analytics</h3>
+              <p className="text-zinc-400 leading-relaxed">
+                Live profit reporting, cost tracking, and inventory forecasting.
+              </p>
+            </div>
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-2">
+                <CheckCircle className="w-8 h-8 text-chart-1" />
+              </div>
+              <h3 className="text-xl font-bold text-white uppercase">99.9% Uptime</h3>
+              <p className="text-zinc-400 leading-relaxed">
+                Redundant cloud infrastructure ensures your service never stops.
+              </p>
             </div>
           </div>
-          <p className="text-[10px] text-neutral-700 font-black uppercase tracking-[0.6em] text-center">
-            Mise Operating System • Build v4.0.2
-          </p>
         </div>
-      </main>
+
+        {/* Book Demo Section */}
+        <div id="demo" className="mt-32 mb-24 max-w-5xl mx-auto scroll-mt-24">
+          <Card className="glass-card overflow-hidden">
+            <CardContent className="p-0 grid md:grid-cols-2">
+              <div className="p-8 md:p-12 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/10 bg-white/5">
+                <h2 className="text-3xl font-bold text-white mb-6 font-display uppercase">See Mise in Action</h2>
+                <div className="space-y-6">
+                  <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-chart-1/20 flex items-center justify-center shrink-0">
+                      <ChefHat className="w-5 h-5 text-chart-1" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-white mb-1">Service Intelligence</h3>
+                      <p className="text-zinc-400 text-sm">Automated recipe costing and real-time inventory tracking.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
+                      <BarChart3 className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-white mb-1">Profit Analytics</h3>
+                      <p className="text-zinc-400 text-sm">Live P&L dashboards and contribution margin analysis.</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center shrink-0">
+                      <Shield className="w-5 h-5 text-green-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-white mb-1">Loss Prevention</h3>
+                      <p className="text-zinc-400 text-sm">Track waste, theft, and variance down to the ingredient.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-8 md:p-12">
+                <div className="text-center md:text-left mb-8">
+                  <h3 className="text-xl font-bold text-white mb-2 uppercase">Schedule Your Personal Tour</h3>
+                  <p className="text-zinc-400 text-sm">
+                    Join 500+ restaurants modernizing their operations.
+                  </p>
+                </div>
+
+                <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
+                  <div>
+                    <label htmlFor="name" className="block text-[10px] font-black uppercase tracking-[0.2em] text-neutral-600 mb-1 ml-1">Name</label>
+                    <input type="text" id="name" className="w-full bg-black/40 border border-white/5 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 transition-all shadow-inner font-bold" placeholder="Chef Ramsay" />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-[10px] font-black uppercase tracking-[0.2em] text-neutral-600 mb-1 ml-1">Email</label>
+                    <input type="email" id="email" className="w-full bg-black/40 border border-white/5 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 transition-all shadow-inner font-bold" placeholder="chef@hellskitchen.com" />
+                  </div>
+                  <div>
+                    <label htmlFor="restaurant" className="block text-[10px] font-black uppercase tracking-[0.2em] text-neutral-600 mb-1 ml-1">Restaurant Name</label>
+                    <input type="text" id="restaurant" className="w-full bg-black/40 border border-white/5 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 transition-all shadow-inner font-bold" placeholder="Hell's Kitchen" />
+                  </div>
+
+                  <button type="submit" className="mt-4 w-full bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-500/20 active:scale-95">
+                    Request Access
+                  </button>
+                </form>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </main >
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-white/5 py-12">
-        <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
-          <p className="text-neutral-700 text-[10px] font-black uppercase tracking-widest italic">Designed for Excellence by Antigravity Studio</p>
+      < footer className="relative z-10 border-t border-white/5 py-10 bg-background" >
+        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
+          <p className="text-zinc-500 text-sm font-medium">© 2026 Mise AI. All rights reserved.</p>
           <div className="flex gap-6 items-center">
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-lg shadow-emerald-500/50" />
-              <span className="text-[10px] text-emerald-500 font-black uppercase tracking-widest">System Online</span>
+              <div className="w-2 h-2 rounded-full bg-chart-1" />
+              <span className="text-sm font-bold text-zinc-300 uppercase tracking-tighter">Systems Operational</span>
             </div>
-            <div className="w-px h-4 bg-white/10" />
-            <span className="text-[10px] text-neutral-600 font-black uppercase tracking-widest">&copy; 2026 Mise AI</span>
           </div>
         </div>
       </footer>
