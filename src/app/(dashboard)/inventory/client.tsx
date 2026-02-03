@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -58,14 +58,17 @@ export default function ProcurementPage() {
     const router = useRouter()
     const pathname = usePathname()
 
+    // Memoize supabase client
+    const supabase = useMemo(() => createClient(), [])
+
     // Derived state from URL, default to 'inventory'
     const activeTab = (searchParams.get('tab') as Tab) || 'inventory'
 
-    const updateTab = (tab: Tab) => {
+    const updateTab = useCallback((tab: Tab) => {
         const params = new URLSearchParams(searchParams.toString())
         params.set('tab', tab)
         router.replace(`${pathname}?${params.toString()}`, { scroll: false })
-    }
+    }, [searchParams, router, pathname])
 
     const [loading, setLoading] = useState(true)
     const [isDiscovering, setIsDiscovering] = useState(false)
@@ -153,7 +156,7 @@ export default function ProcurementPage() {
         updateTab('history')
     }
 
-    const getPreferredVendor = (ingredientId: string) => {
+    const getPreferredVendor = useCallback((ingredientId: string) => {
         const products = vendorProducts.filter(vp => vp.ingredient_id === ingredientId)
         if (products.length === 0) return null
         // Prefer 'is_preferred', then lowest price
@@ -162,7 +165,7 @@ export default function ProcurementPage() {
             if (!a.is_preferred && b.is_preferred) return 1
             return a.vendor_price - b.vendor_price
         })[0]
-    }
+    }, [vendorProducts])
 
     const handleSort = (key: string) => {
         setSortConfig(current => ({
@@ -200,11 +203,10 @@ export default function ProcurementPage() {
 
     useEffect(() => {
         fetchAllData()
-    }, [])
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     async function fetchAllData() {
         setLoading(true)
-        const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
 
@@ -213,7 +215,7 @@ export default function ProcurementPage() {
             // Fetch all data in parallel
             // First check profile role
             const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-            const isAdmin = profile?.role === 'admin' || profile?.role === 'owner'
+            const hasAuthority = ['admin', 'owner', 'chef'].includes(profile?.role || '')
 
             // Base queries
             let ingredientsQuery = supabase.from('ingredients').select('*').order('name')
@@ -221,7 +223,7 @@ export default function ProcurementPage() {
             let vendorProductsQuery = supabase.from('vendor_products').select('*, ingredient:ingredients(name, purchase_unit)')
 
             // Apply user_id filter ONLY if not admin
-            if (!isAdmin) {
+            if (!hasAuthority) {
                 ingredientsQuery = ingredientsQuery.eq('user_id', user.id)
                 vendorsQuery = vendorsQuery.eq('user_id', user.id)
                 vendorProductsQuery = vendorProductsQuery.eq('user_id', user.id)
@@ -524,19 +526,25 @@ export default function ProcurementPage() {
         setOrderTotal(total)
     }, [orders])
 
-    // Filtered data based on search
-    const filteredIngredients = ingredients.filter(i =>
-        i.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        i.category.toLowerCase().includes(searchQuery.toLowerCase())
+    // Memoized filtered data based on search
+    const filteredIngredients = useMemo(() =>
+        ingredients.filter(i =>
+            i.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            i.category.toLowerCase().includes(searchQuery.toLowerCase())
+        ),
+        [ingredients, searchQuery]
     )
 
-    const filteredVendors = vendors.filter(v =>
-        v.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredVendors = useMemo(() =>
+        vendors.filter(v =>
+            v.name.toLowerCase().includes(searchQuery.toLowerCase())
+        ),
+        [vendors, searchQuery]
     )
 
-    // Group vendors
-    const activeVendors = filteredVendors.filter(v => v.is_approved)
-    const discoveredVendors = filteredVendors.filter(v => !v.is_approved && v.source === 'auto_discovered')
+    // Group vendors - memoized
+    const activeVendors = useMemo(() => filteredVendors.filter(v => v.is_approved), [filteredVendors])
+    const discoveredVendors = useMemo(() => filteredVendors.filter(v => !v.is_approved && v.source === 'auto_discovered'), [filteredVendors])
 
     return (
         <div className="min-h-screen bg-zinc-950 text-white">

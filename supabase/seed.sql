@@ -257,3 +257,42 @@ BEGIN
   SELECT r.id, i.id, 0.1, 'kg' FROM recipes r, ingredients i WHERE r.name = 'Creme Brulee' AND i.name = 'Sugar White' AND r.user_id = target_user_id;
 
 END $$;
+
+
+  -- ---------------------------------------------------------
+  -- IMAGE POPULATION
+  -- ---------------------------------------------------------
+  
+  DO $$
+  DECLARE
+    target_user_id uuid;
+  BEGIN
+    SELECT id INTO target_user_id FROM auth.users LIMIT 1;
+    
+    -- Specific Premium Images
+    UPDATE recipes SET image_url = '/images/beef-wellington.png' WHERE name ILIKE '%Wellington%' AND user_id = target_user_id;
+    UPDATE recipes SET image_url = '/images/apple-crumble.png' WHERE name ILIKE '%Crumble%' AND user_id = target_user_id;
+    UPDATE recipes SET image_url = '/images/beef-carpaccio.png' WHERE name ILIKE '%Carpaccio%' AND user_id = target_user_id;
+
+    -- Starters
+    UPDATE recipes SET image_url = '/assets/menu/starters/beef-carpaccio.png' WHERE name ILIKE 'Beef Carpaccio' AND user_id = target_user_id;
+    UPDATE recipes SET image_url = '/assets/menu/starters/beef-tartare.png' WHERE name ILIKE 'Beef Tartare Classic' AND user_id = target_user_id;
+    UPDATE recipes SET image_url = '/assets/menu/starters/salmon-tartare.png' WHERE name ILIKE 'Salmon Tartare' AND user_id = target_user_id;
+    UPDATE recipes SET image_url = '/assets/menu/starters/scallop-ceviche.png' WHERE name ILIKE 'Scallop Ceviche' AND user_id = target_user_id;
+    UPDATE recipes SET image_url = '/assets/menu/starters/lobster-bisque.png' WHERE name ILIKE 'Lobster Bisque' AND user_id = target_user_id;
+    UPDATE recipes SET image_url = '/assets/menu/starters/french-onion-soup.png' WHERE name ILIKE 'French Onion Soup' AND user_id = target_user_id;
+
+    -- Mains
+    UPDATE recipes SET image_url = '/assets/menu/main.png' WHERE (image_url IS NULL OR image_url = '') AND user_id = target_user_id;
+    UPDATE recipes SET image_url = '/assets/menu/main.png' WHERE (name ILIKE 'Filet Mignon%' OR name ILIKE '%Steak%' OR name ILIKE '%Duck%' OR name ILIKE '%Rack of Lamb%') AND user_id = target_user_id;
+
+    -- Desserts
+    UPDATE recipes SET image_url = '/assets/menu/dessert.png' WHERE name IN ('Creme Brulee', 'Chocolate Mousse', 'Cheesecake', 'Tiramisu', 'Lemon Tart', 'Molten Cake', 'Ice Cream Trio', 'Fruit Plate', 'Cheese Board') AND user_id = target_user_id;
+
+    -- Categories Fallbacks
+    UPDATE recipes SET image_url = '/assets/menu/drink.png' WHERE image_url IS NULL AND (name ILIKE '%Martini%' OR name ILIKE '%Old Fashioned%' OR name ILIKE '%Negroni%' OR name ILIKE '%Wine%') AND user_id = target_user_id;
+    UPDATE recipes SET image_url = '/assets/menu/starter.png' WHERE image_url IS NULL AND (name ILIKE '%Salad%' OR name ILIKE '%Toast%' OR name ILIKE '%Shrimp%' OR name ILIKE '%Oysters%' OR name ILIKE '%Board%') AND user_id = target_user_id;
+    UPDATE recipes SET image_url = '/assets/menu/main.png' WHERE image_url IS NULL AND (name ILIKE '%Seafood%' OR name ILIKE '%Fish%' OR name ILIKE '%Chicken%' OR name ILIKE '%Burger%' OR name ILIKE '%Lamb%' OR name ILIKE '%Osso%') AND user_id = target_user_id;
+    UPDATE recipes SET image_url = '/assets/menu/sauce.png' WHERE (name ILIKE '%Sauce' OR name ILIKE 'Bearnaise' OR name ILIKE 'Red Wine Jus' OR name ILIKE 'Garlic Aioli') AND user_id = target_user_id;
+    UPDATE recipes SET image_url = '/assets/menu/main.png' WHERE image_url IS NULL AND user_id = target_user_id;
+  END $$;

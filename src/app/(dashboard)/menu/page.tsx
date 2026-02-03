@@ -17,7 +17,7 @@ export default async function MenuPage() {
         .eq('id', user.id)
         .single()
 
-    const isAdmin = profile?.role === 'admin' || profile?.role === 'owner'
+    const hasAuthority = ['admin', 'owner', 'chef'].includes(profile?.role || '')
 
     // Fetch recipes with items for stock check
     // If admin/owner, fetch ALL recipes. If typical user, fetch OWN recipes.
@@ -38,7 +38,7 @@ export default async function MenuPage() {
             )
         `)
 
-    if (!isAdmin) {
+    if (!hasAuthority) {
         query = query.eq('user_id', user.id)
     }
 

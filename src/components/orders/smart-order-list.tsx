@@ -43,7 +43,7 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
     const lowStockItems = useMemo(() => {
         return ingredients.filter(i => {
             const effectivePar = i.par_level || 5 // Match the "Red Pulse" threshold from Pantry view
-            return i.current_stock < effectivePar
+            return (i.current_stock ?? 0) < effectivePar
         })
     }, [ingredients])
 
@@ -87,7 +87,7 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
             )
             if (isOrdered) return false
 
-            const isLow = (i.par_level || 5) > i.current_stock
+            const isLow = (i.par_level || 5) > (i.current_stock ?? 0)
             const isAdded = addedIds.includes(i.id)
             return isLow || isAdded
         })
@@ -99,10 +99,10 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
     // 2. State for order quantities (default to par - stock)
     const [orderQuantities, setOrderQuantities] = useState<Record<string, number>>(() => {
         const initial: Record<string, number> = {}
-        const initialLow = ingredients.filter(i => (i.par_level || 5) > i.current_stock)
+        const initialLow = ingredients.filter(i => (i.par_level || 5) > (i.current_stock ?? 0))
         initialLow.forEach(i => {
             const effectivePar = i.par_level || 5
-            initial[i.id] = Math.max(0, effectivePar - i.current_stock)
+            initial[i.id] = Math.max(0, effectivePar - (i.current_stock ?? 0))
         })
         return initial
     })
@@ -111,7 +111,7 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
     const [selectedVendors, setSelectedVendors] = useState<Record<string, { vendorId: string; vendorName: string; price: number }>>(() => {
         const initial: Record<string, { vendorId: string; vendorName: string; price: number }> = {}
         // Auto-select the cheapest vendor for each low stock item
-        const initialLow = ingredients.filter(i => (i.par_level || 5) > i.current_stock)
+        const initialLow = ingredients.filter(i => (i.par_level || 5) > (i.current_stock ?? 0))
         initialLow.forEach(ingredient => {
             const options = vendorProducts.filter(vp => vp.ingredient_id === ingredient.id)
             if (options.length > 0) {
@@ -146,8 +146,8 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
             if (ingredient) {
                 setOrderQuantities(prev => ({
                     ...prev,
-                    [ingredientId]: (ingredient.par_level || 5) > ingredient.current_stock
-                        ? (ingredient.par_level || 5) - ingredient.current_stock
+                    [ingredientId]: (ingredient.par_level || 5) > (ingredient.current_stock ?? 0)
+                        ? (ingredient.par_level || 5) - (ingredient.current_stock ?? 0)
                         : 1
                 }))
                 // Set vendor selection
@@ -205,7 +205,7 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
         const initial: Record<string, number> = {}
         lowStockItems.forEach(i => {
             const effectivePar = i.par_level || 5
-            initial[i.id] = Math.max(0, effectivePar - i.current_stock)
+            initial[i.id] = Math.max(0, effectivePar - (i.current_stock ?? 0))
         })
         setOrderQuantities(initial)
         toast.success('Restored to Smart Suggestions')
@@ -543,8 +543,8 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
-                                                <span className={item.current_stock < (item.par_level || 5) ? "text-red-400 font-bold" : "text-emerald-400 font-bold"}>
-                                                    {item.current_stock}
+                                                <span className={(item.current_stock ?? 0) < (item.par_level || 5) ? "text-red-400 font-bold" : "text-emerald-400 font-bold"}>
+                                                    {item.current_stock ?? 0}
                                                 </span>
                                                 <span className="text-neutral-600">/</span>
                                                 <span className="text-neutral-300">{item.par_level || 5}</span>

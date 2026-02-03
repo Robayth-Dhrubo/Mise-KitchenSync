@@ -15,15 +15,15 @@ import { type Ingredient, type IngredientCategory } from '@/lib/types/database'
 import { ALL_UNITS } from '@/lib/calculations'
 
 const CATEGORIES: IngredientCategory[] = [
-    'Produce',
-    'Meat',
-    'Seafood',
-    'Dairy',
-    'Dry Goods',
-    'Oils & Fats',
-    'Spices',
-    'Beverages',
-    'Other',
+    'produce',
+    'meat',
+    'seafood',
+    'dairy',
+    'dry_goods',
+    'oils_fats',
+    'spices',
+    'beverages',
+    'other',
 ]
 
 interface IngredientFormProps {
@@ -39,7 +39,7 @@ export function IngredientForm({
 }: IngredientFormProps) {
     const [formData, setFormData] = useState({
         name: initialData?.name || '',
-        category: initialData?.category || null,
+        category: initialData?.category as IngredientCategory | undefined,
         purchase_price: initialData?.purchase_price || 0,
         purchase_unit: initialData?.purchase_unit || 'kg',
         conversion_ratio: initialData?.conversion_ratio || 1,

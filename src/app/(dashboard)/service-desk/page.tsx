@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { AlertCircle, MessageSquare, Send, CheckCircle, Clock, Loader2, Plus, Ticket } from 'lucide-react'
+import { AlertCircle, MessageSquare, Send, CheckCircle, Clock, Loader2, Plus, Ticket, Server, Globe } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import {
-    Users, UserPlus, RefreshCw, AlertTriangle, Check, Search, Mail, Filter
+    Users, UserPlus, RefreshCw, AlertTriangle, Check, Search, Mail, Filter, Loader2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -289,9 +289,9 @@ export default function AdminTeamPage() {
                                                 <TableCell>
                                                     <Select value={u.role || 'pending'} onValueChange={(v) => handleRoleChange(u.id, v as any)}>
                                                         <SelectTrigger className={`h-7 border-0 bg-opacity-20 text-xs w-[120px] font-medium ${u.role === 'admin' ? 'bg-purple-500 text-purple-400' :
-                                                                u.role === 'chef' ? 'bg-emerald-500 text-emerald-400' :
-                                                                    u.role === 'foh' ? 'bg-blue-500 text-blue-400' :
-                                                                        'bg-yellow-500 text-yellow-400'
+                                                            u.role === 'chef' ? 'bg-emerald-500 text-emerald-400' :
+                                                                u.role === 'foh' ? 'bg-blue-500 text-blue-400' :
+                                                                    'bg-yellow-500 text-yellow-400'
                                                             }`}>
                                                             <SelectValue />
                                                         </SelectTrigger>

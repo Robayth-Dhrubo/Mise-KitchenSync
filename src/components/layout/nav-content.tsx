@@ -21,6 +21,11 @@ import {
     Link2,
     Store,
     Gauge,
+    ShieldAlert,
+    Map,
+    Coffee,
+    History,
+    Utensils,
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -31,19 +36,21 @@ import { ReportIssueDialog } from '@/components/layout/report-issue-dialog'
 // Main navigation
 const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['admin', 'owner', 'chef', 'foh'], group: 'main' },
+    { href: '/pos', label: 'Floor Map', icon: Map, roles: ['foh', 'admin', 'owner'], group: 'main' },
+    { href: '/pos/reservations', label: 'Reservations', icon: Calendar, roles: ['foh', 'admin', 'owner'], group: 'main' },
+    { href: '/pos/terminal', label: 'Place Order', icon: Utensils, roles: ['foh', 'admin', 'owner'], group: 'main' },
+    { href: '/pos/ird', label: 'In-Room Dining', icon: Coffee, roles: ['foh', 'admin', 'owner'], group: 'main' },
+    { href: '/pos/ledger', label: 'Ledger', icon: History, roles: ['foh', 'admin', 'owner'], group: 'main' },
     { href: '/admin/team', label: 'Team & IAM', icon: Users, roles: ['admin', 'owner'], group: 'main' },
     { href: '/service-desk', label: 'Service Desk', icon: AlertCircle, roles: ['admin', 'owner'], group: 'main' },
 
     // Operations Group
-    { href: '/pos', label: 'Front Desk', icon: Store, roles: ['foh', 'admin', 'owner'], group: 'operations' },
-    { href: '/menu', label: 'Menu', icon: BookOpen, roles: ['chef', 'foh', 'admin', 'owner'], group: 'operations' },
-    { href: '/kitchen-manager', label: 'Kitchen Manager', icon: ChefHat, roles: ['chef', 'admin', 'owner'], group: 'operations' },
+    { href: '/kitchen-manager', label: 'Kitchen', icon: ChefHat, roles: ['chef', 'admin', 'owner'], group: 'operations' },
     { href: '/weekly-schedule', label: 'Weekly Schedule', icon: Calendar, roles: ['chef', 'admin', 'owner'], group: 'operations' },
     { href: '/inventory', label: 'Inventory & Orders', icon: Package, roles: ['chef', 'admin', 'owner'], group: 'operations' },
-    { href: '/analytics', label: 'Analytics', icon: BarChart3, roles: ['chef', 'admin', 'owner'], group: 'operations' },
 
     // Settings Group
-    { href: '/settings', label: 'Settings', icon: Settings, roles: ['chef', 'admin', 'owner'], group: 'settings' },
+    { href: '/settings', label: 'Settings', icon: Settings, roles: ['chef', 'admin', 'owner', 'foh'], group: 'settings' },
 ]
 
 export function NavContent({ onNavigate, hideLogo = false }: { onNavigate?: () => void; hideLogo?: boolean }) {
@@ -125,11 +132,13 @@ export function NavContent({ onNavigate, hideLogo = false }: { onNavigate?: () =
                         {/* Main Group (Platform) */}
                         {filteredItems.some(i => i.group === 'main') && (
                             <div className="space-y-1">
-                                <p className="px-4 text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">Platform</p>
+                                {userRole !== 'foh' && (
+                                    <p className="px-4 text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">Platform</p>
+                                )}
                                 {filteredItems.filter(i => i.group === 'main').map((item) => {
                                     const Icon = item.icon
                                     const isActive = pathname === item.href ||
-                                        (item.href !== '/dashboard' && pathname.startsWith(item.href))
+                                        (item.href !== '/dashboard' && item.href !== '/pos' && pathname.startsWith(item.href))
 
                                     return (
                                         <Link
@@ -150,11 +159,40 @@ export function NavContent({ onNavigate, hideLogo = false }: { onNavigate?: () =
                                 })}
                             </div>
                         )}
+                        {/* Finance Group */}
+                        {filteredItems.some(i => i.group === 'finance') && (
+                            <div className="space-y-1 pt-2">
+                                <p className="px-4 text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">Finance</p>
+                                {filteredItems.filter(i => i.group === 'finance').map((item) => {
+                                    const Icon = item.icon
+                                    const isActive = pathname === item.href || pathname.startsWith(item.href)
+
+                                    return (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            onClick={onNavigate}
+                                            className={cn(
+                                                'flex items-center gap-4 px-4 py-2 rounded-xl text-sm font-bold transition-all duration-300',
+                                                isActive
+                                                    ? 'bg-amber-600 text-white shadow-xl shadow-amber-600/20'
+                                                    : 'text-neutral-500 hover:text-white hover:bg-white/5'
+                                            )}
+                                        >
+                                            <Icon className={cn("w-5 h-5 flex-shrink-0 animate-pulse text-amber-500", isActive && "text-white")} />
+                                            {item.label}
+                                        </Link>
+                                    )
+                                })}
+                            </div>
+                        )}
 
                         {/* Operations Group */}
                         {filteredItems.some(i => i.group === 'operations') && (
                             <div className="space-y-1 pt-2">
-                                <p className="px-4 text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">Operations</p>
+                                {userRole !== 'foh' && (
+                                    <p className="px-4 text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-2">Operations</p>
+                                )}
                                 {filteredItems.filter(i => i.group === 'operations').map((item) => {
                                     const Icon = item.icon
                                     const isActive = pathname === item.href || pathname.startsWith(item.href)
@@ -211,7 +249,7 @@ export function NavContent({ onNavigate, hideLogo = false }: { onNavigate?: () =
                             <ReportIssueDialog>
                                 <button className="w-full flex items-center gap-4 px-4 py-2 rounded-xl text-sm font-bold text-neutral-500 hover:text-emerald-400 hover:bg-white/5 transition-all duration-300">
                                     <AlertCircle className="w-5 h-5" />
-                                    Reported Issues
+                                    Report Issues
                                 </button>
                             </ReportIssueDialog>
                         )}

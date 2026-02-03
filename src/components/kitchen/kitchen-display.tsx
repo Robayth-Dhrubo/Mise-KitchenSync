@@ -178,20 +178,8 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
                 {/* Ambient Background Glows */}
                 <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-600/5 rounded-full blur-[140px] -z-10" />
 
-                {/* Header with View Toggle even when empty */}
-                <div className="flex items-center justify-between border-b border-zinc-800 pb-8">
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-emerald-500/10 rounded-xl">
-                            <ChefHat className="w-8 h-8 text-emerald-500" />
-                        </div>
-                        <div>
-                            <h1 className="text-3xl font-bold text-white tracking-tight">Kitchen Manager</h1>
-                            <p className="text-zinc-500 text-sm mt-1 flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                Active Service History
-                            </p>
-                        </div>
-                    </div>
+                {/* View Toggle */}
+                <div className="flex items-center gap-4">
                     <div className="flex bg-zinc-900 rounded-lg p-1">
                         <button
                             onClick={() => setViewMode('active')}
@@ -223,25 +211,7 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-12 gap-4">
-                <div className="space-y-1">
-                    <h1 className="text-5xl font-black text-white tracking-tighter font-display uppercase">
-                        {viewMode === 'active' ? 'Kitchen manager.' : 'History.'}
-                    </h1>
-                    <p className="text-neutral-500 font-bold text-sm uppercase tracking-widest flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        {viewMode === 'active' ? 'Active Service History' : 'Past Order Archives'}
-                    </p>
-                </div>
-                <p className="text-zinc-500 text-sm">
-                    {viewMode === 'active'
-                        ? `${orders.length} active order${orders.length !== 1 ? 's' : ''}`
-                        : 'Showing last 50 delivered orders'
-                    }
-                </p>
-            </div>
-
+            {/* Controls Bar */}
             <div className="flex items-center gap-4">
                 {/* View Toggle */}
                 <div className="flex bg-zinc-900 rounded-lg p-1">
@@ -374,6 +344,6 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
                     )
                 })}
             </div>
-        </div >
+        </div>
     )
 }

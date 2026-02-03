@@ -11,7 +11,13 @@ export default async function GuestPage({ params }: { params: Promise<{ room: st
     const { data: firstUser, error: userError } = await supabase.from('profiles').select('id').limit(1).single()
 
     if (userError || !firstUser) {
-        console.error('Error fetching hotel profile:', userError)
+        console.error('Error fetching hotel profile:', {
+            message: userError?.message,
+            details: userError?.details,
+            hint: userError?.hint,
+            code: userError?.code,
+            data: firstUser
+        })
         return (
             <div className="min-h-screen bg-black flex flex-col items-center justify-center p-6 text-center">
                 <h1 className="text-3xl font-black text-white font-display mb-4">Vault Access Denied.</h1>

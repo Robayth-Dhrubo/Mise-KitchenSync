@@ -115,7 +115,7 @@ export function VendorPriceManager({ ingredient, vendors, existingPrices, onUpda
                                 <div className="text-right">
                                     <div className="text-xl font-bold text-white">${vp.vendor_price.toFixed(2)}</div>
                                     <div className="text-[10px] text-zinc-600">
-                                        Last checked: {new Date(vp.last_updated).toLocaleDateString()}
+                                        Last checked: {vp.last_updated ? new Date(vp.last_updated).toLocaleDateString() : 'N/A'}
                                     </div>
                                 </div>
                                 <Button

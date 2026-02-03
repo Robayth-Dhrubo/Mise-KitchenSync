@@ -12,7 +12,7 @@ export function calculateRecipeCost(
     // Calculate total ingredient cost
     const totalCost = items.reduce((sum, item) => {
         // Cost per unit of ingredient
-        const costPerUnit = item.ingredient.purchase_price / item.ingredient.conversion_ratio
+        const costPerUnit = item.ingredient.purchase_price / (item.ingredient.conversion_ratio || 1)
         // Cost for this recipe item
         const itemCost = costPerUnit * item.quantity_needed
         return sum + itemCost
@@ -20,6 +20,7 @@ export function calculateRecipeCost(
 
     // Calculate margins
     const grossMarginDollars = menuPrice - totalCost
+    const margin = menuPrice > 0 ? (grossMarginDollars / menuPrice) * 100 : 0
     const foodCostPercentage = menuPrice > 0 ? (totalCost / menuPrice) * 100 : 0
     const isProfitable = grossMarginDollars > 0 && foodCostPercentage <= targetFoodCostPct
 
@@ -36,17 +37,21 @@ export function calculateRecipeCost(
     }
 
     return {
+        id: '', // Will be set by database
+        recipe_id: '', // Will be set by database
         total_cost: Math.round(totalCost * 100) / 100,
+        margin: Math.round(margin * 10) / 10,
         gross_margin_dollars: Math.round(grossMarginDollars * 100) / 100,
         food_cost_percentage: Math.round(foodCostPercentage * 10) / 10,
         is_profitable: isProfitable,
         margin_status: marginStatus,
+        updated_at: new Date().toISOString()
     }
 }
 
 /**
  * Check if a recipe should be considered "In Stock" based on required ingredients.
- * Returns true if every ingredient has current_stock >= quantity_needed.
+ * Returns true if every ingredient has current_stock >= quantity.
  */
 export function isRecipeInStock(items: RecipeItemWithIngredient[]): boolean {
     if (!items || items.length === 0) return true // No ingredients? Always in stock (e.g. water)
@@ -55,15 +60,14 @@ export function isRecipeInStock(items: RecipeItemWithIngredient[]): boolean {
         // Essential Fix: Compare stock in base units (current_stock * conversion_ratio)
         // vs usage units (quantity_needed). 
 
-        // If ingredient data is missing or corrupted, we default to "In Stock" 
-        // to avoid blocking sales due to data errors.
         if (!item.ingredient) return true
 
         const currentStock = item.ingredient.current_stock ?? 0
         const ratio = item.ingredient.conversion_ratio ?? 1
+        const needed = item.quantity_needed ?? (item as any).quantity ?? 0
 
         const stockInBaseUnits = currentStock * ratio
-        return stockInBaseUnits >= item.quantity_needed
+        return stockInBaseUnits >= needed
     })
 }
 

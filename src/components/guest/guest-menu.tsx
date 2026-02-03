@@ -73,20 +73,21 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, isPreview = 
     }, [supabase, router])
 
     const toggleAvailability = async (recipe: any) => {
+        const newStatus = !recipe.is_available
         setIsUpdating(recipe.id)
         try {
-            const { error } = await supabase
-                .from('recipes')
-                .update({ is_available: !recipe.is_available })
-                .eq('id', recipe.id)
+            const { error } = await supabase.rpc('update_recipe_availability', {
+                p_is_available: newStatus,
+                p_recipe_id: recipe.id
+            })
 
             if (error) throw error
 
-            toast.success(recipe.is_available ? 'Dish deactivated' : 'Dish reactivated')
+            toast.success(newStatus ? 'Dish reactivated' : 'Dish deactivated')
             router.refresh()
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error updating availability:', error)
-            toast.error('Sync failed')
+            toast.error('Sync failed: ' + error.message)
         } finally {
             setIsUpdating(null)
         }
