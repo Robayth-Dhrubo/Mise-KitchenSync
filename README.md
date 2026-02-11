@@ -47,6 +47,7 @@ Edit `.env.local` with your Supabase credentials:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=your_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key # Required for admin features
 ```
 
 ### 4. Run Development Server

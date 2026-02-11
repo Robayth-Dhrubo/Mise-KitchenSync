@@ -69,17 +69,17 @@ export default async function RecipesPage() {
         <div className="space-y-10 pb-20">
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="space-y-1">
-                    <div className="flex items-center gap-3 text-emerald-500 mb-1">
+                    <div className="flex items-center gap-3 text-primary mb-1">
                         <BookOpen className="w-5 h-5" />
                         <span className="text-[10px] font-black uppercase tracking-[0.2em]">Recipe Vault</span>
                     </div>
-                    <h1 className="text-4xl font-black text-white tracking-tight">Technical Recipes</h1>
-                    <p className="text-neutral-500 font-medium">Manage margins, ingredient costs, and prep instructions.</p>
+                    <h1 className="text-4xl font-black text-foreground tracking-tight">Technical Recipes</h1>
+                    <p className="text-muted-foreground font-medium">Manage margins, ingredient costs, and prep instructions.</p>
                 </div>
 
                 <div className="flex items-center gap-3">
                     <Link href="/menu/new">
-                        <Button className="h-14 px-8 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-2xl shadow-xl shadow-emerald-600/20 group transition-all">
+                        <Button className="h-14 px-8 bg-primary hover:bg-primary text-foreground font-bold rounded-2xl shadow-xl shadow-primary/20 group transition-all">
                             <Plus className="w-5 h-5 mr-3 group-hover:rotate-90 transition-transform duration-500" />
                             New Recipe
                         </Button>
@@ -90,14 +90,14 @@ export default async function RecipesPage() {
             {recipesWithCost.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-32 bg-white/5 rounded-[40px] border border-dashed border-white/10 text-center px-6">
                     <div className="w-24 h-24 bg-white/5 rounded-3xl flex items-center justify-center mb-8 rotate-12 group-hover:rotate-0 transition-transform">
-                        <BookOpen className="w-12 h-12 text-neutral-700" />
+                        <BookOpen className="w-12 h-12 text-muted-foreground" />
                     </div>
-                    <h2 className="text-2xl font-bold text-white mb-3">The vault is empty</h2>
-                    <p className="text-neutral-500 max-w-sm mb-10 font-medium">
+                    <h2 className="text-2xl font-bold text-foreground mb-3">The vault is empty</h2>
+                    <p className="text-muted-foreground max-w-sm mb-10 font-medium">
                         Start by adding your first recipe to track costs and optimize your margins.
                     </p>
                     <Link href="/menu/new">
-                        <Button variant="outline" className="h-12 border-white/10 hover:bg-white/5 text-white font-bold rounded-xl">
+                        <Button variant="outline" className="h-12 border-white/10 hover:bg-white/5 text-foreground font-bold rounded-xl">
                             Register First Recipe <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                     </Link>

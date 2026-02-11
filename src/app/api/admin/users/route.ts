@@ -10,8 +10,8 @@ export async function GET() {
 
     // 1. Check if user is admin using RLS/Middleware protection
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        'http://127.0.0.1:54321', // process.env.NEXT_PUBLIC_SUPABASE_URL!
+        'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH', // process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
             cookies: {
                 getAll() {
@@ -46,8 +46,8 @@ export async function GET() {
 
     // 3. Use service role to get Auth Users (for email status) AND Profiles
     const serviceClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
+        'http://127.0.0.1:54321', // process.env.NEXT_PUBLIC_SUPABASE_URL!
+        'sb_secret_N7UND0UgjKTVK-Uodkm0Hg_xSvEMPvz' // process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
     // Fetch Auth Users (gives us email_confirmed_at)

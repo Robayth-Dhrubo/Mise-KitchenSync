@@ -11,8 +11,8 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { ChefHat, Loader2 } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { ChefHat } from 'lucide-react'
 
 export default function SignupPage() {
     const router = useRouter()
@@ -32,8 +32,6 @@ export default function SignupPage() {
         setError(null)
 
         const supabase = createClient()
-
-        // Sign up the user
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: data.email,
             password: data.password,
@@ -45,22 +43,13 @@ export default function SignupPage() {
             return
         }
 
-        // Update profile with restaurant name (trigger already created basic profile)
         if (authData.user) {
-            // Small delay to let trigger complete
             await new Promise(resolve => setTimeout(resolve, 500))
-
             const { error: profileError } = await supabase
                 .from('profiles')
-                .update({
-                    restaurant_name: data.restaurantName,
-                })
+                .update({ restaurant_name: data.restaurantName })
                 .eq('id', authData.user.id)
-
-            if (profileError) {
-                console.error('Profile update error:', profileError)
-                // Continue anyway - profile exists from trigger
-            }
+            if (profileError) console.error('Profile update error:', profileError)
         }
 
         router.push('/dashboard')
@@ -68,112 +57,77 @@ export default function SignupPage() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-black p-4 relative overflow-hidden">
-            {/* Ambient Background */}
-            <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[120px]" />
-            <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[100px]" />
-
-            <Card className="w-full max-w-md relative z-10 bg-neutral-900/40 border-white/5 backdrop-blur-3xl rounded-[40px] shadow-2xl overflow-hidden p-2">
-                <CardHeader className="text-center space-y-4 pt-10 px-8">
-                    <div className="mx-auto w-16 h-16 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center shadow-lg rotate-3">
-                        <ChefHat className="w-8 h-8 text-white" />
+        <div className="min-h-screen flex items-center justify-center bg-background p-4">
+            <div className="w-full max-w-sm space-y-10">
+                <div className="text-center space-y-6">
+                    <Link href="/" className="inline-block group">
+                        <div className="mx-auto w-14 h-14 bg-sidebar rounded-2xl flex items-center justify-center group-hover:scale-105 transition-all duration-500">
+                            <ChefHat className="w-7 h-7 text-primary" />
+                        </div>
+                    </Link>
+                    <div className="space-y-2">
+                        <h1 className="text-3xl font-semibold text-foreground tracking-tight">Employee Register</h1>
+                        <p className="text-xs font-medium text-muted-foreground uppercase tracking-[0.3em]">Create Your Account</p>
                     </div>
-                    <div>
-                        <CardTitle className="text-2xl font-bold text-white">Create your account</CardTitle>
-                        <CardDescription className="text-neutral-400">
-                            Start managing your service profitably
-                        </CardDescription>
-                    </div>
-                </CardHeader>
+                </div>
 
-                <CardContent>
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        {error && (
-                            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-                                {error}
+                <Card className="bg-white border-border rounded-2xl shadow-sm">
+                    <CardContent className="pt-8 px-6 pb-6 space-y-7">
+                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+                            {error && (
+                                <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs font-medium flex items-center gap-2.5">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                                    {error}
+                                </div>
+                            )}
+
+                            <div className="space-y-2">
+                                <Label htmlFor="restaurantName" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-0.5">Property Name</Label>
+                                <Input id="restaurantName" type="text" placeholder="The Grand Hotel" {...register('restaurantName')}
+                                    className="h-12 bg-background border-border rounded-xl text-foreground font-medium text-sm placeholder:text-muted-foreground/50 focus:border-primary focus:ring-primary/20 transition-all" />
+                                {errors.restaurantName && <p className="text-red-500 text-xs font-medium ml-0.5">{errors.restaurantName.message}</p>}
                             </div>
-                        )}
 
-                        <div className="space-y-2">
-                            <Label htmlFor="restaurantName" className="text-neutral-300">Restaurant Name</Label>
-                            <Input
-                                id="restaurantName"
-                                type="text"
-                                placeholder="The Golden Spoon"
-                                {...register('restaurantName')}
-                                className="bg-neutral-800/50 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-emerald-500 focus:ring-emerald-500/20"
-                            />
-                            {errors.restaurantName && (
-                                <p className="text-red-400 text-sm">{errors.restaurantName.message}</p>
-                            )}
+                            <div className="space-y-2">
+                                <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-0.5">Email</Label>
+                                <Input id="email" type="email" placeholder="chef@property.com" {...register('email')}
+                                    className="h-12 bg-background border-border rounded-xl text-foreground font-medium text-sm placeholder:text-muted-foreground/50 focus:border-primary focus:ring-primary/20 transition-all" />
+                                {errors.email && <p className="text-red-500 text-xs font-medium ml-0.5">{errors.email.message}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="password" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-0.5">Password</Label>
+                                <Input id="password" type="password" placeholder="••••••••" {...register('password')}
+                                    className="h-12 bg-background border-border rounded-xl text-foreground font-medium text-sm placeholder:text-muted-foreground/50 focus:border-primary focus:ring-primary/20 transition-all" />
+                                {errors.password && <p className="text-red-500 text-xs font-medium ml-0.5">{errors.password.message}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="confirmPassword" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-0.5">Confirm Password</Label>
+                                <Input id="confirmPassword" type="password" placeholder="••••••••" {...register('confirmPassword')}
+                                    className="h-12 bg-background border-border rounded-xl text-foreground font-medium text-sm placeholder:text-muted-foreground/50 focus:border-primary focus:ring-primary/20 transition-all" />
+                                {errors.confirmPassword && <p className="text-red-500 text-xs font-medium ml-0.5">{errors.confirmPassword.message}</p>}
+                            </div>
+
+                            <Button type="submit"
+                                className="w-full h-12 bg-primary text-primary-foreground font-semibold text-sm rounded-xl hover:bg-primary/90 transition-all duration-300 shadow-sm"
+                                disabled={isLoading}>
+                                {isLoading ? (
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-4 h-4 border-2 border-[#F9F8F4]/30 border-t-[#F9F8F4] rounded-full animate-spin" />
+                                        Creating Account...
+                                    </div>
+                                ) : 'Create Account'}
+                            </Button>
+                        </form>
+
+                        <div className="text-center text-xs font-medium">
+                            <span className="text-muted-foreground">Already have an account? </span>
+                            <Link href="/login" className="text-primary hover:text-primary transition-colors">Sign In</Link>
                         </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="email" className="text-neutral-300">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="chef@restaurant.com"
-                                {...register('email')}
-                                className="bg-neutral-800/50 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-emerald-500 focus:ring-emerald-500/20"
-                            />
-                            {errors.email && (
-                                <p className="text-red-400 text-sm">{errors.email.message}</p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="password" className="text-neutral-300">Password</Label>
-                            <Input
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                {...register('password')}
-                                className="bg-neutral-800/50 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-emerald-500 focus:ring-emerald-500/20"
-                            />
-                            {errors.password && (
-                                <p className="text-red-400 text-sm">{errors.password.message}</p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="confirmPassword" className="text-neutral-300">Confirm Password</Label>
-                            <Input
-                                id="confirmPassword"
-                                type="password"
-                                placeholder="••••••••"
-                                {...register('confirmPassword')}
-                                className="bg-neutral-800/50 border-neutral-700 text-white placeholder:text-neutral-500 focus:border-emerald-500 focus:ring-emerald-500/20"
-                            />
-                            {errors.confirmPassword && (
-                                <p className="text-red-400 text-sm">{errors.confirmPassword.message}</p>
-                            )}
-                        </div>
-
-                        <Button
-                            type="submit"
-                            className="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-medium h-11 transition-all duration-200"
-                            disabled={isLoading}
-                        >
-                            {isLoading ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                    Creating account...
-                                </>
-                            ) : (
-                                'Create account'
-                            )}
-                        </Button>
-                    </form>
-
-                    <div className="mt-6 text-center text-neutral-400 text-sm">
-                        Already have an account?{' '}
-                        <Link href="/login" className="text-emerald-500 hover:text-emerald-400 font-medium transition-colors">
-                            Sign in
-                        </Link>
-                    </div>
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     )
 }

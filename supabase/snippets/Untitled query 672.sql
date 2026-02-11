@@ -1,0 +1,1 @@
+UPDATE public.orders SET location_id = (SELECT id FROM public.locations WHERE type = 'room' LIMIT 1) WHERE type = 'room_service' AND location_id IS NULL;

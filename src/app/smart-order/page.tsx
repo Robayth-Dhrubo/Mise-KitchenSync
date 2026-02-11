@@ -22,8 +22,8 @@ export default async function SmartOrderPage() {
     return (
         <div className="h-screen flex flex-col p-6 overflow-hidden">
             <header className="mb-6 flex-shrink-0">
-                <h1 className="text-3xl font-bold text-white">Smart Order Engine</h1>
-                <p className="text-neutral-400">Review and approve vendor purchase orders</p>
+                <h1 className="text-3xl font-bold text-foreground">Smart Order Engine</h1>
+                <p className="text-muted-foreground">Review and approve vendor purchase orders</p>
             </header>
 
             <div className="flex-1 overflow-x-auto overflow-y-hidden">

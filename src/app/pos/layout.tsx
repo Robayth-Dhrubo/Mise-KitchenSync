@@ -1,4 +1,4 @@
-import { NavContent } from '@/components/layout/nav-content'
+import { PosSidebar } from '@/components/pos/pos-sidebar'
 import { MobileNav } from '@/components/layout/mobile-nav'
 
 export default function PosLayout({
@@ -7,9 +7,9 @@ export default function PosLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className="flex h-screen bg-neutral-950 overflow-hidden">
-            <aside className="hidden lg:block w-64 h-full shrink-0">
-                <NavContent />
+        <div className="flex h-screen bg-background overflow-hidden">
+            <aside className="hidden lg:block h-full shrink-0">
+                <PosSidebar />
             </aside>
             <div className="lg:hidden">
                 <MobileNav />

@@ -1,216 +1,178 @@
-'use client'
-
-import { useState } from 'react'
 import Link from 'next/link'
-import { ChefHat, Hotel, Terminal, ArrowRight, Shield, CheckCircle, BarChart3, Menu, X } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
+import Image from 'next/image'
+import { ArrowRight, Sparkles, Shield, BarChart3, Utensils, Zap, Clock, TrendingUp, Star, Flame, Eye } from 'lucide-react'
 
 export default function LandingPage() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-
   return (
-    <div className="min-h-screen bg-background relative selection:bg-chart-1 selection:text-black font-sans">
-      {/* Subtle Grid Background - Tech Feel */}
-      <div className="absolute inset-0 z-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
-      <div className="absolute inset-0 z-0 bg-background/90 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(16,185,129,0.15),rgba(255,255,255,0))] pointer-events-none" />
+    <div className="min-h-screen bg-background text-foreground">
+      {/* Silk texture */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.015]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 256 256\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'n\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.8\' numOctaves=\'4\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23n)\'/%3E%3C/svg%3E")', backgroundRepeat: 'repeat' }} />
 
-      {/* Navigation */}
-      <nav className="relative z-50 border-b border-white/10 bg-background/80 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform">
-                <ChefHat className="w-6 h-6 text-black" />
-              </div>
-              <span className="text-2xl font-bold text-foreground tracking-tight font-display">Mise.</span>
+      {/* Warm golden glow — very subtle */}
+      <div className="fixed top-[-30%] left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full bg-primary/[0.03] blur-[140px] pointer-events-none z-0" />
+
+      {/* Nav */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 group">
+            <Image src="/logo.png" alt="Mise" width={36} height={36} className="rounded-full group-hover:opacity-80 transition-opacity" />
+            <span className="font-bold text-lg tracking-tight text-foreground">Mise</span>
+          </Link>
+          <div className="flex items-center gap-5">
+            <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              Sign in
+            </Link>
+            <Link href="/signup" className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 transition-colors">
+              Get Started
             </Link>
           </div>
-
-          {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-8 text-sm font-black uppercase tracking-widest text-muted-foreground">
-            <Link href="/guest" className="text-emerald-400 hover:text-emerald-300 transition-colors text-[10px]">Guest Portal</Link>
-            <Link href="/signup" className="hover:text-white transition-colors text-[10px]">Register</Link>
-            <Link href="/login" className="px-6 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-white font-bold hover:bg-zinc-800 transition-all shadow-sm text-[10px]">
-              Staff Login
-            </Link>
-          </div>
-
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden p-2 text-white hover:bg-zinc-800 rounded-lg transition-colors"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
         </div>
-
-        {/* Mobile Nav Overlay */}
-        {isMobileMenuOpen && (
-          <div className="absolute top-20 left-0 w-full bg-background border-b border-white/10 p-6 flex flex-col gap-4 shadow-2xl md:hidden animate-in slide-in-from-top-2 text-[10px] font-black uppercase tracking-widest">
-            <Link
-              href="/guest"
-              className="text-emerald-400 hover:text-emerald-300 py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Guest Portal
-            </Link>
-            <Link
-              href="/signup"
-              className="text-white hover:text-emerald-500 py-2"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Register
-            </Link>
-            <Link
-              href="/login"
-              className="text-black bg-white py-3 rounded-lg text-center mt-2 hover:bg-zinc-200"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Staff Login
-            </Link>
-          </div>
-        )}
       </nav>
 
-      <main className="relative z-10 px-6 pt-20 pb-32 max-w-7xl mx-auto">
-        {/* Hero Section */}
-        <div className="text-center mb-24 max-w-4xl mx-auto">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-zinc-900 border border-zinc-800 mb-8">
-            <span className="w-2 h-2 rounded-full bg-chart-1 animate-pulse" />
-            <span className="text-sm font-medium text-zinc-300 uppercase tracking-widest font-black text-[10px]">Mise OS v4.0 is live</span>
+      {/* Hero */}
+      <section className="relative z-10 pt-40 pb-32 px-6">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          {/* Logo emblem */}
+          <div className="flex justify-center">
+            <Image src="/logo.png" alt="Mise Culinary Solutions" width={100} height={100} className="rounded-full shadow-2xl shadow-primary/10" />
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold text-foreground tracking-tight mb-8 leading-tight font-display uppercase">
-            Control Your <br />
-            <span className="text-chart-1">Service Costs.</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-primary/20 text-xs text-primary font-medium tracking-wider uppercase">
+            <Sparkles className="w-3 h-3" />
+            Culinary Solutions
+          </div>
+
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-[-0.04em] leading-[1.05]">
+            <span className="text-foreground">Run Your Kitchen</span>
+            <br />
+            <span className="text-primary">Like a Machine.</span>
           </h1>
 
-          <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto mb-12 leading-relaxed">
-            The operating system for profitable restaurants. Track inventory, calculate real food costs, and stop losing money on waste.
+          <p className="text-lg text-muted-foreground max-w-xl mx-auto leading-relaxed">
+            Recipe costing, inventory, POS, and margin protection — unified under one premium platform for profitable hospitality.
           </p>
 
-          <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-            <Link href="/login" className="px-10 py-5 rounded-2xl bg-emerald-600 text-white font-black text-xl hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-500/20 w-full md:w-auto uppercase tracking-tighter">
-              Staff Login
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+            <Link href="/signup" className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
+              Start Free Trial
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </Link>
-            <Link href="/guest" className="px-10 py-5 rounded-2xl bg-zinc-900 border border-white/10 text-white font-black text-xl hover:bg-zinc-800 transition-all shadow-xl w-full md:w-auto uppercase tracking-tighter">
-              Guest Login
+            <Link href="/guest" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-lg border border-border text-sm text-muted-foreground font-medium hover:text-foreground hover:border-primary/30 transition-all">
+              Guest Portal
             </Link>
           </div>
         </div>
+      </section>
 
-        {/* Features Section */}
-        <div id="features" className="mt-32 scroll-mt-24">
-          <h2 className="text-4xl font-bold text-white text-center mb-16 font-display uppercase">System Architecture</h2>
-          <div className="grid md:grid-cols-3 gap-12 text-center">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-2">
-                <Shield className="w-8 h-8 text-chart-1" />
+      {/* Thin gold divider */}
+      <div className="relative z-10 max-w-3xl mx-auto px-6">
+        <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+      </div>
+
+      {/* Metrics strip */}
+      <section className="relative z-10">
+        <div className="max-w-5xl mx-auto px-6 py-14">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {[
+              { value: '99.9%', label: 'Uptime' },
+              { value: '<2s', label: 'Response' },
+              { value: '30%', label: 'Cost Savings' },
+              { value: '5★', label: 'Rating' },
+            ].map((s, i) => (
+              <div key={i} className="space-y-1">
+                <p className="text-2xl font-bold tracking-tight text-primary">{s.value}</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-widest">{s.label}</p>
               </div>
-              <h3 className="text-xl font-bold text-white uppercase">Enterprise Security</h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Bank-grade encryption for all financial and guest data. Vault secured.
-              </p>
-            </div>
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-2">
-                <BarChart3 className="w-8 h-8 text-chart-1" />
-              </div>
-              <h3 className="text-xl font-bold text-white uppercase">Real-time Analytics</h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Live profit reporting, cost tracking, and inventory forecasting.
-              </p>
-            </div>
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-2">
-                <CheckCircle className="w-8 h-8 text-chart-1" />
-              </div>
-              <h3 className="text-xl font-bold text-white uppercase">99.9% Uptime</h3>
-              <p className="text-zinc-400 leading-relaxed">
-                Redundant cloud infrastructure ensures your service never stops.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
+      </section>
 
-        {/* Book Demo Section */}
-        <div id="demo" className="mt-32 mb-24 max-w-5xl mx-auto scroll-mt-24">
-          <Card className="glass-card overflow-hidden">
-            <CardContent className="p-0 grid md:grid-cols-2">
-              <div className="p-8 md:p-12 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/10 bg-white/5">
-                <h2 className="text-3xl font-bold text-white mb-6 font-display uppercase">See Mise in Action</h2>
-                <div className="space-y-6">
-                  <div className="flex gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-chart-1/20 flex items-center justify-center shrink-0">
-                      <ChefHat className="w-5 h-5 text-chart-1" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-white mb-1">Service Intelligence</h3>
-                      <p className="text-zinc-400 text-sm">Automated recipe costing and real-time inventory tracking.</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
-                      <BarChart3 className="w-5 h-5 text-blue-400" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-white mb-1">Profit Analytics</h3>
-                      <p className="text-zinc-400 text-sm">Live P&L dashboards and contribution margin analysis.</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-4">
-                    <div className="w-10 h-10 rounded-lg bg-green-500/20 flex items-center justify-center shrink-0">
-                      <Shield className="w-5 h-5 text-green-400" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-white mb-1">Loss Prevention</h3>
-                      <p className="text-zinc-400 text-sm">Track waste, theft, and variance down to the ingredient.</p>
-                    </div>
-                  </div>
-                </div>
+      {/* Gold divider */}
+      <div className="relative z-10 max-w-3xl mx-auto px-6">
+        <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+      </div>
+
+      {/* Features */}
+      <section className="relative z-10 py-28 px-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="text-center mb-14 space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Platform</p>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Everything you need</h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              { icon: Utensils, title: 'Recipe Engine', desc: 'Precision costing with yield tracking and real-time ingredient repricing.' },
+              { icon: BarChart3, title: 'Margin Guard', desc: 'Automated alerts when supplier price changes threaten your food cost targets.' },
+              { icon: Shield, title: 'Inventory Control', desc: 'Par-level management, waste tracking, and smart reorder suggestions.' },
+              { icon: Flame, title: 'Kitchen Display', desc: 'Real-time order routing to stations with automated ticket management.' },
+              { icon: Eye, title: 'Live Dashboard', desc: 'Revenue, covers, and cost metrics updating in real-time across all outlets.' },
+              { icon: Zap, title: 'Unified POS', desc: 'Dine-in, room service, and takeaway — one terminal, one ticket system.' },
+            ].map((f, i) => (
+              <div key={i} className="bg-card border border-border/50 rounded-xl p-7 hover:border-primary/20 transition-all duration-300 group">
+                <f.icon className="w-5 h-5 text-primary/60 mb-4 group-hover:text-primary transition-colors" />
+                <h3 className="font-semibold text-foreground mb-2">{f.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
               </div>
-
-              <div className="p-8 md:p-12">
-                <div className="text-center md:text-left mb-8">
-                  <h3 className="text-xl font-bold text-white mb-2 uppercase">Schedule Your Personal Tour</h3>
-                  <p className="text-zinc-400 text-sm">
-                    Join 500+ restaurants modernizing their operations.
-                  </p>
-                </div>
-
-                <form className="flex flex-col gap-4" onSubmit={(e) => e.preventDefault()}>
-                  <div>
-                    <label htmlFor="name" className="block text-[10px] font-black uppercase tracking-[0.2em] text-neutral-600 mb-1 ml-1">Name</label>
-                    <input type="text" id="name" className="w-full bg-black/40 border border-white/5 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 transition-all shadow-inner font-bold" placeholder="Chef Ramsay" />
-                  </div>
-                  <div>
-                    <label htmlFor="email" className="block text-[10px] font-black uppercase tracking-[0.2em] text-neutral-600 mb-1 ml-1">Email</label>
-                    <input type="email" id="email" className="w-full bg-black/40 border border-white/5 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 transition-all shadow-inner font-bold" placeholder="chef@hellskitchen.com" />
-                  </div>
-                  <div>
-                    <label htmlFor="restaurant" className="block text-[10px] font-black uppercase tracking-[0.2em] text-neutral-600 mb-1 ml-1">Restaurant Name</label>
-                    <input type="text" id="restaurant" className="w-full bg-black/40 border border-white/5 rounded-2xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500/50 transition-all shadow-inner font-bold" placeholder="Hell's Kitchen" />
-                  </div>
-
-                  <button type="submit" className="mt-4 w-full bg-emerald-600 text-white font-black text-lg py-4 rounded-2xl hover:bg-emerald-500 transition-all shadow-xl shadow-emerald-500/20 active:scale-95">
-                    Request Access
-                  </button>
-                </form>
-              </div>
-            </CardContent>
-          </Card>
+            ))}
+          </div>
         </div>
-      </main >
+      </section>
+
+      {/* Workflow */}
+      <section className="relative z-10 py-28 px-6 border-t border-border/50">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-14 space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Workflow</p>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Three steps to control</h2>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              { step: '01', title: 'Build Your Menu', desc: 'Import recipes, set food costs, and calculate optimal pricing automatically.' },
+              { step: '02', title: 'Track Everything', desc: 'Inventory levels, supplier prices, and waste — all tracked in real-time.' },
+              { step: '03', title: 'Protect Margins', desc: 'Get alerts before cost spikes eat your profit. Adjust menus instantly.' },
+            ].map((item, i) => (
+              <div key={i} className="space-y-3">
+                <span className="text-3xl font-bold text-primary/20">{item.step}</span>
+                <h3 className="text-lg font-semibold">{item.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="relative z-10 py-28 px-6 border-t border-border/50">
+        <div className="max-w-2xl mx-auto text-center space-y-6">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">
+            Ready to take control?
+          </h2>
+          <p className="text-muted-foreground">
+            Join culinary teams running smarter, more profitable operations.
+          </p>
+          <Link href="/signup" className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-lg bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
+            Get Started Free
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        </div>
+      </section>
 
       {/* Footer */}
-      < footer className="relative z-10 border-t border-white/5 py-10 bg-background" >
-        <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-zinc-500 text-sm font-medium">© 2026 Mise AI. All rights reserved.</p>
-          <div className="flex gap-6 items-center">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-chart-1" />
-              <span className="text-sm font-bold text-zinc-300 uppercase tracking-tighter">Systems Operational</span>
-            </div>
+      <footer className="relative z-10 border-t border-border/50 py-10 px-6">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Image src="/logo.png" alt="Mise" width={20} height={20} className="rounded-full opacity-50" />
+            <span className="text-sm font-medium text-muted-foreground">Mise</span>
+          </div>
+          <div className="flex items-center gap-4 text-xs text-muted-foreground">
+            <span>© 2026 Mise Culinary Solutions</span>
+            <span>·</span>
+            <span className="hover:text-primary transition-colors cursor-pointer">Privacy</span>
+            <span>·</span>
+            <span className="hover:text-primary transition-colors cursor-pointer">Terms</span>
           </div>
         </div>
       </footer>

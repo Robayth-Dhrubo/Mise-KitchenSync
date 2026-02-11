@@ -1,7 +1,7 @@
 export type LocationType = 'table' | 'room' | 'wall' | 'kitchen' | 'restroom' | 'bar' | 'entrance' | 'obstacle' | 'service_point'
 export type LocationStatus = 'available' | 'occupied' | 'dirty' | 'reserved'
 export type ReservationStatus = 'confirmed' | 'seated' | 'cancelled' | 'noshow'
-export type OrderStatus = 'pending' | 'firing' | 'completed' | 'cancelled'
+export type OrderStatus = 'pending' | 'firing' | 'completed' | 'cancelled' | 'received' | 'preparing' | 'ready' | 'delivered'
 export type OrderType = 'dine_in' | 'room_service' | 'takeaway'
 
 export interface Location {
@@ -45,6 +45,8 @@ export interface POSOrder {
     created_at: string
     location?: Location
     order_items?: POSOrderItem[]
+    guest_name?: string
+    tracking_pin?: string
 }
 
 export interface POSOrderItem {

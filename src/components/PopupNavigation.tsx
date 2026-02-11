@@ -43,7 +43,8 @@ export function PopupNavigation() {
         pathname.startsWith('/settings') ||
         pathname.startsWith('/pos') ||
         pathname.startsWith('/recipes') ||
-        pathname.startsWith('/admin')
+        pathname.startsWith('/admin') ||
+        pathname.startsWith('/guest')
     if (isAuthPage || isLandingPage || isDashboardPage) return null
 
     const handleSignOut = async () => {
@@ -57,27 +58,27 @@ export function PopupNavigation() {
     }
 
     return (
-        <header className="sticky top-0 z-40 w-full border-b border-neutral-800 bg-neutral-900/80 backdrop-blur-md">
+        <header className="sticky top-0 z-40 w-full border-b border-border bg-card/80 backdrop-blur-md">
             <div className="flex h-16 items-center px-6 justify-between">
                 {/* Logo (Visible on all sizes, refined positioning) */}
                 <Link href="/" className="flex items-center gap-2 group transition-transform hover:scale-105">
-                    <ChefHat className="h-5 w-5 text-emerald-500" />
-                    <span className="text-lg font-bold tracking-wide text-white font-display">Mise</span>
+                    <ChefHat className="h-5 w-5 text-primary" />
+                    <span className="text-lg font-bold tracking-wide text-foreground font-display">Mise</span>
                 </Link>
 
                 {/* Mobile Menu Trigger (Swapped to right side) */}
                 <div className="lg:hidden">
                     <Sheet open={open} onOpenChange={setOpen}>
                         <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-neutral-400 hover:text-white">
+                            <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-foreground">
                                 <Menu className="h-6 w-6" />
                                 <span className="sr-only">Toggle navigation menu</span>
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="right" className="w-72 border-l-neutral-800 bg-neutral-900 p-0 text-neutral-100 border-l">
-                            <SheetHeader className="h-16 flex items-center border-b border-neutral-800 px-6">
-                                <SheetTitle className="flex items-center gap-2 text-neutral-100">
-                                    <ChefHat className="h-6 w-6 text-emerald-500" />
+                        <SheetContent side="right" className="w-72 border-l-[#333] bg-card p-0 text-[#F0EDE8] border-l">
+                            <SheetHeader className="h-16 flex items-center border-b border-border px-6">
+                                <SheetTitle className="flex items-center gap-2 text-[#F0EDE8]">
+                                    <ChefHat className="h-6 w-6 text-primary" />
                                     <span className="text-xl font-bold tracking-tight">Mise</span>
                                 </SheetTitle>
                             </SheetHeader>
@@ -96,8 +97,8 @@ export function PopupNavigation() {
                                                 className={cn(
                                                     "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                                                     isActive
-                                                        ? "bg-neutral-800 text-white"
-                                                        : "text-neutral-400 hover:bg-neutral-800/50 hover:text-white"
+                                                        ? "bg-secondary text-foreground"
+                                                        : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
                                                 )}
                                             >
                                                 <Icon className="h-4 w-4" />
@@ -107,15 +108,15 @@ export function PopupNavigation() {
                                     })}
                                 </nav>
 
-                                <div className="p-4 border-t border-neutral-800">
-                                    <div className="mb-4 rounded-lg bg-neutral-800/50 p-4">
-                                        <p className="text-xs font-medium text-neutral-400">Service Status</p>
+                                <div className="p-4 border-t border-border">
+                                    <div className="mb-4 rounded-lg bg-secondary/50 p-4">
+                                        <p className="text-xs font-medium text-muted-foreground">Service Status</p>
                                         <div className="mt-2 flex items-center gap-2">
                                             <span className="relative flex h-2 w-2">
-                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                                             </span>
-                                            <span className="text-xs text-emerald-500">Online</span>
+                                            <span className="text-xs text-primary">Online</span>
                                         </div>
                                     </div>
 
@@ -145,8 +146,8 @@ export function PopupNavigation() {
                                 className={cn(
                                     "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-all duration-200",
                                     isActive
-                                        ? "bg-emerald-500/10 text-emerald-500"
-                                        : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+                                        ? "bg-primary/10 text-primary"
+                                        : "text-muted-foreground hover:text-foreground hover:bg-secondary"
                                 )}
                             >
                                 <Icon className="h-4 w-4" />
@@ -161,7 +162,7 @@ export function PopupNavigation() {
                 <div className="hidden lg:flex items-center gap-4">
                     <button
                         onClick={handleSignOut}
-                        className="text-neutral-400 hover:text-white transition-colors p-2"
+                        className="text-muted-foreground hover:text-foreground transition-colors p-2"
                         title="Sign Out"
                     >
                         <LogOut className="h-5 w-5" />

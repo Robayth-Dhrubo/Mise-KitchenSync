@@ -1,24 +1,15 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { supabaseConfig } from './config'
 
 export async function updateSession(request: NextRequest) {
     let supabaseResponse = NextResponse.next({
         request,
     })
 
-    // Check for valid configuration
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-    // If config is missing or invalid (e.g. placeholder), bypass middleware
-    if (!supabaseUrl || !supabaseUrl.startsWith('http') || !supabaseKey) {
-        // console.warn('Supabase configuration missing or invalid in middleware')
-        return supabaseResponse
-    }
-
     const supabase = createServerClient(
-        supabaseUrl,
-        supabaseKey,
+        supabaseConfig.url,
+        supabaseConfig.anonKey,
         {
             cookies: {
                 getAll() {
@@ -65,19 +56,14 @@ export async function updateSession(request: NextRequest) {
         // If user is NOT pending, they should NOT be on the approval page
         if (request.nextUrl.pathname === '/approval-pending') {
             const url = request.nextUrl.clone()
-            url.pathname = profile?.role === 'foh' ? '/pos' : '/dashboard'
+            url.pathname = '/dashboard'
             return NextResponse.redirect(url)
         }
 
         // 1. Redirect logged-in users away from auth pages
         if (request.nextUrl.pathname === '/login' || request.nextUrl.pathname === '/signup') {
             const url = request.nextUrl.clone()
-            // Redirect to appropriate home based on role
-            if (profile?.role === 'foh') {
-                url.pathname = '/pos'
-            } else {
-                url.pathname = '/dashboard'
-            }
+            url.pathname = '/dashboard'
             return NextResponse.redirect(url)
         }
 
@@ -85,26 +71,22 @@ export async function updateSession(request: NextRequest) {
         if (request.nextUrl.pathname.startsWith('/admin')) {
             if (profile?.role !== 'admin') {
                 const url = request.nextUrl.clone()
-                // Redirect to appropriate home based on role
-                url.pathname = profile?.role === 'foh' ? '/pos' : '/dashboard'
+                url.pathname = '/dashboard'
                 return NextResponse.redirect(url)
             }
         }
 
         // 3. CHEF ROUTES - Chef and Admin can access
-        if (request.nextUrl.pathname.startsWith('/dashboard') ||
-            request.nextUrl.pathname.startsWith('/kitchen-manager') ||
-            request.nextUrl.pathname.startsWith('/inventory') ||
+        if (request.nextUrl.pathname.startsWith('/kitchen-manager') ||
             request.nextUrl.pathname.startsWith('/analytics') ||
             request.nextUrl.pathname.startsWith('/pantry') ||
-            request.nextUrl.pathname.startsWith('/menu') ||
             request.nextUrl.pathname.startsWith('/weekly-schedule') ||
             request.nextUrl.pathname.startsWith('/settings')) {
 
-            // STRICT: Front of House (FO) users are BANNED from chef/admin routes
+            // STRICT: Front of House (FOH) users are BANNED from chef/admin routes
             if (profile?.role === 'foh') {
                 const url = request.nextUrl.clone()
-                url.pathname = '/pos' // Force them back to POS
+                url.pathname = '/dashboard' // Redirect to dashboard
                 return NextResponse.redirect(url)
             }
         }
@@ -122,9 +104,8 @@ export async function updateSession(request: NextRequest) {
     }
 
     // 4. LEGACY REDIRECTS - Smooth transition for old links
-    // 4. LEGACY REDIRECTS - Smooth transition for old links
     const legacyMap: Record<string, string> = {
-        '/front-desk': '/pos',
+        '/front-desk': '/dashboard',
         '/procurement': '/inventory',
         '/reports': '/analytics',
         '/service-log': '/kitchen-manager',

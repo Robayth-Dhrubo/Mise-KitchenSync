@@ -1,4 +1,5 @@
 export const ASSET_IMAGES = {
+    hero: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1920&q=80',
     starter: '/assets/menu/starter.png',
     main: '/assets/menu/main.png',
     dessert: '/assets/menu/dessert.png',

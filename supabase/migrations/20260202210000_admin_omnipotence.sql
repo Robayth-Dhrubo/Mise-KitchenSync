@@ -13,7 +13,7 @@ begin
   return exists (
     select 1 from public.profiles
     where id = auth.uid()
-    and role in ('admin', 'owner', 'chef')
+    and role in ('admin', 'owner', 'chef', 'foh', 'fo')
   );
 end;
 $$;
@@ -95,7 +95,11 @@ BEGIN
     -- locations
     IF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'locations') THEN
         drop policy if exists "Admins can manage all locations" on locations;
-        create policy "Admins can manage all locations" on locations for all
+        drop policy if exists "Public can view locations" on locations;
+        -- Public read for guests and all staff
+        create policy "Public can view locations" on locations for select using (true);
+        -- Admin management
+        create policy "Admins can manage locations" on locations for all
         using (auth.uid() = user_id or public.is_admin());
     END IF;
 

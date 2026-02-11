@@ -205,7 +205,7 @@ export default function SchedulePage() {
             case 'admin': return 'bg-purple-500/20 text-purple-400 border-purple-500/30'
             case 'chef': return 'bg-orange-500/20 text-orange-400 border-orange-500/30'
             case 'foh': return 'bg-blue-500/20 text-blue-400 border-blue-500/30'
-            default: return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30'
+            default: return 'bg-muted-foreground/20 text-muted-foreground border-border/30'
         }
     }
 
@@ -218,12 +218,12 @@ export default function SchedulePage() {
             {/* Header */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-emerald-500/10 rounded-xl">
-                        <Calendar className="w-8 h-8 text-emerald-500" />
+                    <div className="p-3 bg-primary/10 rounded-xl">
+                        <Calendar className="w-8 h-8 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-3xl font-bold text-white tracking-tight">Weekly Schedule</h1>
-                        <p className="text-zinc-500 text-sm mt-1">
+                        <h1 className="text-3xl font-bold text-foreground tracking-tight">Weekly Schedule</h1>
+                        <p className="text-muted-foreground text-sm mt-1">
                             Click on any cell to add a shift • {filteredStaff.length} staff members
                         </p>
                     </div>
@@ -233,12 +233,12 @@ export default function SchedulePage() {
                     {/* Role Filter - Only visible to Admin */}
                     {currentUserRole === 'admin' && (
                         <div className="flex items-center gap-2">
-                            <Filter className="w-4 h-4 text-neutral-500" />
+                            <Filter className="w-4 h-4 text-muted-foreground" />
                             <Select value={roleFilter} onValueChange={setRoleFilter}>
-                                <SelectTrigger className="w-[130px] h-9 bg-neutral-900 border-white/10 text-sm">
+                                <SelectTrigger className="w-[130px] h-9 bg-card border-white/10 text-sm">
                                     <SelectValue />
                                 </SelectTrigger>
-                                <SelectContent className="bg-neutral-900 border-white/10">
+                                <SelectContent className="bg-card border-white/10">
                                     <SelectItem value="all">All Roles</SelectItem>
                                     <SelectItem value="chef">Service</SelectItem>
                                     <SelectItem value="foh">Front Desk</SelectItem>
@@ -249,7 +249,7 @@ export default function SchedulePage() {
                     )}
 
                     {/* Week Navigation */}
-                    <div className="flex items-center gap-1 bg-neutral-900/50 rounded-lg border border-white/5 p-1">
+                    <div className="flex items-center gap-1 bg-card/50 rounded-lg border border-white/5 p-1">
                         <Button
                             variant="ghost"
                             size="icon"
@@ -258,7 +258,7 @@ export default function SchedulePage() {
                         >
                             <ChevronLeft className="w-4 h-4" />
                         </Button>
-                        <div className="px-3 text-sm text-neutral-300 font-medium min-w-[180px] text-center">
+                        <div className="px-3 text-sm text-foreground font-medium min-w-[180px] text-center">
                             {format(currentWeekStart, 'MMM d')} - {format(addDays(currentWeekStart, 6), 'MMM d, yyyy')}
                         </div>
                         <Button
@@ -277,7 +277,7 @@ export default function SchedulePage() {
                             variant="outline"
                             size="sm"
                             onClick={handleCopyPreviousWeek}
-                            className="border-white/10 hover:bg-white/5 text-neutral-300"
+                            className="border-white/10 hover:bg-white/5 text-foreground"
                         >
                             <Copy className="w-4 h-4 mr-2" />
                             Copy Last Week
@@ -289,16 +289,16 @@ export default function SchedulePage() {
             {/* Schedule Grid - ADP/Dayforce Style */}
             {isLoading ? (
                 <div className="flex items-center justify-center py-20">
-                    <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
                 </div>
             ) : (
-                <Card className="bg-neutral-900/40 border-white/5 overflow-hidden">
+                <Card className="bg-card/40 border-white/5 overflow-hidden">
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">
                             <table className="w-full border-collapse min-w-[800px]">
                                 <thead>
                                     <tr className="border-b border-white/10">
-                                        <th className="text-left p-3 text-xs font-bold text-neutral-500 uppercase tracking-wider bg-black/30 sticky left-0 z-10 min-w-[200px]">
+                                        <th className="text-left p-3 text-xs font-bold text-muted-foreground uppercase tracking-wider bg-sidebar/30 sticky left-0 z-10 min-w-[200px]">
                                             Employee
                                         </th>
                                         {weekDays.map((day, i) => {
@@ -306,11 +306,11 @@ export default function SchedulePage() {
                                             return (
                                                 <th
                                                     key={i}
-                                                    className={`text-center p-3 text-xs font-bold uppercase tracking-wider min-w-[120px] ${isToday ? 'bg-emerald-500/10 text-emerald-400' : 'text-neutral-500'
+                                                    className={`text-center p-3 text-xs font-bold uppercase tracking-wider min-w-[120px] ${isToday ? 'bg-primary/10 text-primary' : 'text-muted-foreground'
                                                         }`}
                                                 >
                                                     <div>{format(day, 'EEE')}</div>
-                                                    <div className={`text-lg ${isToday ? 'text-emerald-400' : 'text-neutral-300'}`}>
+                                                    <div className={`text-lg ${isToday ? 'text-primary' : 'text-foreground'}`}>
                                                         {format(day, 'd')}
                                                     </div>
                                                 </th>
@@ -321,7 +321,7 @@ export default function SchedulePage() {
                                 <tbody>
                                     {filteredStaff.length === 0 ? (
                                         <tr>
-                                            <td colSpan={8} className="text-center py-12 text-neutral-500">
+                                            <td colSpan={8} className="text-center py-12 text-muted-foreground">
                                                 No staff members found. Adjust filters or add team members.
                                             </td>
                                         </tr>
@@ -329,13 +329,13 @@ export default function SchedulePage() {
                                         filteredStaff.map((member) => (
                                             <tr key={member.id} className="border-b border-white/5 hover:bg-white/[0.02]">
                                                 {/* Employee Name Column (Sticky) */}
-                                                <td className="p-3 bg-black/30 sticky left-0 z-10 border-r border-white/5">
+                                                <td className="p-3 bg-sidebar/30 sticky left-0 z-10 border-r border-white/5">
                                                     <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-white">
+                                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold text-foreground">
                                                             {member.email.charAt(0).toUpperCase()}
                                                         </div>
                                                         <div>
-                                                            <div className="text-sm font-medium text-white truncate max-w-[120px]">
+                                                            <div className="text-sm font-medium text-foreground truncate max-w-[120px]">
                                                                 {member.email.split('@')[0]}
                                                             </div>
                                                             <Badge variant="outline" className={`text-[9px] h-4 px-1.5 ${getRoleBadgeColor(member.role)}`}>
@@ -353,16 +353,16 @@ export default function SchedulePage() {
                                                     return (
                                                         <td
                                                             key={dayIndex}
-                                                            className={`p-1 text-center relative group cursor-pointer transition-colors ${isToday ? 'bg-emerald-500/5' : ''
+                                                            className={`p-1 text-center relative group cursor-pointer transition-colors ${isToday ? 'bg-primary/5' : ''
                                                                 } ${canManageShifts ? 'hover:bg-white/5' : ''}`}
                                                             onClick={() => !shift && handleCellClick(member.id, day)}
                                                         >
                                                             {shift ? (
-                                                                <div className="relative bg-emerald-500/20 border border-emerald-500/30 rounded-lg p-2 mx-1">
-                                                                    <div className="text-xs font-bold text-emerald-400">
+                                                                <div className="relative bg-primary/20 border border-primary/30 rounded-lg p-2 mx-1">
+                                                                    <div className="text-xs font-bold text-primary">
                                                                         {format(new Date(shift.start_time), 'HH:mm')}
                                                                     </div>
-                                                                    <div className="text-[10px] text-emerald-500/70">
+                                                                    <div className="text-[10px] text-primary/70">
                                                                         {format(new Date(shift.end_time), 'HH:mm')}
                                                                     </div>
                                                                     {canManageShifts && (
@@ -373,14 +373,14 @@ export default function SchedulePage() {
                                                                             }}
                                                                             className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                                                                         >
-                                                                            <X className="w-3 h-3 text-white" />
+                                                                            <X className="w-3 h-3 text-foreground" />
                                                                         </button>
                                                                     )}
                                                                 </div>
                                                             ) : (
                                                                 canManageShifts && (
                                                                     <div className="h-12 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                        <Plus className="w-5 h-5 text-neutral-600" />
+                                                                        <Plus className="w-5 h-5 text-muted-foreground" />
                                                                     </div>
                                                                 )
                                                             )}
@@ -399,10 +399,10 @@ export default function SchedulePage() {
 
             {/* Add Shift Dialog */}
             <Dialog open={!!selectedCell} onOpenChange={(open) => !open && setSelectedCell(null)}>
-                <DialogContent className="bg-neutral-900 border-white/10 text-white max-w-sm">
+                <DialogContent className="bg-card border-white/10 text-foreground max-w-sm">
                     <DialogHeader>
                         <DialogTitle className="flex items-center gap-2">
-                            <Plus className="w-5 h-5 text-emerald-500" />
+                            <Plus className="w-5 h-5 text-primary" />
                             Add Shift
                         </DialogTitle>
                     </DialogHeader>
@@ -410,40 +410,40 @@ export default function SchedulePage() {
                         <div className="space-y-4 pt-2">
                             <div className="p-3 bg-white/5 rounded-lg border border-white/10">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-sm font-bold text-emerald-400">
+                                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
                                         {selectedStaff.email.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
-                                        <div className="font-medium text-white">{selectedStaff.email.split('@')[0]}</div>
-                                        <div className="text-xs text-neutral-500">{format(selectedCell.date, 'EEEE, MMM d')}</div>
+                                        <div className="font-medium text-foreground">{selectedStaff.email.split('@')[0]}</div>
+                                        <div className="text-xs text-muted-foreground">{format(selectedCell.date, 'EEEE, MMM d')}</div>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="space-y-2">
-                                    <Label className="text-xs text-neutral-400">Start Time</Label>
+                                    <Label className="text-xs text-muted-foreground">Start Time</Label>
                                     <Input
                                         type="time"
                                         value={shiftTimes.start}
                                         onChange={(e) => setShiftTimes({ ...shiftTimes, start: e.target.value })}
-                                        className="bg-black/50 border-white/10"
+                                        className="bg-sidebar/50 border-white/10"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-xs text-neutral-400">End Time</Label>
+                                    <Label className="text-xs text-muted-foreground">End Time</Label>
                                     <Input
                                         type="time"
                                         value={shiftTimes.end}
                                         onChange={(e) => setShiftTimes({ ...shiftTimes, end: e.target.value })}
-                                        className="bg-black/50 border-white/10"
+                                        className="bg-sidebar/50 border-white/10"
                                     />
                                 </div>
                             </div>
 
                             {/* Quick Templates */}
                             <div className="space-y-2">
-                                <Label className="text-xs text-neutral-400">Quick Templates</Label>
+                                <Label className="text-xs text-muted-foreground">Quick Templates</Label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {[
                                         { label: 'Morning', start: '06:00', end: '14:00' },
@@ -462,7 +462,7 @@ export default function SchedulePage() {
                             </div>
 
                             <Button
-                                className="w-full bg-emerald-600 hover:bg-emerald-500"
+                                className="w-full bg-primary hover:bg-primary"
                                 onClick={handleCreateShift}
                                 disabled={isSubmitting}
                             >

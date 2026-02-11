@@ -2,68 +2,66 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Hotel, Star, ArrowRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { ArrowRight, Sparkles } from 'lucide-react'
 
 export default function GuestLoginPage() {
+    const [guestName, setGuestName] = useState('')
     const [roomNumber, setRoomNumber] = useState('')
     const router = useRouter()
 
     const handleEnter = (e: React.FormEvent) => {
         e.preventDefault()
-        if (roomNumber.trim()) {
-            router.push(`/guest/${roomNumber}`)
+        if (guestName.trim() && roomNumber.trim()) {
+            try {
+                localStorage.setItem('guest_name', guestName.trim())
+            } catch {
+                // ignore localStorage errors
+            }
+            router.push(`/guest/${roomNumber.trim()}`)
         }
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-black p-4 relative overflow-hidden">
-            {/* Ambient Background */}
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[120px]" />
-            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[100px]" />
-
-            <div className="max-w-md w-full space-y-12 relative">
-                <div className="text-center space-y-6">
-                    <div className="mx-auto w-16 h-16 bg-white/5 border border-white/10 rounded-[24px] flex items-center justify-center shadow-2xl backdrop-blur-xl rotate-3">
-                        <Hotel className="w-8 h-8 text-white transition-transform group-hover:rotate-12" />
+        <div className="min-h-screen flex items-center justify-center bg-background p-4">
+            <div className="max-w-sm w-full space-y-12">
+                <div className="text-center space-y-5">
+                    <div className="mx-auto w-14 h-14 bg-muted border border-border rounded-2xl flex items-center justify-center">
+                        <Sparkles className="w-6 h-6 text-primary" />
                     </div>
                     <div className="space-y-2">
-                        <h1 className="text-5xl font-black text-white tracking-tighter leading-tight font-display">Digital Menu.</h1>
-                        <p className="text-neutral-500 font-medium text-lg tracking-tight">Curated dining at your station.</p>
+                        <h1 className="text-3xl font-semibold text-foreground tracking-tight">Guest Portal</h1>
+                        <p className="text-muted-foreground font-medium text-sm">Browse our curated menu and place your order.</p>
                     </div>
                 </div>
 
-                <div className="space-y-8">
-                    <form onSubmit={handleEnter} className="space-y-6">
-                        <div className="relative group">
-                            <Input
-                                id="room"
-                                placeholder="ROOM / TABLE"
-                                className="h-24 text-5xl font-black bg-neutral-950 border-white/5 rounded-[32px] text-center focus:border-emerald-500/50 transition-all placeholder:text-white/20 tracking-[0.1em] shadow-2xl shadow-emerald-500/5 text-white font-display"
-                                value={roomNumber}
-                                onChange={(e) => setRoomNumber(e.target.value)}
-                                autoFocus
-                            />
+                <form onSubmit={handleEnter} className="space-y-5">
+                    <div className="space-y-4">
+                        <div className="space-y-2">
+                            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-0.5">Your Name</label>
+                            <Input id="name" placeholder="How shall we address you?"
+                                className="h-14 text-base bg-white border-border rounded-xl text-center text-foreground font-medium placeholder:text-muted-foreground/50 focus:border-primary focus:ring-primary/20 transition-all"
+                                value={guestName} onChange={(e) => setGuestName(e.target.value)} autoFocus />
                         </div>
-                        <Button
-                            type="submit"
-                            className="w-full h-20 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xl rounded-[32px] transition-all shadow-xl shadow-emerald-500/20 active:scale-95 flex items-center justify-center gap-3 group font-display"
-                            disabled={!roomNumber.trim()}
-                        >
-                            INVOKE MENU
-                            <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-                        </Button>
-                    </form>
-
-                    <div className="flex flex-col items-center gap-4">
-                        <div className="h-px w-12 bg-neutral-800" />
-                        <div className="flex justify-center gap-8 text-[10px] font-black uppercase tracking-[0.2em] text-neutral-600">
-                            <a href="/" className="flex items-center gap-2 uppercase hover:text-emerald-500 transition-colors">
-                                Powered by Mise
-                            </a>
+                        <div className="space-y-2">
+                            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider ml-0.5">Room or Table</label>
+                            <Input id="room" placeholder="e.g. Room 201, Table 5"
+                                className="h-14 text-base bg-white border-border rounded-xl text-center text-foreground font-medium placeholder:text-muted-foreground/50 focus:border-primary focus:ring-primary/20 transition-all"
+                                value={roomNumber} onChange={(e) => setRoomNumber(e.target.value)} />
                         </div>
                     </div>
+                    <Button type="submit"
+                        className="w-full h-14 bg-primary text-primary-foreground font-semibold text-base rounded-xl hover:bg-primary/90 transition-all duration-300 shadow-sm flex items-center justify-center gap-2.5 group"
+                        disabled={!roomNumber.trim() || !guestName.trim()}>
+                        View Menu
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    </Button>
+                </form>
+
+                <div className="flex flex-col items-center gap-3">
+                    <div className="h-px w-10 bg-secondary" />
+                    <a href="/" className="text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-[0.25em]">Powered by Mise</a>
                 </div>
             </div>
         </div>

@@ -547,23 +547,23 @@ export default function ProcurementPage() {
     const discoveredVendors = useMemo(() => filteredVendors.filter(v => !v.is_approved && v.source === 'auto_discovered'), [filteredVendors])
 
     return (
-        <div className="min-h-screen bg-zinc-950 text-white">
+        <div className="min-h-screen bg-sidebar text-foreground">
             {/* Header */}
-            <div className="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm sticky top-0 z-50">
+            <div className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-6 py-8 relative overflow-hidden">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-4">
-                            <div className="p-3 bg-emerald-500/10 rounded-xl">
-                                <Package className="w-8 h-8 text-emerald-500" />
+                            <div className="p-3 bg-primary/10 rounded-xl">
+                                <Package className="w-8 h-8 text-primary" />
                             </div>
                             <div>
-                                <h1 className="text-3xl font-bold text-white tracking-tight">Inventory & Orders</h1>
-                                <p className="text-zinc-500 text-sm mt-1">Manage stock, suppliers, and purchase orders</p>
+                                <h1 className="text-3xl font-bold text-foreground tracking-tight">Inventory & Orders</h1>
+                                <p className="text-muted-foreground text-sm mt-1">Manage stock, suppliers, and purchase orders</p>
                             </div>
                         </div>
                         <button
                             onClick={fetchAllData}
-                            className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition"
+                            className="p-2 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition"
                         >
                             <RefreshCw className={cn("w-5 h-5", loading && "animate-spin")} />
                         </button>
@@ -617,13 +617,13 @@ export default function ProcurementPage() {
             {/* Search Bar */}
             <div className="max-w-7xl mx-auto px-6 py-4">
                 <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                     <input
                         type="text"
                         placeholder={`Search ${activeTab}...`}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-12 pr-4 py-3 bg-zinc-900 border border-zinc-800 rounded-xl text-white placeholder:text-zinc-500 focus:outline-none focus:border-emerald-600 transition"
+                        className="w-full pl-12 pr-4 py-3 bg-card border border-border rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition"
                     />
                 </div>
             </div>
@@ -632,7 +632,7 @@ export default function ProcurementPage() {
             <div className="max-w-7xl mx-auto px-6 pb-8">
                 {loading ? (
                     <div className="flex items-center justify-center py-20">
-                        <RefreshCw className="w-8 h-8 text-emerald-500 animate-spin" />
+                        <RefreshCw className="w-8 h-8 text-primary animate-spin" />
                     </div>
                 ) : (
                     <>
@@ -648,14 +648,14 @@ export default function ProcurementPage() {
                             <div className="space-y-6">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <div className="h-8 w-1 bg-emerald-500 rounded-full" />
+                                        <div className="h-8 w-1 bg-primary rounded-full" />
                                         <h2 className="text-lg font-semibold">Inventory Management</h2>
                                     </div>
                                     <div className="flex gap-2">
                                         <button
                                             onClick={handleRunOracle}
                                             disabled={isOracleRunning}
-                                            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-purple-900/20 disabled:opacity-50"
+                                            className="flex items-center gap-2 bg-purple-600 hover:bg-purple-500 text-foreground px-4 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-purple-900/20 disabled:opacity-50"
                                         >
                                             <Sparkles className={cn("w-4 h-4", isOracleRunning && "animate-spin")} />
                                             {isOracleRunning ? 'Consulting Oracle...' : 'Run Oracle'}
@@ -665,7 +665,7 @@ export default function ProcurementPage() {
                                                 resetNewIngredient()
                                                 setIsCreatingIngredient(true)
                                             }}
-                                            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-emerald-900/20"
+                                            className="flex items-center gap-2 bg-primary hover:bg-primary text-foreground px-4 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-[#5A4820]/20"
                                         >
                                             <Plus className="w-4 h-4" />
                                             New Item
@@ -676,56 +676,56 @@ export default function ProcurementPage() {
                                 {filteredIngredients.length === 0 ? (
                                     <EmptyState icon={Package} message="No ingredients found" />
                                 ) : (
-                                    <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 overflow-hidden backdrop-blur-sm">
+                                    <div className="rounded-xl border border-border bg-card/50 overflow-hidden backdrop-blur-sm">
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-left text-sm min-w-[800px]">
                                                 <thead>
-                                                    <tr className="border-b border-zinc-800 bg-zinc-900/50 text-zinc-400">
-                                                        <th className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('name')}>
+                                                    <tr className="border-b border-border bg-card/50 text-muted-foreground">
+                                                        <th className="px-6 py-4 font-medium cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('name')}>
                                                             <div className="flex items-center gap-1">
                                                                 Item Name
                                                                 {sortConfig.key === 'name' && (
-                                                                    <span className="text-emerald-500 text-xs">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                                    <span className="text-primary text-xs">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                                                 )}
                                                             </div>
                                                         </th>
                                                         <th className="px-6 py-4 font-medium">Preferred Vendor</th>
-                                                        <th className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('category')}>
+                                                        <th className="px-6 py-4 font-medium cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('category')}>
                                                             <div className="flex items-center gap-1">
                                                                 Category
                                                                 {sortConfig.key === 'category' && (
-                                                                    <span className="text-emerald-500 text-xs">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                                    <span className="text-primary text-xs">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                                                 )}
                                                             </div>
                                                         </th>
-                                                        <th className="px-6 py-4 font-medium cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('status')}>
+                                                        <th className="px-6 py-4 font-medium cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('status')}>
                                                             <div className="flex items-center gap-1">
                                                                 Status
                                                                 {sortConfig.key === 'status' && (
-                                                                    <span className="text-emerald-500 text-xs">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                                    <span className="text-primary text-xs">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                                                 )}
                                                             </div>
                                                         </th>
-                                                        <th className="px-6 py-4 font-medium w-1/4 cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('current_stock')}>
+                                                        <th className="px-6 py-4 font-medium w-1/4 cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('current_stock')}>
                                                             <div className="flex items-center gap-1">
                                                                 Stock Level
                                                                 {sortConfig.key === 'current_stock' && (
-                                                                    <span className="text-emerald-500 text-xs">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                                    <span className="text-primary text-xs">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                                                 )}
                                                             </div>
                                                         </th>
-                                                        <th className="px-6 py-4 font-medium text-right cursor-pointer hover:text-white transition-colors" onClick={() => handleSort('purchase_price')}>
+                                                        <th className="px-6 py-4 font-medium text-right cursor-pointer hover:text-foreground transition-colors" onClick={() => handleSort('purchase_price')}>
                                                             <div className="flex items-center justify-end gap-1">
                                                                 Est. Price
                                                                 {sortConfig.key === 'purchase_price' && (
-                                                                    <span className="text-emerald-500 text-xs">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                                                                    <span className="text-primary text-xs">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
                                                                 )}
                                                             </div>
                                                         </th>
                                                         <th className="px-6 py-4 w-10"></th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="divide-y divide-zinc-800">
+                                                <tbody className="divide-y divide-[#333]">
                                                     {filteredIngredients
                                                         .sort((a, b) => {
                                                             // Custom sort for Status (derived from stock pct)
@@ -756,31 +756,31 @@ export default function ProcurementPage() {
                                                             return (
                                                                 <tr
                                                                     key={item.id}
-                                                                    className="group hover:bg-zinc-800/50 transition-colors"
+                                                                    className="group hover:bg-secondary/50 transition-colors"
                                                                 >
                                                                     <td className="px-6 py-4">
-                                                                        <div className="font-medium text-white">
+                                                                        <div className="font-medium text-foreground">
                                                                             {item.name}
                                                                         </div>
-                                                                        <div className="text-xs text-zinc-500">
+                                                                        <div className="text-xs text-muted-foreground">
                                                                             {item.purchase_unit}
                                                                         </div>
                                                                     </td>
                                                                     <td className="px-6 py-4">
                                                                         {vendor ? (
                                                                             <div className="flex items-center gap-2">
-                                                                                <div className="w-2 h-2 rounded-full bg-emerald-500" title="Auto-Matched" />
-                                                                                <span className="text-zinc-300">{vendor.supplier?.name || 'Unknown'}</span>
+                                                                                <div className="w-2 h-2 rounded-full bg-primary" title="Auto-Matched" />
+                                                                                <span className="text-foreground">{vendor.supplier?.name || 'Unknown'}</span>
                                                                                 {vendor.is_preferred && (
-                                                                                    <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded border border-emerald-500/30">Pref</span>
+                                                                                    <span className="text-[10px] bg-primary/20 text-primary px-1.5 py-0.5 rounded border border-primary/30">Pref</span>
                                                                                 )}
                                                                             </div>
                                                                         ) : (
-                                                                            <span className="text-zinc-600 text-xs">No vendor linked</span>
+                                                                            <span className="text-muted-foreground text-xs">No vendor linked</span>
                                                                         )}
                                                                     </td>
                                                                     <td className="px-6 py-4">
-                                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-zinc-800 text-zinc-400 border border-zinc-700">
+                                                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-secondary text-muted-foreground border border-border">
                                                                             {item.category}
                                                                         </span>
                                                                     </td>
@@ -795,33 +795,33 @@ export default function ProcurementPage() {
                                                                                 Low
                                                                             </span>
                                                                         ) : (
-                                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
                                                                                 Healthy
                                                                             </span>
                                                                         )}
                                                                     </td>
                                                                     <td className="px-6 py-4">
                                                                         <div className="flex items-center gap-3">
-                                                                            <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                                                                            <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
                                                                                 <div
                                                                                     className={cn(
                                                                                         "h-full rounded-full transition-all duration-500",
-                                                                                        isCritical ? "bg-red-500" : isWarning ? "bg-yellow-500" : "bg-emerald-500"
+                                                                                        isCritical ? "bg-red-500" : isWarning ? "bg-yellow-500" : "bg-primary"
                                                                                     )}
                                                                                     style={{ width: `${Math.min(stockPct, 100)}%` }}
                                                                                 />
                                                                             </div>
-                                                                            <span className="text-xs font-mono text-zinc-500 w-16 text-right">
+                                                                            <span className="text-xs font-mono text-muted-foreground w-16 text-right">
                                                                                 {item.current_stock} / {item.par_level}
                                                                             </span>
                                                                         </div>
                                                                     </td>
                                                                     <td className="px-6 py-4 text-right">
-                                                                        <div className="font-mono text-zinc-300">
+                                                                        <div className="font-mono text-foreground">
                                                                             ${item.purchase_price?.toFixed(2) || '0.00'}
                                                                         </div>
                                                                         {vendor?.scrape_status === 'success' && (
-                                                                            <div className="text-[10px] text-emerald-500 flex items-center justify-end gap-1 mt-0.5">
+                                                                            <div className="text-[10px] text-primary flex items-center justify-end gap-1 mt-0.5">
                                                                                 <Globe className="w-3 h-3" />
                                                                                 Live Price
                                                                             </div>
@@ -831,14 +831,14 @@ export default function ProcurementPage() {
                                                                         <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                                             <button
                                                                                 onClick={(e) => handleEditIngredient(e, item)}
-                                                                                className="p-2 text-zinc-400 hover:text-white hover:bg-zinc-700 rounded-lg transition"
+                                                                                className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition"
                                                                                 title="Edit Item"
                                                                             >
                                                                                 <Pencil className="w-4 h-4" />
                                                                             </button>
                                                                             <button
                                                                                 onClick={(e) => handleDeleteIngredient(e, item.id)}
-                                                                                className="p-2 text-zinc-400 hover:text-red-400 hover:bg-red-900/20 rounded-lg transition"
+                                                                                className="p-2 text-muted-foreground hover:text-red-400 hover:bg-red-900/20 rounded-lg transition"
                                                                                 title="Delete Item"
                                                                             >
                                                                                 <Trash2 className="w-4 h-4" />
@@ -861,12 +861,12 @@ export default function ProcurementPage() {
                             <div className="space-y-8">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <div className="h-8 w-1 bg-emerald-500 rounded-full" />
+                                        <div className="h-8 w-1 bg-primary rounded-full" />
                                         <h2 className="text-lg font-semibold">Draft Purchase Orders</h2>
                                     </div>
                                     <button
                                         onClick={() => setIsSmartSearchOpen(true)}
-                                        className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-emerald-900/20"
+                                        className="flex items-center gap-2 bg-primary hover:bg-primary text-foreground px-4 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-[#5A4820]/20"
                                     >
                                         <Search className="w-4 h-4" />
                                         Find Products
@@ -874,10 +874,10 @@ export default function ProcurementPage() {
                                 </div>
 
                                 {Object.keys(orders).length === 0 ? (
-                                    <div className="bg-emerald-950/10 border border-emerald-900/30 rounded-xl p-12 text-center">
-                                        <CheckCircle className="w-16 h-16 text-emerald-600 mx-auto mb-4 opacity-50" />
-                                        <h3 className="text-xl font-bold text-emerald-500 mb-2">All Clear!</h3>
-                                        <p className="text-zinc-400 max-w-sm mx-auto">
+                                    <div className="bg-primary/5 border border-primary/20 rounded-xl p-12 text-center">
+                                        <CheckCircle className="w-16 h-16 text-primary mx-auto mb-4 opacity-50" />
+                                        <h3 className="text-xl font-bold text-primary mb-2">All Clear!</h3>
+                                        <p className="text-muted-foreground max-w-sm mx-auto">
                                             Your smart order list is empty. You're fully stocked or haven't started your procurement run yet.
                                         </p>
                                     </div>
@@ -886,16 +886,16 @@ export default function ProcurementPage() {
                                         {Object.entries(orders).map(([vendor, items]) => (
                                             <div
                                                 key={vendor}
-                                                className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl relative"
+                                                className="bg-card border border-border rounded-xl overflow-hidden shadow-2xl relative"
                                             >
                                                 {/* Invoice Header */}
-                                                <div className="p-6 border-b border-zinc-800 flex items-start justify-between bg-zinc-900/50">
+                                                <div className="p-6 border-b border-border flex items-start justify-between bg-card/50">
                                                     <div>
-                                                        <h3 className="font-bold text-2xl tracking-tight text-white">{vendor}</h3>
-                                                        <p className="text-sm text-zinc-500 font-mono mt-1">DRAFT-PO-{Math.floor(Math.random() * 10000)}</p>
+                                                        <h3 className="font-bold text-2xl tracking-tight text-foreground">{vendor}</h3>
+                                                        <p className="text-sm text-muted-foreground font-mono mt-1">DRAFT-PO-{Math.floor(Math.random() * 10000)}</p>
                                                     </div>
                                                     <div className="text-right">
-                                                        <span className="block text-xs uppercase font-bold tracking-wider text-zinc-500">Status</span>
+                                                        <span className="block text-xs uppercase font-bold tracking-wider text-muted-foreground">Status</span>
                                                         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-500/10 text-amber-500 border border-amber-500/20 mt-1">
                                                             Draft
                                                         </span>
@@ -903,9 +903,9 @@ export default function ProcurementPage() {
                                                 </div>
 
                                                 {/* Invoice Body (Table) */}
-                                                <div className="p-0 bg-black/20 min-h-[200px]">
+                                                <div className="p-0 bg-sidebar/20 min-h-[200px]">
                                                     <table className="w-full text-left text-sm">
-                                                        <thead className="bg-zinc-800/50 border-b border-zinc-800 text-zinc-400">
+                                                        <thead className="bg-secondary/50 border-b border-border text-muted-foreground">
                                                             <tr>
                                                                 <th className="px-6 py-3 font-semibold w-24">Qty</th>
                                                                 <th className="px-6 py-3 font-semibold">Description</th>
@@ -914,40 +914,40 @@ export default function ProcurementPage() {
                                                                 <th className="px-6 py-3 w-10"></th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody className="divide-y divide-zinc-800/50">
+                                                        <tbody className="divide-y divide-[#333]/50">
                                                             {items.sort((a, b) => a.ingredient_name.localeCompare(b.ingredient_name)).map((item) => (
-                                                                <tr key={item.ingredient_id} className="group hover:bg-zinc-800/50 transition-colors">
+                                                                <tr key={item.ingredient_id} className="group hover:bg-secondary/50 transition-colors">
                                                                     <td className="px-6 py-3">
-                                                                        <div className="flex items-center border border-zinc-700 rounded overflow-hidden w-fit bg-zinc-900 shadow-sm">
+                                                                        <div className="flex items-center border border-border rounded overflow-hidden w-fit bg-card shadow-sm">
                                                                             <button
                                                                                 onClick={() => handleUpdateOrderQuantity(vendor, item.ingredient_id, -1)}
-                                                                                className="px-2 py-1 hover:bg-zinc-800 text-zinc-400 transition"
+                                                                                className="px-2 py-1 hover:bg-secondary text-muted-foreground transition"
                                                                             >
                                                                                 -
                                                                             </button>
-                                                                            <span className="px-2 font-mono font-medium text-white min-w-[1.5rem] text-center">{item.qty_needed}</span>
+                                                                            <span className="px-2 font-mono font-medium text-foreground min-w-[1.5rem] text-center">{item.qty_needed}</span>
                                                                             <button
                                                                                 onClick={() => handleUpdateOrderQuantity(vendor, item.ingredient_id, 1)}
-                                                                                className="px-2 py-1 hover:bg-zinc-800 text-zinc-400 transition"
+                                                                                className="px-2 py-1 hover:bg-secondary text-muted-foreground transition"
                                                                             >
                                                                                 +
                                                                             </button>
                                                                         </div>
                                                                     </td>
                                                                     <td className="px-6 py-3">
-                                                                        <div className="font-medium text-zinc-200">{item.ingredient_name}</div>
-                                                                        <div className="text-xs text-zinc-600">{item.unit}</div>
+                                                                        <div className="font-medium text-foreground">{item.ingredient_name}</div>
+                                                                        <div className="text-xs text-muted-foreground">{item.unit}</div>
                                                                     </td>
-                                                                    <td className="px-6 py-3 text-right tabular-nums text-zinc-400">
+                                                                    <td className="px-6 py-3 text-right tabular-nums text-muted-foreground">
                                                                         ${item.unit_price?.toFixed(2) || '—'}
                                                                     </td>
-                                                                    <td className="px-6 py-3 text-right tabular-nums font-semibold text-white">
+                                                                    <td className="px-6 py-3 text-right tabular-nums font-semibold text-foreground">
                                                                         ${item.line_total?.toFixed(2) || '—'}
                                                                     </td>
                                                                     <td className="px-6 py-3 text-right">
                                                                         <button
                                                                             onClick={() => handleRemoveOrderItem(vendor, item.ingredient_id)}
-                                                                            className="text-zinc-600 hover:text-red-400 transition-colors"
+                                                                            className="text-muted-foreground hover:text-red-400 transition-colors"
                                                                         >
                                                                             <Trash2 className="w-4 h-4" />
                                                                         </button>
@@ -959,11 +959,11 @@ export default function ProcurementPage() {
                                                 </div>
 
                                                 {/* Invoice Footer */}
-                                                <div className="bg-zinc-900/50 p-6 border-t border-zinc-800 flex items-center justify-between">
+                                                <div className="bg-card/50 p-6 border-t border-border flex items-center justify-between">
                                                     <div className="flex items-center gap-2">
                                                         <button
                                                             onClick={() => setManualOrderVendor(vendor)}
-                                                            className="text-xs font-semibold text-emerald-500 hover:text-emerald-400 hover:underline flex items-center gap-1"
+                                                            className="text-xs font-semibold text-primary hover:text-primary hover:underline flex items-center gap-1"
                                                         >
                                                             <Plus className="w-3 h-3" />
                                                             Add Line Item
@@ -971,14 +971,14 @@ export default function ProcurementPage() {
                                                     </div>
                                                     <div className="flex items-center gap-6">
                                                         <div className="text-right">
-                                                            <p className="text-xs text-zinc-500 uppercase font-bold tracking-wider">Total</p>
-                                                            <p className="text-2xl font-bold text-white">
+                                                            <p className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Total</p>
+                                                            <p className="text-2xl font-bold text-foreground">
                                                                 ${items.reduce((s, i) => s + (i.line_total || 0), 0).toFixed(2)}
                                                             </p>
                                                         </div>
                                                         <button
                                                             onClick={() => handleApproveOrder(vendor, items)}
-                                                            className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-lg font-semibold shadow-lg shadow-emerald-900/20 transition-transform hover:scale-105 active:scale-95 flex items-center gap-2"
+                                                            className="bg-primary hover:bg-primary text-foreground px-6 py-3 rounded-lg font-semibold shadow-lg shadow-[#5A4820]/20 transition-transform hover:scale-105 active:scale-95 flex items-center gap-2"
                                                         >
                                                             Approve & Send
                                                             <Send className="w-4 h-4" />
@@ -992,14 +992,14 @@ export default function ProcurementPage() {
 
                                 {/* Grand Total Footer */}
                                 {orderTotal > 0 && (
-                                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 sticky bottom-6 shadow-2xl shadow-emerald-900/20">
+                                    <div className="bg-card border border-border rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 sticky bottom-6 shadow-2xl shadow-[#5A4820]/20">
                                         <div>
-                                            <h3 className="text-lg font-semibold text-white">Grand Total Estimate</h3>
-                                            <p className="text-zinc-500 text-sm">Across {Object.keys(orders).length} vendors</p>
+                                            <h3 className="text-lg font-semibold text-foreground">Grand Total Estimate</h3>
+                                            <p className="text-muted-foreground text-sm">Across {Object.keys(orders).length} vendors</p>
                                         </div>
                                         <div className="flex items-center gap-6">
-                                            <span className="text-4xl font-bold text-white tracking-tight">${orderTotal.toFixed(2)}</span>
-                                            <button className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-lg font-bold text-lg shadow-lg shadow-emerald-900/50 transition-all hover:scale-105">
+                                            <span className="text-4xl font-bold text-foreground tracking-tight">${orderTotal.toFixed(2)}</span>
+                                            <button className="bg-primary hover:bg-primary text-foreground px-8 py-3 rounded-lg font-bold text-lg shadow-lg shadow-[#5A4820]/50 transition-all hover:scale-105">
                                                 Send All Orders
                                             </button>
                                         </div>
@@ -1012,15 +1012,15 @@ export default function ProcurementPage() {
                         {activeTab === 'vendors' && (
                             <div className="space-y-8">
                                 {/* Header Section */}
-                                <div className="flex items-center justify-between border-b border-zinc-800 pb-6">
+                                <div className="flex items-center justify-between border-b border-border pb-6">
                                     <div>
-                                        <h2 className="text-2xl font-bold text-white tracking-tight">Supply Network</h2>
-                                        <p className="text-zinc-400 text-sm mt-1">Manage your supplier relationships and discover new sources.</p>
+                                        <h2 className="text-2xl font-bold text-foreground tracking-tight">Supply Network</h2>
+                                        <p className="text-muted-foreground text-sm mt-1">Manage your supplier relationships and discover new sources.</p>
                                     </div>
                                     <div className="flex gap-3">
                                         <button
                                             onClick={handlePurge}
-                                            className="px-4 py-2 bg-zinc-900 border border-zinc-700 text-zinc-400 hover:text-red-400 hover:border-red-500/50 rounded-lg text-sm font-medium transition-colors"
+                                            className="px-4 py-2 bg-card border border-border text-muted-foreground hover:text-red-400 hover:border-red-500/50 rounded-lg text-sm font-medium transition-colors"
                                             title="Reset Network"
                                         >
                                             <Trash2 className="w-4 h-4" />
@@ -1028,7 +1028,7 @@ export default function ProcurementPage() {
                                         <button
                                             onClick={handleDiscover}
                                             disabled={isDiscovering}
-                                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white px-5 py-2 rounded-lg text-sm font-medium shadow-lg shadow-blue-900/20 transition-all hover:scale-105"
+                                            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-foreground px-5 py-2 rounded-lg text-sm font-medium shadow-lg shadow-blue-900/20 transition-all hover:scale-105"
                                         >
                                             <Globe className={cn("w-4 h-4", isDiscovering && "animate-spin")} />
                                             {isDiscovering ? 'Scouting Area...' : 'Discover Suppliers'}
@@ -1042,7 +1042,7 @@ export default function ProcurementPage() {
                                             <AlertTriangle className="w-6 h-6 text-red-500" />
                                         </div>
                                         <div>
-                                            <h4 className="text-white font-medium">Location Services Disabled</h4>
+                                            <h4 className="text-foreground font-medium">Location Services Disabled</h4>
                                             <p className="text-sm text-red-300">We can't find nearby vendors without your location. Please check your browser settings.</p>
                                         </div>
                                     </div>
@@ -1055,21 +1055,21 @@ export default function ProcurementPage() {
                                             <div className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider">
                                                 New Opportunities
                                             </div>
-                                            <div className="h-px bg-zinc-800 flex-grow" />
+                                            <div className="h-px bg-secondary flex-grow" />
                                         </div>
 
                                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                                             {discoveredVendors.map(vendor => (
                                                 <div
                                                     key={vendor.id}
-                                                    className="group relative overflow-hidden rounded-xl border border-blue-500/30 bg-zinc-900/80 p-1 backdrop-blur-sm transition-all hover:border-blue-400/50"
+                                                    className="group relative overflow-hidden rounded-xl border border-blue-500/30 bg-card/80 p-1 backdrop-blur-sm transition-all hover:border-blue-400/50"
                                                 >
                                                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                                                     <div className="p-5 h-full flex flex-col">
                                                         <div className="flex justify-between items-start mb-4">
                                                             <div>
-                                                                <h3 className="font-bold text-lg text-white group-hover:text-blue-200 transition-colors">{vendor.name}</h3>
+                                                                <h3 className="font-bold text-lg text-foreground group-hover:text-blue-200 transition-colors">{vendor.name}</h3>
                                                                 <p className="text-xs text-blue-400 mt-1 flex items-center gap-1">
                                                                     <MapPin className="w-3 h-3" />
                                                                     {vendor.distance_km}km Away
@@ -1084,20 +1084,20 @@ export default function ProcurementPage() {
 
                                                         <div className="flex-grow">
                                                             {vendor.address && (
-                                                                <p className="text-sm text-zinc-500 line-clamp-2 mb-4">{vendor.address}</p>
+                                                                <p className="text-sm text-muted-foreground line-clamp-2 mb-4">{vendor.address}</p>
                                                             )}
                                                         </div>
 
-                                                        <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-zinc-800/50">
+                                                        <div className="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-border/50">
                                                             <button
                                                                 onClick={() => handleBan(vendor.id)}
-                                                                className="py-2 text-xs font-medium text-zinc-500 hover:text-red-400 transition-colors"
+                                                                className="py-2 text-xs font-medium text-muted-foreground hover:text-red-400 transition-colors"
                                                             >
                                                                 Ignore
                                                             </button>
                                                             <button
                                                                 onClick={() => handleApprove(vendor.id)}
-                                                                className="py-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-500 rounded-lg shadow-lg shadow-blue-900/20 transition-all active:scale-95"
+                                                                className="py-2 text-xs font-bold text-foreground bg-blue-600 hover:bg-blue-500 rounded-lg shadow-lg shadow-blue-900/20 transition-all active:scale-95"
                                                             >
                                                                 Connect
                                                             </button>
@@ -1112,10 +1112,10 @@ export default function ProcurementPage() {
                                 {/* ACTIVE NETWORK SECTION */}
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-3">
-                                        <div className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                                        <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold uppercase tracking-wider">
                                             Active Partners
                                         </div>
-                                        <div className="h-px bg-zinc-800 flex-grow" />
+                                        <div className="h-px bg-secondary flex-grow" />
                                     </div>
 
                                     {activeVendors.length === 0 ? (
@@ -1125,17 +1125,17 @@ export default function ProcurementPage() {
                                             {activeVendors.map(vendor => (
                                                 <div
                                                     key={vendor.id}
-                                                    className="group bg-zinc-900 border border-zinc-800 rounded-xl p-5 hover:border-zinc-600 transition-all hover:shadow-xl relative overflow-hidden"
+                                                    className="group bg-card border border-border rounded-xl p-5 hover:border-border transition-all hover:shadow-xl relative overflow-hidden"
                                                 >
                                                     <div className="flex items-start justify-between mb-4">
                                                         <div className="flex items-center gap-4">
-                                                            <div className="h-12 w-12 rounded-lg bg-zinc-800 flex items-center justify-center text-xl font-bold text-zinc-500 group-hover:text-white group-hover:bg-zinc-700 transition-colors">
+                                                            <div className="h-12 w-12 rounded-lg bg-secondary flex items-center justify-center text-xl font-bold text-muted-foreground group-hover:text-foreground group-hover:bg-muted transition-colors">
                                                                 {vendor.name.charAt(0)}
                                                             </div>
                                                             <div>
-                                                                <h3 className="font-bold text-white text-lg">{vendor.name}</h3>
-                                                                <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-emerald-500 tracking-wide">
-                                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                                                                <h3 className="font-bold text-foreground text-lg">{vendor.name}</h3>
+                                                                <span className="inline-flex items-center gap-1 text-[10px] uppercase font-bold text-primary tracking-wide">
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-primary" />
                                                                     Verified
                                                                 </span>
                                                             </div>
@@ -1145,20 +1145,20 @@ export default function ProcurementPage() {
                                                                 e.stopPropagation()
                                                                 handleDelete(vendor.id)
                                                             }}
-                                                            className="text-zinc-600 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                            className="text-muted-foreground hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-opacity"
                                                         >
                                                             <Trash2 className="w-4 h-4" />
                                                         </button>
                                                     </div>
 
-                                                    <div className="space-y-2 text-sm text-zinc-400 pl-16">
+                                                    <div className="space-y-2 text-sm text-muted-foreground pl-16">
                                                         {vendor.email || vendor.phone ? (
                                                             <>
-                                                                {vendor.email && <p className="truncate hover:text-white transition-colors">{vendor.email}</p>}
-                                                                {vendor.phone && <p className="hover:text-white transition-colors">{vendor.phone}</p>}
+                                                                {vendor.email && <p className="truncate hover:text-foreground transition-colors">{vendor.email}</p>}
+                                                                {vendor.phone && <p className="hover:text-foreground transition-colors">{vendor.phone}</p>}
                                                             </>
                                                         ) : (
-                                                            <p className="text-zinc-600">No contact info available</p>
+                                                            <p className="text-muted-foreground">No contact info available</p>
                                                         )}
                                                     </div>
                                                 </div>
@@ -1170,20 +1170,20 @@ export default function ProcurementPage() {
                                 {/* Reuse Ingredient Creation Modal */}
                                 {isCreatingIngredient && (
                                     <div
-                                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in"
+                                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-sidebar/80 backdrop-blur-sm animate-in fade-in"
                                         onClick={() => setIsCreatingIngredient(false)}
                                     >
                                         <div
-                                            className="w-full max-w-md bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative animate-in zoom-in-95 duration-200 shadow-2xl"
+                                            className="w-full max-w-md bg-card border border-border rounded-xl p-6 relative animate-in zoom-in-95 duration-200 shadow-2xl"
                                             onClick={e => e.stopPropagation()}
                                         >
-                                            <h3 className="text-xl font-bold mb-6 text-white">{selectedIngredient ? 'Edit Item' : 'New Item'}</h3>
+                                            <h3 className="text-xl font-bold mb-6 text-foreground">{selectedIngredient ? 'Edit Item' : 'New Item'}</h3>
                                             <div className="space-y-4">
                                                 <div>
-                                                    <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Item Name</label>
+                                                    <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Item Name</label>
                                                     <input
                                                         type="text"
-                                                        className="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none transition"
+                                                        className="w-full bg-sidebar border border-border rounded-lg px-4 py-2.5 text-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition"
                                                         placeholder="e.g. Kosher Salt"
                                                         value={newIngredient.name}
                                                         onChange={e => setNewIngredient({ ...newIngredient, name: e.target.value })}
@@ -1191,9 +1191,9 @@ export default function ProcurementPage() {
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div>
-                                                        <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Category</label>
+                                                        <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Category</label>
                                                         <select
-                                                            className="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 outline-none transition"
+                                                            className="w-full bg-sidebar border border-border rounded-lg px-4 py-2.5 text-foreground focus:border-primary outline-none transition"
                                                             value={newIngredient.category}
                                                             onChange={e => setNewIngredient({ ...newIngredient, category: e.target.value })}
                                                         >
@@ -1205,10 +1205,10 @@ export default function ProcurementPage() {
                                                         </select>
                                                     </div>
                                                     <div>
-                                                        <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Unit</label>
+                                                        <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Unit</label>
                                                         <input
                                                             type="text"
-                                                            className="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 outline-none transition"
+                                                            className="w-full bg-sidebar border border-border rounded-lg px-4 py-2.5 text-foreground focus:border-primary outline-none transition"
                                                             placeholder="e.g. lbs"
                                                             value={newIngredient.purchase_unit}
                                                             onChange={e => setNewIngredient({ ...newIngredient, purchase_unit: e.target.value })}
@@ -1217,34 +1217,34 @@ export default function ProcurementPage() {
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div>
-                                                        <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Par Level</label>
+                                                        <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Par Level</label>
                                                         <input
                                                             type="number"
-                                                            className="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 outline-none transition"
+                                                            className="w-full bg-sidebar border border-border rounded-lg px-4 py-2.5 text-foreground focus:border-primary outline-none transition"
                                                             value={newIngredient.par_level}
                                                             onChange={e => setNewIngredient({ ...newIngredient, par_level: parseFloat(e.target.value) })}
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="text-xs font-medium text-zinc-400 mb-1.5 block">Est. Price ($)</label>
+                                                        <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Est. Price ($)</label>
                                                         <input
                                                             type="number"
-                                                            className="w-full bg-black border border-zinc-800 rounded-lg px-4 py-2.5 text-white focus:border-emerald-500 outline-none transition"
+                                                            className="w-full bg-sidebar border border-border rounded-lg px-4 py-2.5 text-foreground focus:border-primary outline-none transition"
                                                             value={newIngredient.purchase_price}
                                                             onChange={e => setNewIngredient({ ...newIngredient, purchase_price: parseFloat(e.target.value) })}
                                                         />
                                                     </div>
                                                 </div>
-                                                <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-zinc-800">
+                                                <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-border">
                                                     <button
                                                         onClick={() => setIsCreatingIngredient(false)}
-                                                        className="px-4 py-2 text-zinc-400 hover:text-white text-sm font-medium transition"
+                                                        className="px-4 py-2 text-muted-foreground hover:text-foreground text-sm font-medium transition"
                                                     >
                                                         Cancel
                                                     </button>
                                                     <button
                                                         onClick={handleCreateIngredient}
-                                                        className="px-6 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold shadow-lg shadow-emerald-900/20 transition-all hover:scale-105"
+                                                        className="px-6 py-2 bg-primary hover:bg-primary text-foreground rounded-lg text-sm font-bold shadow-lg shadow-[#5A4820]/20 transition-all hover:scale-105"
                                                     >
                                                         {selectedIngredient ? 'Update' : 'Create'}
                                                     </button>
@@ -1259,30 +1259,30 @@ export default function ProcurementPage() {
                         {/* HISTORY TAB */}
                         {activeTab === 'history' && (
                             <div className="space-y-8">
-                                <h2 className="text-lg font-semibold text-white">Order History</h2>
+                                <h2 className="text-lg font-semibold text-foreground">Order History</h2>
                                 {sentOrders.length === 0 ? (
                                     <EmptyState icon={CheckCircle} message="No sent orders yet" />
                                 ) : (
                                     <div className="grid gap-6">
                                         {sentOrders.map((po) => (
-                                            <div key={po.id} className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 opacity-75 hover:opacity-100 transition-opacity">
+                                            <div key={po.id} className="bg-card/50 border border-border rounded-xl p-6 opacity-75 hover:opacity-100 transition-opacity">
                                                 <div className="flex items-center justify-between mb-4">
                                                     <div>
-                                                        <h3 className="font-bold text-white text-lg">{po.vendor}</h3>
-                                                        <p className="text-sm text-zinc-500">{po.id} • {po.date}</p>
+                                                        <h3 className="font-bold text-foreground text-lg">{po.vendor}</h3>
+                                                        <p className="text-sm text-muted-foreground">{po.id} • {po.date}</p>
                                                     </div>
                                                     <div className="flex items-center gap-4">
-                                                        <span className="text-xl font-bold text-white">${po.total.toFixed(2)}</span>
-                                                        <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-bold border border-emerald-500/20 uppercase tracking-wide">
+                                                        <span className="text-xl font-bold text-foreground">${po.total.toFixed(2)}</span>
+                                                        <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold border border-primary/20 uppercase tracking-wide">
                                                             Sent
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <div className="space-y-2 pl-4 border-l-2 border-zinc-800">
+                                                <div className="space-y-2 pl-4 border-l-2 border-border">
                                                     {po.items.map((item, idx) => (
                                                         <div key={idx} className="flex justify-between text-sm">
-                                                            <span className="text-zinc-400">{item.qty_needed}x {item.ingredient_name}</span>
-                                                            <span className="text-zinc-500 tabular-nums">${item.line_total?.toFixed(2)}</span>
+                                                            <span className="text-muted-foreground">{item.qty_needed}x {item.ingredient_name}</span>
+                                                            <span className="text-muted-foreground tabular-nums">${item.line_total?.toFixed(2)}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -1298,19 +1298,19 @@ export default function ProcurementPage() {
                 {/* Manual Order Modal */}
                 {manualOrderVendor && (
                     <div
-                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in"
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-sidebar/80 backdrop-blur-sm animate-in fade-in"
                         onClick={() => setManualOrderVendor(null)}
                     >
                         <div
-                            className="w-full max-w-sm bg-zinc-900 border border-zinc-800 rounded-xl p-6 relative animate-in zoom-in-95 duration-200"
+                            className="w-full max-w-sm bg-card border border-border rounded-xl p-6 relative animate-in zoom-in-95 duration-200"
                             onClick={e => e.stopPropagation()}
                         >
                             <h3 className="text-lg font-bold mb-4">Add to {manualOrderVendor} Order</h3>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-xs text-zinc-500 mb-1 block">Select Ingredient</label>
+                                    <label className="text-xs text-muted-foreground mb-1 block">Select Ingredient</label>
                                     <select
-                                        className="w-full bg-black border border-zinc-800 rounded-lg px-3 py-2 focus:border-emerald-500 outline-none"
+                                        className="w-full bg-sidebar border border-border rounded-lg px-3 py-2 focus:border-primary outline-none"
                                         value={manualOrderIngredientId}
                                         onChange={e => setManualOrderIngredientId(e.target.value)}
                                     >
@@ -1325,14 +1325,14 @@ export default function ProcurementPage() {
                                 <div className="flex justify-end gap-3 mt-6">
                                     <button
                                         onClick={() => setManualOrderVendor(null)}
-                                        className="px-4 py-2 text-zinc-400 hover:text-white"
+                                        className="px-4 py-2 text-muted-foreground hover:text-foreground"
                                     >
                                         Cancel
                                     </button>
                                     <button
                                         onClick={handleAddManualOrderItem}
                                         disabled={!manualOrderIngredientId}
-                                        className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white rounded-lg font-medium"
+                                        className="px-4 py-2 bg-primary hover:bg-primary disabled:opacity-50 text-foreground rounded-lg font-medium"
                                     >
                                         Add to Order
                                     </button>
@@ -1358,10 +1358,10 @@ function TabButton({
     badgeColor?: 'red' | 'emerald' | 'blue' | 'zinc'
 }) {
     const badgeColors = {
-        red: 'bg-red-500 text-white',
-        emerald: 'bg-emerald-500 text-white',
-        blue: 'bg-blue-500 text-white',
-        zinc: 'bg-zinc-700 text-zinc-300',
+        red: 'bg-red-500 text-foreground',
+        emerald: 'bg-primary text-foreground',
+        blue: 'bg-blue-500 text-foreground',
+        zinc: 'bg-muted-foreground text-foreground',
     }
 
     return (
@@ -1370,8 +1370,8 @@ function TabButton({
             className={cn(
                 "flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-sm transition-all",
                 active
-                    ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20"
-                    : "bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700"
+                    ? "bg-primary text-foreground shadow-lg shadow-primary/20"
+                    : "bg-secondary text-muted-foreground hover:text-foreground hover:bg-muted"
             )}
         >
             {icon}
@@ -1388,7 +1388,7 @@ function TabButton({
 // Empty State Component
 function EmptyState({ icon: Icon, message }: { icon: any, message: string }) {
     return (
-        <div className="flex flex-col items-center justify-center py-20 text-zinc-500">
+        <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
             <Icon className="w-12 h-12 mb-4" />
             <p>{message}</p>
         </div>

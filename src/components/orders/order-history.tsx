@@ -65,11 +65,11 @@ export function OrderHistory({ orders }: OrderHistoryProps) {
 
     if (orders.length === 0) {
         return (
-            <Card className="bg-neutral-900 border-neutral-800">
+            <Card className="bg-card border-border">
                 <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                    <History className="w-12 h-12 text-neutral-700 mb-4" />
-                    <h3 className="text-xl font-bold text-white">No Order History</h3>
-                    <p className="text-neutral-500 mt-2">You haven't placed any orders yet.</p>
+                    <History className="w-12 h-12 text-muted-foreground mb-4" />
+                    <h3 className="text-xl font-bold text-foreground">No Order History</h3>
+                    <p className="text-muted-foreground mt-2">You haven't placed any orders yet.</p>
                 </CardContent>
             </Card>
         )
@@ -82,31 +82,31 @@ export function OrderHistory({ orders }: OrderHistoryProps) {
             case 'ordered':
                 return <Badge className="bg-blue-500/10 text-blue-500 border-blue-500/20">Ordered</Badge>
             case 'received':
-                return <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">Received</Badge>
+                return <Badge className="bg-primary/10 text-primary border-primary/20">Received</Badge>
             default:
                 return <Badge variant="outline">{status}</Badge>
         }
     }
 
     return (
-        <Card className="bg-neutral-900 border-neutral-800">
+        <Card className="bg-card border-border">
             <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
-                    <History className="w-5 h-5 text-neutral-400" />
+                <CardTitle className="text-foreground flex items-center gap-2">
+                    <History className="w-5 h-5 text-muted-foreground" />
                     Order History
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 <Table>
                     <TableHeader>
-                        <TableRow className="border-neutral-800 hover:bg-transparent">
-                            <TableHead className="text-neutral-400">Date</TableHead>
-                            <TableHead className="text-neutral-400">Ingredient</TableHead>
-                            <TableHead className="text-neutral-400">Vendor</TableHead>
-                            <TableHead className="text-neutral-400">Qty</TableHead>
-                            <TableHead className="text-neutral-400">Cost</TableHead>
-                            <TableHead className="text-neutral-400">Expected</TableHead>
-                            <TableHead className="text-neutral-400">Status</TableHead>
+                        <TableRow className="border-border hover:bg-transparent">
+                            <TableHead className="text-muted-foreground">Date</TableHead>
+                            <TableHead className="text-muted-foreground">Ingredient</TableHead>
+                            <TableHead className="text-muted-foreground">Vendor</TableHead>
+                            <TableHead className="text-muted-foreground">Qty</TableHead>
+                            <TableHead className="text-muted-foreground">Cost</TableHead>
+                            <TableHead className="text-muted-foreground">Expected</TableHead>
+                            <TableHead className="text-muted-foreground">Status</TableHead>
                             <TableHead className="w-[100px]"></TableHead>
                         </TableRow>
                     </TableHeader>
@@ -117,28 +117,28 @@ export function OrderHistory({ orders }: OrderHistoryProps) {
                                 : (order.quantity_to_order || 0) * (order.ingredients?.purchase_price || 0)
 
                             return (
-                                <TableRow key={order.id} className="border-neutral-800 hover:bg-neutral-800/50">
-                                    <TableCell className="text-neutral-300 font-medium whitespace-nowrap">
+                                <TableRow key={order.id} className="border-border hover:bg-secondary/50">
+                                    <TableCell className="text-foreground font-medium whitespace-nowrap">
                                         {format(new Date(order.created_at), 'MMM d')}
                                     </TableCell>
-                                    <TableCell className="text-white">
+                                    <TableCell className="text-foreground">
                                         {order.ingredients?.name || 'Unknown Item'}
                                     </TableCell>
                                     <TableCell>
-                                        <Badge variant="outline" className="text-xs border-neutral-700 text-neutral-400">
+                                        <Badge variant="outline" className="text-xs border-border text-muted-foreground">
                                             {order.suppliers?.name || 'Direct'}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="text-neutral-300">
+                                    <TableCell className="text-foreground">
                                         {order.quantity_to_order} {order.ingredients?.purchase_unit}
                                     </TableCell>
-                                    <TableCell className="text-neutral-300">
+                                    <TableCell className="text-foreground">
                                         ${cost.toFixed(2)}
                                     </TableCell>
-                                    <TableCell className="text-neutral-400 text-sm">
+                                    <TableCell className="text-muted-foreground text-sm">
                                         {order.expected_delivery_date
                                             ? format(new Date(order.expected_delivery_date), 'MMM d')
-                                            : <span className="text-neutral-600">—</span>
+                                            : <span className="text-muted-foreground">—</span>
                                         }
                                     </TableCell>
                                     <TableCell>
@@ -149,7 +149,7 @@ export function OrderHistory({ orders }: OrderHistoryProps) {
                                             <Button
                                                 size="sm"
                                                 variant="ghost"
-                                                className="text-emerald-500 hover:text-emerald-400 hover:bg-emerald-500/10"
+                                                className="text-primary hover:text-primary hover:bg-primary/10"
                                                 onClick={() => markReceivedMutation.mutate(order.id)}
                                                 disabled={markReceivedMutation.isPending}
                                             >
@@ -158,7 +158,7 @@ export function OrderHistory({ orders }: OrderHistoryProps) {
                                             </Button>
                                         )}
                                         {order.status === 'received' && order.received_date && (
-                                            <span className="text-xs text-neutral-500">
+                                            <span className="text-xs text-muted-foreground">
                                                 {format(new Date(order.received_date), 'MMM d')}
                                             </span>
                                         )}

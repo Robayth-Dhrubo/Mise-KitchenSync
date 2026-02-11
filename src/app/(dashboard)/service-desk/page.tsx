@@ -148,11 +148,11 @@ export default function ReportedIssuesPage() {
         <div className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold text-white tracking-tight flex items-center gap-3">
-                        <AlertCircle className="w-8 h-8 text-emerald-500" />
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight flex items-center gap-3">
+                        <AlertCircle className="w-8 h-8 text-primary" />
                         Service Desk
                     </h1>
-                    <p className="text-zinc-500 text-sm mt-1">
+                    <p className="text-muted-foreground text-sm mt-1">
                         Manage support tickets from Kitchen and Front of House.
                     </p>
                 </div>
@@ -161,12 +161,12 @@ export default function ReportedIssuesPage() {
                         variant="outline"
                         size="sm"
                         onClick={fetchIssues}
-                        className="border-zinc-700 bg-black/40 text-zinc-400 hover:text-white"
+                        className="border-border bg-sidebar/40 text-muted-foreground hover:text-foreground"
                     >
                         Refresh
                     </Button>
                     <ReportIssueDialog>
-                        <Button className="bg-emerald-600 hover:bg-emerald-500 text-white gap-2">
+                        <Button className="bg-primary hover:bg-primary text-foreground gap-2">
                             <Plus className="w-4 h-4" />
                             Create Ticket
                         </Button>
@@ -181,11 +181,11 @@ export default function ReportedIssuesPage() {
                     className={cn(
                         "flex items-center gap-2 px-4 py-2 rounded-lg transition-all border whitespace-nowrap",
                         activeTab === 'service'
-                            ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
-                            : "text-zinc-400 border-transparent hover:text-white hover:bg-white/5"
+                            ? "bg-primary/10 text-primary border-primary/20"
+                            : "text-muted-foreground border-transparent hover:text-foreground hover:bg-white/5"
                     )}
                 >
-                    {activeTab === 'service' && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />}
+                    {activeTab === 'service' && <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />}
                     Service (Kitchen)
                 </button>
                 <button
@@ -194,7 +194,7 @@ export default function ReportedIssuesPage() {
                         "flex items-center gap-2 px-4 py-2 rounded-lg transition-all border whitespace-nowrap",
                         activeTab === 'desk'
                             ? "bg-blue-500/10 text-blue-500 border-blue-500/20"
-                            : "text-zinc-400 border-transparent hover:text-white hover:bg-white/5"
+                            : "text-muted-foreground border-transparent hover:text-foreground hover:bg-white/5"
                     )}
                 >
                     {activeTab === 'desk' && <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />}
@@ -206,7 +206,7 @@ export default function ReportedIssuesPage() {
                         "flex items-center gap-2 px-4 py-2 rounded-lg transition-all border whitespace-nowrap",
                         activeTab === 'all'
                             ? "bg-purple-500/10 text-purple-500 border-purple-500/20"
-                            : "text-zinc-400 border-transparent hover:text-white hover:bg-white/5"
+                            : "text-muted-foreground border-transparent hover:text-foreground hover:bg-white/5"
                     )}
                 >
                     All Issues ({issues.length})
@@ -217,24 +217,24 @@ export default function ReportedIssuesPage() {
             <div className="space-y-4">
                 {isLoading ? (
                     <div className="flex justify-center p-12">
-                        <Loader2 className="w-8 h-8 animate-spin text-zinc-500" />
+                        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
                     </div>
                 ) : filteredIssues.length > 0 ? (
                     filteredIssues.map((issue) => (
-                        <div key={issue.id} className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-6 transition-all hover:border-zinc-700 group">
+                        <div key={issue.id} className="bg-card/50 border border-border rounded-xl p-6 transition-all hover:border-border group">
                             <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
                                 <div className="flex items-start gap-4">
                                     <div className={cn(
                                         "w-10 h-10 rounded-full flex items-center justify-center border shrink-0",
                                         issue.type === 'service'
-                                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500"
+                                            ? "bg-primary/10 border-primary/20 text-primary"
                                             : "bg-blue-500/10 border-blue-500/20 text-blue-500"
                                     )}>
                                         {issue.category === 'hardware' ? <Server className="w-5 h-5" /> : <Ticket className="w-5 h-5" />}
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <h3 className="text-white font-bold text-lg">{issue.title}</h3>
+                                            <h3 className="text-foreground font-bold text-lg">{issue.title}</h3>
                                             <span className={cn(
                                                 "uppercase text-[10px] font-bold px-2 py-0.5 rounded-full border",
                                                 issue.priority === 'critical' ? "bg-red-500/10 text-red-500 border-red-500/20" :
@@ -242,13 +242,13 @@ export default function ReportedIssuesPage() {
                                                         "bg-blue-500/10 text-blue-500 border-blue-500/20"
                                             )}>{issue.priority}</span>
                                         </div>
-                                        <div className="flex items-center gap-3 text-zinc-500 text-sm mt-1 flex-wrap">
+                                        <div className="flex items-center gap-3 text-muted-foreground text-sm mt-1 flex-wrap">
                                             <span className="flex items-center gap-1">
                                                 <Clock className="w-3 h-3" />
                                                 {timeAgo(issue.created_at)}
                                             </span>
                                             <span>•</span>
-                                            <span className="text-zinc-400">
+                                            <span className="text-muted-foreground">
                                                 {issue.creator?.email?.split('@')[0] || 'Unknown'}
                                                 <span className="opacity-50 ml-1">({issue.creator?.role.toUpperCase()})</span>
                                             </span>
@@ -260,13 +260,13 @@ export default function ReportedIssuesPage() {
                                     <Select value={issue.status} onValueChange={(v) => handleStatusChange(issue.id, v)}>
                                         <SelectTrigger className={cn(
                                             "h-8 border-white/10 text-xs font-medium",
-                                            issue.status === 'resolved' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                                            issue.status === 'resolved' ? "bg-primary/10 text-primary border-primary/20" :
                                                 issue.status === 'in_progress' ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
                                                     "bg-amber-500/10 text-amber-500 border-amber-500/20"
                                         )}>
                                             <SelectValue />
                                         </SelectTrigger>
-                                        <SelectContent className="bg-neutral-900 border-white/10">
+                                        <SelectContent className="bg-card border-white/10">
                                             <SelectItem value="open">Open</SelectItem>
                                             <SelectItem value="in_progress">In Progress</SelectItem>
                                             <SelectItem value="resolved">Resolved</SelectItem>
@@ -275,7 +275,7 @@ export default function ReportedIssuesPage() {
                                 </div>
                             </div>
 
-                            <p className="text-zinc-300 ml-14 mb-6 leading-relaxed">
+                            <p className="text-foreground ml-14 mb-6 leading-relaxed">
                                 {issue.description}
                             </p>
 
@@ -283,11 +283,11 @@ export default function ReportedIssuesPage() {
                             <div className="ml-14">
                                 {issue.reply ? (
                                     <div className="bg-white/5 rounded-xl p-4 border border-white/5">
-                                        <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm mb-2">
+                                        <div className="flex items-center gap-2 text-primary font-bold text-sm mb-2">
                                             <MessageSquare className="w-4 h-4" />
                                             Admin Reply
                                         </div>
-                                        <p className="text-zinc-300 text-sm">{issue.reply}</p>
+                                        <p className="text-foreground text-sm">{issue.reply}</p>
                                     </div>
                                 ) : replyingTo === issue.id ? (
                                     <div className="space-y-3 animate-in fade-in slide-in-from-top-2">
@@ -295,13 +295,13 @@ export default function ReportedIssuesPage() {
                                             value={replyText}
                                             onChange={(e) => setReplyText(e.target.value)}
                                             placeholder="Type your reply to resolve this issue..."
-                                            className="bg-black/40 border-zinc-700 min-h-[100px] text-zinc-200"
+                                            className="bg-sidebar/40 border-border min-h-[100px] text-foreground"
                                             autoFocus
                                         />
                                         <div className="flex items-center gap-2">
                                             <Button
                                                 onClick={() => handleSendReply(issue.id)}
-                                                className="bg-emerald-600 hover:bg-emerald-500 text-white gap-2"
+                                                className="bg-primary hover:bg-primary text-foreground gap-2"
                                             >
                                                 <Send className="w-4 h-4" />
                                                 Send Reply & Resolve
@@ -309,7 +309,7 @@ export default function ReportedIssuesPage() {
                                             <Button
                                                 variant="ghost"
                                                 onClick={() => setReplyingTo(null)}
-                                                className="text-zinc-400 hover:text-white"
+                                                className="text-muted-foreground hover:text-foreground"
                                             >
                                                 Cancel
                                             </Button>
@@ -322,7 +322,7 @@ export default function ReportedIssuesPage() {
                                             setReplyingTo(issue.id)
                                             setReplyText('')
                                         }}
-                                        className="border-zinc-700 hover:bg-white/5 hover:text-white hover:border-zinc-600 text-zinc-400"
+                                        className="border-border hover:bg-white/5 hover:text-foreground hover:border-border text-muted-foreground"
                                     >
                                         <MessageSquare className="w-4 h-4 mr-2" />
                                         Reply to Staff
@@ -332,12 +332,12 @@ export default function ReportedIssuesPage() {
                         </div>
                     ))
                 ) : (
-                    <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-12 flex flex-col items-center justify-center text-center mt-6">
-                        <div className="w-16 h-16 bg-zinc-800 rounded-full flex items-center justify-center mb-6">
-                            <CheckCircle className="w-8 h-8 text-zinc-500" />
+                    <div className="bg-card/50 border border-border rounded-xl p-12 flex flex-col items-center justify-center text-center mt-6">
+                        <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center mb-6">
+                            <CheckCircle className="w-8 h-8 text-muted-foreground" />
                         </div>
-                        <h3 className="text-white font-medium text-xl">All caught up!</h3>
-                        <p className="text-zinc-500 mt-2 max-w-sm">
+                        <h3 className="text-foreground font-medium text-xl">All caught up!</h3>
+                        <p className="text-muted-foreground mt-2 max-w-sm">
                             There are no {activeTab !== 'all' ? activeTab : ''} issues requiring attention.
                         </p>
                     </div>

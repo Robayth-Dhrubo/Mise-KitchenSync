@@ -71,19 +71,19 @@ export default async function RecipeDetailPage({ params }: PageProps) {
     return (
         <div className="space-y-12 relative pb-24">
             {/* Ambient Background Glows */}
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-600/5 rounded-full blur-[140px] -z-10" />
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] -z-10" />
             <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-600/5 rounded-full blur-[120px] -z-10" />
 
             {/* Header */}
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="flex items-center gap-6">
                     <Link href="/menu">
-                        <Button variant="ghost" size="icon" className="h-14 w-14 rounded-2xl bg-white/5 border border-white/5 text-neutral-400 hover:text-white hover:bg-white/10 transition-all">
+                        <Button variant="ghost" size="icon" className="h-14 w-14 rounded-2xl bg-white/5 border border-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all">
                             <ArrowLeft className="w-6 h-6" />
                         </Button>
                     </Link>
                     <div className="space-y-1">
-                        <h1 className="text-5xl font-black text-white tracking-tighter flex items-center gap-4">
+                        <h1 className="text-5xl font-black text-foreground tracking-tighter flex items-center gap-4">
                             {recipe.name}.
                             <Badge className={cn(
                                 "h-8 px-4 border-0 text-[10px] font-black uppercase tracking-widest rounded-lg",
@@ -93,12 +93,12 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                                 {formatPercentage(foodCostPct)} Cost
                             </Badge>
                         </h1>
-                        <p className="text-neutral-500 font-bold text-sm uppercase tracking-widest flex items-center gap-2">
+                        <p className="text-muted-foreground font-bold text-sm uppercase tracking-widest flex items-center gap-2">
                             {recipe.description || 'System Calibrated Recipe Asset'}
                         </p>
                     </div>
                 </div>
-                <Button variant="ghost" className="h-14 px-8 bg-white/5 hover:bg-white/10 border border-white/5 text-white/40 font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl transition-all" disabled>
+                <Button variant="ghost" className="h-14 px-8 bg-white/5 hover:bg-white/10 border border-white/5 text-foreground/40 font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl transition-all" disabled>
                     <Pencil className="w-4 h-4 mr-3" />
                     Archive Control
                 </Button>
@@ -110,9 +110,9 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                     {/* Ingredients Table */}
                     <Card className="glass-card">
                         <CardHeader className="p-8 border-b border-white/5">
-                            <CardTitle className="text-xl font-black text-white flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                    <ChefHat className="w-5 h-5 text-emerald-500" />
+                            <CardTitle className="text-xl font-black text-foreground flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                    <ChefHat className="w-5 h-5 text-primary" />
                                 </div>
                                 Component Ledger
                             </CardTitle>
@@ -120,16 +120,16 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                         <CardContent className="p-8">
                             <div className="space-y-3">
                                 {items.map((item: any, index: number) => (
-                                    <div key={index} className="flex items-center justify-between p-6 rounded-[24px] bg-black/20 border border-white/5 hover:border-white/10 transition-all group">
+                                    <div key={index} className="flex items-center justify-between p-6 rounded-[24px] bg-sidebar/20 border border-white/5 hover:border-white/10 transition-all group">
                                         <div className="space-y-1">
-                                            <div className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">Material 0{index + 1}</div>
-                                            <div className="font-bold text-white text-lg tracking-tight group-hover:translate-x-1 transition-transform">{item.ingredientName}</div>
+                                            <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Material 0{index + 1}</div>
+                                            <div className="font-bold text-foreground text-lg tracking-tight group-hover:translate-x-1 transition-transform">{item.ingredientName}</div>
                                         </div>
                                         <div className="flex items-center gap-12 tabular-nums">
-                                            <div className="text-neutral-400 font-bold uppercase tracking-widest text-xs">
+                                            <div className="text-muted-foreground font-bold uppercase tracking-widest text-xs">
                                                 {item.quantity_needed} {item.unit_used}
                                             </div>
-                                            <div className="text-white font-black text-xl tracking-tighter w-24 text-right">
+                                            <div className="text-foreground font-black text-xl tracking-tighter w-24 text-right">
                                                 {formatCurrency(item.cost)}
                                             </div>
                                         </div>
@@ -138,10 +138,10 @@ export default async function RecipeDetailPage({ params }: PageProps) {
 
                                 <div className="mt-8 pt-8 border-t border-white/5 flex items-center justify-between">
                                     <div className="space-y-1">
-                                        <div className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Cumulative Unit Cost</div>
-                                        <div className="text-2xl font-black text-white tracking-tighter">Manufacturing Total</div>
+                                        <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Cumulative Unit Cost</div>
+                                        <div className="text-2xl font-black text-foreground tracking-tighter">Manufacturing Total</div>
                                     </div>
-                                    <div className="text-4xl font-black text-emerald-500 tracking-tighter tabular-nums">
+                                    <div className="text-4xl font-black text-primary tracking-tighter tabular-nums">
                                         {formatCurrency(totalCost)}
                                     </div>
                                 </div>
@@ -158,18 +158,18 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                                 <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center">
                                     <TrendingUp className="w-5 h-5 text-purple-500" />
                                 </div>
-                                <CardTitle className="text-xl font-black text-white">Profit Matrix</CardTitle>
+                                <CardTitle className="text-xl font-black text-foreground">Profit Matrix</CardTitle>
                             </div>
                         </CardHeader>
                         <CardContent className="p-8 space-y-10">
                             <div className="space-y-2">
-                                <div className="text-[10px] font-black text-neutral-600 uppercase tracking-[0.2em]">Market Valuation</div>
-                                <div className="text-5xl font-black text-white tracking-tighter tabular-nums">{formatCurrency(recipe.menu_price)}</div>
+                                <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">Market Valuation</div>
+                                <div className="text-5xl font-black text-foreground tracking-tighter tabular-nums">{formatCurrency(recipe.menu_price)}</div>
                             </div>
 
                             <div className="grid grid-cols-2 gap-8 py-8 border-y border-white/5">
                                 <div className="space-y-2">
-                                    <div className="text-[10px] font-black text-neutral-600 uppercase tracking-widest flex items-center gap-2">
+                                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                                         <TrendingUp className="w-3 h-3" /> Net Alpha
                                     </div>
                                     <div className={cn(
@@ -180,10 +180,10 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                                     </div>
                                 </div>
                                 <div className="space-y-2">
-                                    <div className="text-[10px] font-black text-neutral-600 uppercase tracking-widest flex items-center gap-2">
+                                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest flex items-center gap-2">
                                         <Clock className="w-3 h-3" /> Execution
                                     </div>
-                                    <div className="text-2xl font-black text-white tracking-tighter tabular-nums">
+                                    <div className="text-2xl font-black text-foreground tracking-tighter tabular-nums">
                                         {recipe.prep_time_minutes || '--'}m
                                     </div>
                                 </div>
@@ -191,7 +191,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
 
                             <div className="space-y-4">
                                 <div className="flex justify-between items-end">
-                                    <div className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Margin Efficiency</div>
+                                    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Margin Efficiency</div>
                                     <div className={cn(
                                         "text-4xl font-black tracking-tighter tabular-nums",
                                         getMarginColorClass(marginStatus as any)
@@ -199,7 +199,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                                         {recipe.menu_price > 0 ? Math.round((profit / recipe.menu_price) * 100) : 0}%
                                     </div>
                                 </div>
-                                <div className="h-4 bg-black/40 rounded-full overflow-hidden p-1 border border-white/5">
+                                <div className="h-4 bg-sidebar/40 rounded-full overflow-hidden p-1 border border-white/5">
                                     <div
                                         className={cn(
                                             "h-full rounded-full transition-all duration-1000 ease-out shadow-lg",
@@ -208,7 +208,7 @@ export default async function RecipeDetailPage({ params }: PageProps) {
                                         style={{ width: `${Math.min(Math.max(recipe.menu_price > 0 ? (profit / recipe.menu_price) * 100 : 0, 0), 100)}%` }}
                                     />
                                 </div>
-                                <p className="text-[10px] font-bold text-neutral-600 uppercase tracking-widest text-center">
+                                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">
                                     Algorithmically derived performance metrics
                                 </p>
                             </div>

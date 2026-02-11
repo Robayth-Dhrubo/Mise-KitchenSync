@@ -91,7 +91,7 @@ export function formatPercentage(value: number): string {
 export function getMarginColorClass(status: CostCalculation['margin_status']): string {
     switch (status) {
         case 'excellent':
-            return 'text-emerald-500'
+            return 'text-primary'
         case 'good':
             return 'text-green-500'
         case 'warning':
@@ -99,7 +99,7 @@ export function getMarginColorClass(status: CostCalculation['margin_status']): s
         case 'danger':
             return 'text-red-500'
         default:
-            return 'text-neutral-500'
+            return 'text-muted-foreground'
     }
 }
 
@@ -109,7 +109,7 @@ export function getMarginColorClass(status: CostCalculation['margin_status']): s
 export function getMarginBgClass(status: CostCalculation['margin_status']): string {
     switch (status) {
         case 'excellent':
-            return 'bg-emerald-500/10'
+            return 'bg-primary/10'
         case 'good':
             return 'bg-green-500/10'
         case 'warning':
@@ -117,7 +117,7 @@ export function getMarginBgClass(status: CostCalculation['margin_status']): stri
         case 'danger':
             return 'bg-red-500/10'
         default:
-            return 'bg-neutral-500/10'
+            return 'bg-muted-foreground/10'
     }
 }
 

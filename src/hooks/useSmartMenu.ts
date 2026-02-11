@@ -91,7 +91,7 @@ export function useSmartMenu(userId?: string) {
         if (item.max_servings <= 5) {
             return { status: 'low_stock', label: `Only ${item.max_servings} Left!`, color: 'text-amber-500' }
         }
-        return { status: 'available', label: 'Available', color: 'text-emerald-500' }
+        return { status: 'available', label: 'Available', color: 'text-primary' }
     }, [])
 
     return {

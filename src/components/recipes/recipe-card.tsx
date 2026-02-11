@@ -105,20 +105,20 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
     return (
         <Link href={`/menu/${recipe.id}`}>
             <Card className={cn(
-                "glass-card hover:border-emerald-500/30 transition-all duration-500 cursor-pointer h-full group relative overflow-hidden flex flex-col hover:-translate-y-2",
+                "glass-card hover:border-primary/30 transition-all duration-500 cursor-pointer h-full group relative overflow-hidden flex flex-col hover:-translate-y-2",
                 !recipe.is_available && "opacity-60 grayscale-[0.5]"
             )}>
                 {/* Visual Accent */}
                 <div className={cn(
                     "absolute top-0 left-0 w-full h-1",
-                    recipe.margin_status === 'excellent' ? "bg-emerald-500" :
+                    recipe.margin_status === 'excellent' ? "bg-primary" :
                         recipe.margin_status === 'good' ? "bg-blue-500" :
                             recipe.margin_status === 'warning' ? "bg-yellow-500" : "bg-red-500"
                 )} />
 
                 <CardHeader className="p-8 pb-4">
                     <div className="flex items-start justify-between gap-4 mb-2">
-                        <CardTitle className="text-2xl font-black text-white group-hover:text-emerald-400 transition-colors pr-8 leading-tight font-display">
+                        <CardTitle className="text-2xl font-black text-foreground group-hover:text-primary transition-colors pr-8 leading-tight font-display">
                             {recipe.name}
                         </CardTitle>
                         <div className="flex flex-col items-end gap-2">
@@ -144,7 +144,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                         </div>
                     </div>
                     {recipe.description && (
-                        <p className="text-sm text-neutral-500 font-medium line-clamp-2 leading-relaxed">
+                        <p className="text-sm text-muted-foreground font-medium line-clamp-2 leading-relaxed">
                             {recipe.description}
                         </p>
                     )}
@@ -155,29 +155,29 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-10 w-10 text-neutral-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl"
+                                    className="h-10 w-10 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-xl"
                                 >
                                     <Trash2 className="w-5 h-5" />
                                 </Button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent className="bg-neutral-900 border-white/5 backdrop-blur-3xl rounded-[40px] p-8">
+                            <AlertDialogContent className="bg-card border-white/5 backdrop-blur-3xl rounded-[40px] p-8">
                                 <div className="flex flex-col items-center text-center space-y-6">
                                     <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center">
                                         <Trash2 className="w-8 h-8 text-red-500" />
                                     </div>
                                     <div className="space-y-2">
-                                        <AlertDialogTitle className="text-3xl font-black text-white tracking-tighter">Decommission Asset?</AlertDialogTitle>
-                                        <AlertDialogDescription className="text-neutral-500 font-medium">
+                                        <AlertDialogTitle className="text-3xl font-black text-foreground tracking-tighter">Decommission Asset?</AlertDialogTitle>
+                                        <AlertDialogDescription className="text-muted-foreground font-medium">
                                             This action is irreversible. "{recipe.name}" will be purged from the vault.
                                         </AlertDialogDescription>
                                     </div>
                                     <div className="flex gap-4 w-full pt-4">
-                                        <AlertDialogCancel className="flex-1 h-14 rounded-2xl bg-white/5 border-white/5 text-white font-black uppercase tracking-widest hover:bg-white/10">
+                                        <AlertDialogCancel className="flex-1 h-14 rounded-2xl bg-white/5 border-white/5 text-foreground font-black uppercase tracking-widest hover:bg-white/10">
                                             Abort
                                         </AlertDialogCancel>
                                         <AlertDialogAction
                                             onClick={handleDelete}
-                                            className="flex-1 h-14 rounded-2xl bg-red-600 hover:bg-red-500 text-white font-black uppercase tracking-widest shadow-xl shadow-red-500/20"
+                                            className="flex-1 h-14 rounded-2xl bg-red-600 hover:bg-red-500 text-foreground font-black uppercase tracking-widest shadow-xl shadow-red-500/20"
                                             disabled={isDeleting}
                                         >
                                             {isDeleting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirm'}
@@ -192,22 +192,22 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                 <CardContent className="p-8 pt-4 mt-auto">
                     <div className="grid grid-cols-3 gap-6 py-6 border-y border-white/5">
                         <div className="space-y-1">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-600 flex items-center gap-1">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                                 <DollarSign className="w-3 h-3" /> Price
                             </span>
-                            <p className="font-black text-lg text-white tabular-nums">{formatCurrency(recipe.menu_price)}</p>
+                            <p className="font-black text-lg text-foreground tabular-nums">{formatCurrency(recipe.menu_price)}</p>
                         </div>
                         <div className="space-y-1">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-600 flex items-center gap-1">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                                 <TrendingUp className="w-3 h-3" /> Cost
                             </span>
-                            <p className="font-black text-lg text-neutral-400 tabular-nums">{formatCurrency(recipe.total_cost)}</p>
+                            <p className="font-black text-lg text-muted-foreground tabular-nums">{formatCurrency(recipe.total_cost)}</p>
                         </div>
                         <div className="space-y-1">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-600 flex items-center gap-1">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground flex items-center gap-1">
                                 <Clock className="w-3 h-3" /> Prep
                             </span>
-                            <p className="font-black text-lg text-neutral-400">
+                            <p className="font-black text-lg text-muted-foreground">
                                 {recipe.prep_time_minutes ? `${recipe.prep_time_minutes}m` : '--'}
                             </p>
                         </div>
@@ -221,14 +221,14 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                             className={cn(
                                 "flex-1 h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all gap-2",
                                 recipe.is_available
-                                    ? "bg-red-500/5 text-neutral-500 hover:bg-red-500 hover:text-white"
-                                    : "bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white"
+                                    ? "bg-red-500/5 text-muted-foreground hover:bg-red-500 hover:text-foreground"
+                                    : "bg-primary/10 text-primary hover:bg-primary hover:text-foreground"
                             )}
                         >
                             {isUpdating ? <Loader2 className="w-4 h-4 animate-spin" /> : recipe.is_available ? 'Deactivate Dish' : 'Set Live'}
                         </Button>
                         <div className="flex flex-col items-end">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-neutral-600">Net Margin</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Net Margin</span>
                             <span className={cn(
                                 "text-xl font-black tabular-nums font-display",
                                 getMarginColorClass(recipe.margin_status)

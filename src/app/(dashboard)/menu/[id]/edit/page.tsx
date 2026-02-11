@@ -273,25 +273,25 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
     if (isLoadingData) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         )
     }
 
     return (
         <div className="space-y-12 relative pb-24">
-            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-600/5 rounded-full blur-[140px] -z-10" />
+            <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] -z-10" />
 
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <div className="flex items-center gap-6">
                     <Link href="/menu">
-                        <Button variant="ghost" size="icon" className="h-14 w-14 rounded-2xl bg-white/5 border border-white/5 text-neutral-400 hover:text-white hover:bg-white/10 transition-all">
+                        <Button variant="ghost" size="icon" className="h-14 w-14 rounded-2xl bg-white/5 border border-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10 transition-all">
                             <ArrowLeft className="w-6 h-6" />
                         </Button>
                     </Link>
                     <div className="space-y-1">
-                        <h1 className="text-3xl font-bold text-white tracking-tight">Edit Dish</h1>
-                        <p className="text-neutral-500 text-sm">Update your menu item and photo</p>
+                        <h1 className="text-3xl font-bold text-foreground tracking-tight">Edit Dish</h1>
+                        <p className="text-muted-foreground text-sm">Update your menu item and photo</p>
                     </div>
                 </div>
             </div>
@@ -301,9 +301,9 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                     <div className="lg:col-span-2 space-y-8">
                         <Card className="glass-card">
                             <CardHeader className="p-8 border-b border-white/5">
-                                <CardTitle className="text-lg font-semibold text-white flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                                        <ImageIcon className="w-5 h-5 text-emerald-500" />
+                                <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                                        <ImageIcon className="w-5 h-5 text-primary" />
                                     </div>
                                     Dish Details
                                 </CardTitle>
@@ -311,17 +311,17 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                             <CardContent className="p-8 space-y-8">
                                 <div className="grid md:grid-cols-3 gap-8">
                                     <div className="md:col-span-1 space-y-3">
-                                        <Label className="text-xs text-neutral-500">Dish Photo</Label>
-                                        <div className="aspect-square rounded-2xl bg-black/40 border-2 border-dashed border-white/5 flex flex-col items-center justify-center relative overflow-hidden group hover:border-emerald-500/30 transition-all">
+                                        <Label className="text-xs text-muted-foreground">Dish Photo</Label>
+                                        <div className="aspect-square rounded-2xl bg-sidebar/40 border-2 border-dashed border-white/5 flex flex-col items-center justify-center relative overflow-hidden group hover:border-primary/30 transition-all">
                                             {isUploading ? (
-                                                <div className="flex flex-col items-center gap-2 text-emerald-500 animate-pulse">
+                                                <div className="flex flex-col items-center gap-2 text-primary animate-pulse">
                                                     <Loader2 className="w-8 h-8 animate-spin" />
                                                     <span className="text-[10px] font-bold uppercase tracking-widest">Uploading...</span>
                                                 </div>
                                             ) : watch('image_url') ? (
                                                 <>
                                                     <img src={watch('image_url')} alt="Preview" className="w-full h-full object-cover" />
-                                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                    <div className="absolute inset-0 bg-sidebar/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                         <Button
                                                             type="button"
                                                             variant="ghost"
@@ -334,7 +334,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                                                     </div>
                                                 </>
                                             ) : (
-                                                <div className="flex flex-col items-center gap-2 text-neutral-600">
+                                                <div className="flex flex-col items-center gap-2 text-muted-foreground">
                                                     <Camera className="w-8 h-8" />
                                                     <span className="text-[10px] font-bold uppercase tracking-widest">Click to Upload</span>
                                                 </div>
@@ -351,10 +351,10 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
 
                                     <div className="md:col-span-2 space-y-6">
                                         <div className="space-y-3">
-                                            <Label className="text-xs text-neutral-500">Dish Name</Label>
+                                            <Label className="text-xs text-muted-foreground">Dish Name</Label>
                                             <Input
                                                 {...register('name', { required: 'Dish name is required' })}
-                                                className="h-16 bg-black/40 border-white/5 rounded-2xl text-xl font-black text-white focus:border-emerald-500/50 transition-all"
+                                                className="h-16 bg-sidebar/40 border-white/5 rounded-2xl text-xl font-black text-foreground focus:border-primary/50 transition-all"
                                             />
                                             {errors.name && (
                                                 <p className="text-red-500 text-[10px] font-bold uppercase tracking-widest px-1">{errors.name.message}</p>
@@ -363,24 +363,24 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-3">
-                                                <Label className="text-xs text-neutral-500">Menu Price ($)</Label>
+                                                <Label className="text-xs text-muted-foreground">Menu Price ($)</Label>
                                                 <Input
                                                     type="number"
                                                     step="0.01"
                                                     {...register('menu_price', { valueAsNumber: true })}
-                                                    className="h-14 bg-black/40 border-white/5 rounded-xl text-lg font-black text-white"
+                                                    className="h-14 bg-sidebar/40 border-white/5 rounded-xl text-lg font-black text-foreground"
                                                 />
                                             </div>
                                             <div className="space-y-3">
-                                                <Label className="text-xs text-neutral-500">Category</Label>
+                                                <Label className="text-xs text-muted-foreground">Category</Label>
                                                 <Select
                                                     value={watch('category')}
                                                     onValueChange={(val) => setValue('category', val)}
                                                 >
-                                                    <SelectTrigger className="h-14 bg-black/40 border-white/5 rounded-xl text-white font-bold">
+                                                    <SelectTrigger className="h-14 bg-sidebar/40 border-white/5 rounded-xl text-foreground font-bold">
                                                         <SelectValue />
                                                     </SelectTrigger>
-                                                    <SelectContent className="bg-neutral-900 border-white/5">
+                                                    <SelectContent className="bg-card border-white/5">
                                                         <SelectItem value="starter">Starter</SelectItem>
                                                         <SelectItem value="main">Main Course</SelectItem>
                                                         <SelectItem value="side">Side Dish</SelectItem>
@@ -394,11 +394,11 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                                 </div>
 
                                 <div className="space-y-3">
-                                    <Label className="text-xs text-neutral-500">Description (Optional)</Label>
+                                    <Label className="text-xs text-muted-foreground">Description (Optional)</Label>
                                     <Textarea
                                         {...register('description')}
                                         rows={3}
-                                        className="bg-black/40 border-white/5 rounded-2xl text-white font-medium focus:border-emerald-500/50 transition-all resize-none"
+                                        className="bg-sidebar/40 border-white/5 rounded-2xl text-foreground font-medium focus:border-primary/50 transition-all resize-none"
                                     />
                                 </div>
                             </CardContent>
@@ -408,7 +408,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                             type="button"
                             variant="ghost"
                             onClick={() => setShowAdvanced(!showAdvanced)}
-                            className="w-full h-12 border border-dashed border-white/5 rounded-xl text-neutral-500 hover:text-white hover:bg-white/5 flex items-center justify-between px-6"
+                            className="w-full h-12 border border-dashed border-white/5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-white/5 flex items-center justify-between px-6"
                         >
                             <span className="text-[10px] font-black uppercase tracking-[0.2em]">Advanced: Ingredient & Cost Tracking</span>
                             {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -419,7 +419,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                                 <Card className="glass-card">
                                     <CardHeader className="p-8 border-b border-white/5">
                                         <div className="flex items-center justify-between">
-                                            <CardTitle className="text-lg font-semibold text-white flex items-center gap-3">
+                                            <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
                                                     <Package className="w-5 h-5 text-blue-500" />
                                                 </div>
@@ -429,7 +429,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                                                 type="button"
                                                 variant="ghost"
                                                 onClick={() => append({ ingredient_id: '', quantity_needed: 0, unit_used: 'g' })}
-                                                className="h-10 px-4 text-white/40 font-bold uppercase text-[10px] bg-white/5 hover:bg-white/10 rounded-xl"
+                                                className="h-10 px-4 text-foreground/40 font-bold uppercase text-[10px] bg-white/5 hover:bg-white/10 rounded-xl"
                                             >
                                                 <Plus className="w-3 h-3 mr-2" />
                                                 Add Row
@@ -449,10 +449,10 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                                                                 setValue('items', newItems)
                                                             }}
                                                         >
-                                                            <SelectTrigger className="h-14 bg-black/40 border-white/5 rounded-xl text-white font-bold">
+                                                            <SelectTrigger className="h-14 bg-sidebar/40 border-white/5 rounded-xl text-foreground font-bold">
                                                                 <SelectValue placeholder="Select ingredient..." />
                                                             </SelectTrigger>
-                                                            <SelectContent className="bg-neutral-900 border-white/5">
+                                                            <SelectContent className="bg-card border-white/5">
                                                                 {ingredients?.map((i) => (
                                                                     <SelectItem key={i.id} value={i.id}>{i.name}</SelectItem>
                                                                 ))}
@@ -464,7 +464,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                                                             type="number"
                                                             step="0.01"
                                                             {...register(`items.${index}.quantity_needed`, { valueAsNumber: true })}
-                                                            className="h-14 bg-black/40 border-white/5 rounded-xl text-center font-black text-white"
+                                                            className="h-14 bg-sidebar/40 border-white/5 rounded-xl text-center font-black text-foreground"
                                                         />
                                                     </div>
                                                     <div className="w-32">
@@ -476,10 +476,10 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                                                                 setValue('items', newItems)
                                                             }}
                                                         >
-                                                            <SelectTrigger className="h-14 bg-black/40 border-white/5 rounded-xl text-white font-bold">
+                                                            <SelectTrigger className="h-14 bg-sidebar/40 border-white/5 rounded-xl text-foreground font-bold">
                                                                 <SelectValue />
                                                             </SelectTrigger>
-                                                            <SelectContent className="bg-neutral-900 border-white/5">
+                                                            <SelectContent className="bg-card border-white/5">
                                                                 {ALL_UNITS.map((u) => (
                                                                     <SelectItem key={u} value={u}>{u}</SelectItem>
                                                                 ))}
@@ -491,7 +491,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                                                         variant="ghost"
                                                         size="icon"
                                                         onClick={() => remove(index)}
-                                                        className="h-14 w-14 text-neutral-600 hover:text-red-500 hover:bg-red-500/10 rounded-xl"
+                                                        className="h-14 w-14 text-muted-foreground hover:text-red-500 hover:bg-red-500/10 rounded-xl"
                                                     >
                                                         <Trash2 className="w-5 h-5" />
                                                     </Button>
@@ -508,7 +508,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                         <div className="sticky top-8 space-y-6">
                             <Card className="glass-card">
                                 <CardHeader className="p-8 border-b border-white/5">
-                                    <CardTitle className="text-lg font-semibold text-white flex items-center gap-3 text-emerald-500">
+                                    <CardTitle className="text-lg font-semibold text-foreground flex items-center gap-3 text-primary">
                                         <TrendingUp className="w-5 h-5" />
                                         Profit Matrix
                                     </CardTitle>
@@ -517,16 +517,16 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                                     {costPreview ? (
                                         <div className="space-y-6">
                                             <div className="flex justify-between items-center text-sm">
-                                                <span className="text-neutral-500">Total Plate Cost</span>
-                                                <span className="text-white font-bold">{formatCurrency(costPreview.total_cost)}</span>
+                                                <span className="text-muted-foreground">Total Plate Cost</span>
+                                                <span className="text-foreground font-bold">{formatCurrency(costPreview.total_cost)}</span>
                                             </div>
                                             <div className="flex justify-between items-center text-lg font-bold">
-                                                <span className="text-neutral-500">Gross Margin</span>
+                                                <span className="text-muted-foreground">Gross Margin</span>
                                                 <span className={getMarginColorClass(costPreview.margin_status)}>{formatPercentage(costPreview.food_cost_percentage)}</span>
                                             </div>
                                         </div>
                                     ) : (
-                                        <p className="text-neutral-600 text-sm text-center py-8">Adjust ingredients to see analysis</p>
+                                        <p className="text-muted-foreground text-sm text-center py-8">Adjust ingredients to see analysis</p>
                                     )}
                                 </CardContent>
                             </Card>
@@ -534,7 +534,7 @@ export default function EditRecipePage({ params }: { params: Promise<{ id: strin
                             <Button
                                 type="submit"
                                 disabled={saveMutation.isPending}
-                                className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-emerald-600/20 active:scale-95 group font-display"
+                                className="w-full h-14 bg-primary hover:bg-primary text-foreground font-black uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-primary/20 active:scale-95 group font-display"
                             >
                                 {saveMutation.isPending ? (
                                     <Loader2 className="w-6 h-6 animate-spin" />

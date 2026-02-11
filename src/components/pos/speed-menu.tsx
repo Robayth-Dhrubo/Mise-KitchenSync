@@ -32,14 +32,14 @@ export default function SpeedMenu({ recipes, onItemSelect }: SpeedMenuProps) {
     }), [recipes, searchQuery, category])
 
     return (
-        <div className="flex flex-col h-full overflow-hidden bg-neutral-900 border-r border-white/10">
+        <div className="flex flex-col h-full overflow-hidden bg-card border-r border-white/10">
             {/* Search Header */}
             <div className="p-6 border-b border-white/10 space-y-4">
                 <div className="relative group">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-500 group-focus-within:text-blue-500 transition-colors" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-blue-500 transition-colors" />
                     <Input
                         placeholder="SEARCH MENU..."
-                        className="h-14 pl-12 bg-black/40 border-white/10 rounded-xl text-lg font-bold text-white placeholder:text-neutral-600 focus:border-blue-500/50"
+                        className="h-14 pl-12 bg-sidebar/40 border-white/10 rounded-xl text-lg font-bold text-foreground placeholder:text-muted-foreground focus:border-blue-500/50"
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                     />
@@ -53,7 +53,7 @@ export default function SpeedMenu({ recipes, onItemSelect }: SpeedMenuProps) {
                                 "flex-1 py-3 rounded-lg text-xs font-black uppercase tracking-widest transition-all",
                                 category === cat
                                     ? "bg-white text-black shadow-lg"
-                                    : "bg-white/5 text-neutral-500 hover:bg-white/10 hover:text-white"
+                                    : "bg-white/5 text-muted-foreground hover:bg-white/10 hover:text-foreground"
                             )}
                         >
                             {cat}
@@ -77,27 +77,27 @@ export default function SpeedMenu({ recipes, onItemSelect }: SpeedMenuProps) {
                                 className={cn(
                                     "relative p-4 rounded-2xl text-left transition-all border group",
                                     !isAvailable
-                                        ? "bg-neutral-900/50 border-white/5 opacity-50 cursor-not-allowed"
+                                        ? "bg-card/50 border-white/5 opacity-50 cursor-not-allowed"
                                         : "bg-white/5 border-white/5 hover:bg-blue-600 hover:border-blue-500 hover:shadow-xl hover:shadow-blue-900/20 active:scale-95"
                                 )}
                             >
                                 <div className="flex justify-between items-start mb-3">
                                     <span className={cn(
                                         "text-xs font-black uppercase tracking-wider opacity-60",
-                                        !isAvailable ? "text-neutral-500" : "text-neutral-400 group-hover:text-blue-200"
+                                        !isAvailable ? "text-muted-foreground" : "text-muted-foreground group-hover:text-blue-200"
                                     )}>
                                         {categorize(recipe)}
                                     </span>
                                     <span className={cn(
                                         "font-black text-lg tabular-nums",
-                                        !isAvailable ? "text-neutral-600" : "text-white"
+                                        !isAvailable ? "text-muted-foreground" : "text-foreground"
                                     )}>
                                         ${recipe.menu_price}
                                     </span>
                                 </div>
                                 <h3 className={cn(
                                     "font-black text-sm uppercase leading-tight tracking-tight mb-2",
-                                    !isAvailable ? "text-neutral-500" : "text-white"
+                                    !isAvailable ? "text-muted-foreground" : "text-foreground"
                                 )}>
                                     {recipe.name}
                                 </h3>
@@ -112,8 +112,8 @@ export default function SpeedMenu({ recipes, onItemSelect }: SpeedMenuProps) {
                 </div>
             </div>
 
-            <div className="p-4 border-t border-white/10 bg-black/20">
-                <Button variant="ghost" className="w-full h-12 border-2 border-dashed border-white/10 text-neutral-500 hover:text-white hover:border-white/30 uppercase font-black text-xs tracking-widest gap-2">
+            <div className="p-4 border-t border-white/10 bg-sidebar/20">
+                <Button variant="ghost" className="w-full h-12 border-2 border-dashed border-white/10 text-muted-foreground hover:text-foreground hover:border-white/30 uppercase font-black text-xs tracking-widest gap-2">
                     <Plus className="w-4 h-4" /> Custom Item
                 </Button>
             </div>

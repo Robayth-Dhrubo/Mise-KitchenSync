@@ -1,0 +1,1 @@
+SELECT id, type, location_id FROM public.orders;

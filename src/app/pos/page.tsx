@@ -1,5 +1,5 @@
-import FloorMap from '@/components/pos/floor-map'
+import { redirect } from 'next/navigation'
 
 export default function PosPage() {
-    return <FloorMap />
+    redirect('/dashboard')
 }

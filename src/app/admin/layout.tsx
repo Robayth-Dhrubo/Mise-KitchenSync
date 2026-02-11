@@ -8,7 +8,7 @@ export default function AdminLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className="min-h-screen bg-black overflow-x-hidden">
+        <div className="min-h-screen bg-background overflow-x-hidden">
             {/* Desktop Sidebar */}
             <div className="fixed inset-y-0 z-50">
                 <DesktopSidebar />

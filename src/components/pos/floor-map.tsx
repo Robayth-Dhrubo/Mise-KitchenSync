@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Users, Clock, Loader2, AlertCircle, Calendar, Receipt, ChevronRight, X, ExternalLink, History } from 'lucide-react'
+import { Users, Clock, Loader2, AlertCircle, Calendar, Receipt, ChevronRight, X, ExternalLink, History, Bell } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -23,6 +23,7 @@ export default function FloorMap() {
     const [selectedLocation, setSelectedLocation] = useState<Location | null>(null)
     const [reservations, setReservations] = useState<Reservation[]>([])
     const [preOrders, setPreOrders] = useState<POSOrder[]>([])
+    const [activeOrders, setActiveOrders] = useState<POSOrder[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [isSaving, setIsSaving] = useState(false)
 
@@ -156,8 +157,16 @@ export default function FloorMap() {
                 .gte('scheduled_for', today.toISOString())
                 .lte('scheduled_for', tonight.toISOString())
 
+            // Fetch active (non-delivered) orders
+            const { data: activeOrderData } = await supabase
+                .from('orders')
+                .select('*')
+                .neq('preparation_status', 'delivered')
+                .neq('preparation_status', 'cancelled')
+
             if (locData) setLocations(locData)
             if (resData) setReservations(resData)
+            if (activeOrderData) setActiveOrders(activeOrderData)
             if (orderData) setPreOrders(orderData)
             setIsLoading(false)
         }
@@ -179,11 +188,11 @@ export default function FloorMap() {
 
     const getStatusColor = (status: Location['status']) => {
         switch (status) {
-            case 'available': return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+            case 'available': return 'bg-primary/10 text-primary border-primary/20'
             case 'occupied': return 'bg-amber-500/10 text-amber-500 border-amber-500/20'
             case 'dirty': return 'bg-red-500/10 text-red-500 border-red-500/20'
             case 'reserved': return 'bg-purple-500/10 text-purple-500 border-purple-500/20'
-            default: return 'bg-neutral-500/10 text-neutral-500 border-neutral-500/20'
+            default: return 'bg-muted-foreground/10 text-muted-foreground border-border/20'
         }
     }
 
@@ -298,17 +307,17 @@ export default function FloorMap() {
     if (isLoading) {
         return (
             <div className="h-full flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
             </div>
         )
     }
 
     return (
-        <div className="p-12 h-full flex flex-col gap-10 overflow-y-auto custom-scrollbar bg-neutral-950/50">
+        <div className="p-12 h-full flex flex-col gap-10 overflow-y-auto custom-scrollbar bg-sidebar/50">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 sm:gap-0">
                 <div>
-                    <h1 className="text-4xl font-black text-white tracking-tight uppercase leading-none">Command Center</h1>
-                    <p className="text-neutral-500 font-bold uppercase text-[11px] tracking-[0.3em] mt-3">Live Infrastructure Monitoring</p>
+                    <h1 className="text-4xl font-black text-foreground tracking-tight uppercase leading-none">Command Center</h1>
+                    <p className="text-muted-foreground font-bold uppercase text-[11px] tracking-[0.3em] mt-3">Live Infrastructure Monitoring</p>
                 </div>
 
                 <div className="flex flex-col sm:items-end gap-4">
@@ -319,7 +328,7 @@ export default function FloorMap() {
                             onClick={() => setIsEditMode(!isEditMode)}
                             className={cn(
                                 "h-10 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all gap-2",
-                                isEditMode ? "bg-amber-500 text-black hover:bg-amber-400" : "text-neutral-500 hover:text-white"
+                                isEditMode ? "bg-amber-500 text-black hover:bg-amber-400" : "text-muted-foreground hover:text-foreground"
                             )}
                         >
                             {isEditMode ? 'EXIT EDITOR' : 'EDIT FLOOR'}
@@ -335,7 +344,7 @@ export default function FloorMap() {
                                 onClick={() => setView(v)}
                                 className={cn(
                                     "h-10 px-6 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all",
-                                    view === v ? "bg-emerald-600 text-white shadow-lg" : "text-neutral-500 hover:text-white"
+                                    view === v ? "bg-primary text-foreground shadow-lg" : "text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 {v === 'floor' ? 'Restaurant Floor' : 'In-Room Dining'}
@@ -344,7 +353,7 @@ export default function FloorMap() {
                     </div>
                     <div className="flex gap-2">
 
-                        <Badge variant="outline" className="h-7 px-4 bg-emerald-500/5 text-emerald-500 border-emerald-500/10 rounded-full font-black uppercase text-[8px] tracking-[0.2em]">
+                        <Badge variant="outline" className="h-7 px-4 bg-primary/5 text-primary border-primary/10 rounded-full font-black uppercase text-[8px] tracking-[0.2em]">
                             {locations.filter(l => l.status === 'available').length} FREE
                         </Badge>
                         <Badge variant="outline" className="h-7 px-4 bg-amber-500/5 text-amber-500 border-amber-500/10 rounded-full font-black uppercase text-[8px] tracking-[0.2em]">
@@ -354,7 +363,7 @@ export default function FloorMap() {
                 </div>
             </div>
 
-            <div className="flex-1 relative min-h-[600px] border border-white/5 bg-black/40 rounded-[48px] overflow-hidden shadow-2xl">
+            <div className="flex-1 relative min-h-[600px] border border-white/5 bg-sidebar/40 rounded-[48px] overflow-hidden shadow-2xl">
                 {/* Visual Map Grid */}
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
                     style={{ backgroundImage: 'radial-gradient(circle, #fff 1.5px, transparent 1.5px)', backgroundSize: '48px 48px' }}
@@ -362,12 +371,12 @@ export default function FloorMap() {
 
                 {view === 'floor' ? (
                     floorElements.length === 0 ? (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-600 p-12 text-center">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground p-12 text-center">
                             <AlertCircle className="w-12 h-12 mb-4 opacity-20" />
                             <span className="font-black uppercase tracking-[0.2em] text-[10px]">No infrastructure established</span>
                             <Button
                                 variant="ghost"
-                                className="mt-6 text-[10px] font-black uppercase tracking-widest hover:text-emerald-500 transition-colors"
+                                className="mt-6 text-[10px] font-black uppercase tracking-widest hover:text-primary transition-colors"
                                 onClick={async () => {
                                     await supabase.rpc('initialize_sample_locations')
                                     window.location.reload() // Force reload to ensure all real-time channels and states are fresh
@@ -391,6 +400,7 @@ export default function FloorMap() {
                                 {floorElements.map((element) => {
                                     const hasReservation = reservations.some(r => r.location_id === element.id)
                                     const hasPreOrder = preOrders.some(p => p.location_id === element.id)
+                                    const hasActiveOrder = activeOrders.some(o => o.location_id === element.id)
 
                                     // Base style for positioning
                                     const style = {
@@ -408,19 +418,19 @@ export default function FloorMap() {
                                                 "absolute transition-all duration-300 cursor-pointer group flex items-center justify-center overflow-hidden touch-none",
                                                 // Table Styling (Default Squircles)
                                                 element.type === 'table' && "w-24 h-24 rounded-2xl border-2 shadow-2xl backdrop-blur-xl",
-                                                element.type === 'table' && element.status === 'available' && "bg-black/40 border-white/5 hover:border-emerald-500/40 hover:bg-emerald-500/5 shadow-emerald-500/5",
+                                                element.type === 'table' && element.status === 'available' && "bg-sidebar/40 border-white/5 hover:border-primary/40 hover:bg-primary/5 shadow-primary/5",
                                                 element.type === 'table' && element.status === 'occupied' && "bg-amber-500/10 border-amber-500/20 hover:border-amber-500/40 shadow-amber-500/5",
                                                 element.type === 'table' && element.status === 'dirty' && "bg-red-500/10 border-red-500/20 hover:border-red-500/40 shadow-red-500/5",
 
                                                 // Wall Styling
-                                                element.type === 'wall' && "bg-neutral-800 rounded-sm shadow-xl border border-white/5",
+                                                element.type === 'wall' && "bg-secondary rounded-sm shadow-xl border border-white/5",
 
                                                 // Zone Styling (Kitchen, Restroom, etc)
                                                 // Zone Styling (Kitchen, Restroom, etc)
-                                                ['kitchen', 'restroom', 'bar', 'entrance'].includes(element.type) && "bg-black/20 border-2 border-dashed border-white/10 rounded-xl hover:border-emerald-500/20 hover:bg-emerald-500/5",
+                                                ['kitchen', 'restroom', 'bar', 'entrance'].includes(element.type) && "bg-sidebar/20 border-2 border-dashed border-white/10 rounded-xl hover:border-primary/20 hover:bg-primary/5",
 
                                                 // Custom Entry/Exit Styling
-                                                element.type === 'entrance' && element.metadata?.subtype === 'entry' && "border-emerald-500/50 bg-emerald-500/10",
+                                                element.type === 'entrance' && element.metadata?.subtype === 'entry' && "border-primary/50 bg-primary/10",
                                                 element.type === 'entrance' && element.metadata?.subtype === 'exit' && "border-red-500/50 bg-red-500/10"
                                             )}
                                             style={style}
@@ -438,17 +448,17 @@ export default function FloorMap() {
                                                         <>
                                                             {/* Resize Right */}
                                                             <div
-                                                                className="absolute right-0 top-0 bottom-0 w-2 cursor-e-resize hover:bg-emerald-500/50 z-50 transition-colors"
+                                                                className="absolute right-0 top-0 bottom-0 w-2 cursor-e-resize hover:bg-primary/50 z-50 transition-colors"
                                                                 onMouseDown={(e) => handleInteractionStart(e, element, 'resize', 'e')}
                                                             />
                                                             {/* Resize Bottom */}
                                                             <div
-                                                                className="absolute bottom-0 left-0 right-0 h-2 cursor-s-resize hover:bg-emerald-500/50 z-50 transition-colors"
+                                                                className="absolute bottom-0 left-0 right-0 h-2 cursor-s-resize hover:bg-primary/50 z-50 transition-colors"
                                                                 onMouseDown={(e) => handleInteractionStart(e, element, 'resize', 's')}
                                                             />
                                                             {/* Resize Corner */}
                                                             <div
-                                                                className="absolute bottom-0 right-0 w-3 h-3 cursor-se-resize bg-white/20 hover:bg-emerald-500 z-50 rounded-tl-sm transition-colors"
+                                                                className="absolute bottom-0 right-0 w-3 h-3 cursor-se-resize bg-white/20 hover:bg-primary z-50 rounded-tl-sm transition-colors"
                                                                 onMouseDown={(e) => handleInteractionStart(e, element, 'resize', 'se')}
                                                             />
                                                             {/* Rotate Handle (Top Center outside) */}
@@ -456,7 +466,7 @@ export default function FloorMap() {
                                                                 className="absolute -top-4 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/20 rounded-full cursor-grab hover:bg-amber-500 flex items-center justify-center"
                                                                 onMouseDown={(e) => handleInteractionStart(e, element, 'rotate')}
                                                             >
-                                                                <div className="w-1.5 h-1.5 bg-black rounded-full" />
+                                                                <div className="w-1.5 h-1.5 bg-sidebar rounded-full" />
                                                             </div>
                                                         </>
                                                     )}
@@ -466,28 +476,33 @@ export default function FloorMap() {
                                             {element.type === 'table' && (
                                                 <>
                                                     <div className="relative z-10 text-center">
-                                                        <span className="text-base font-black text-white tracking-tighter uppercase transition-transform duration-500 group-hover:scale-110 block">
+                                                        <span className="text-base font-black text-foreground tracking-tighter uppercase transition-transform duration-500 group-hover:scale-110 block">
                                                             {element.name}
                                                         </span>
                                                     </div>
 
                                                     <div className={cn(
                                                         "absolute inset-1 rounded-xl border border-dashed opacity-20 group-hover:opacity-40 transition-opacity",
-                                                        element.status === 'available' ? "border-emerald-500 animate-[spin_10s_linear_infinite]" :
+                                                        element.status === 'available' ? "border-primary animate-[spin_10s_linear_infinite]" :
                                                             element.status === 'occupied' ? "border-amber-500 animate-[spin_15s_linear_infinite]" :
                                                                 element.status === 'dirty' ? "border-red-500" : "border-white"
                                                     )} />
 
                                                     {/* Table Badges */}
                                                     <div className="absolute top-4 right-4 flex flex-col items-end gap-1">
-                                                        {hasReservation && <div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center animate-pulse"><Calendar className="w-3 h-3 text-white" /></div>}
-                                                        {hasPreOrder && <div className="w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center animate-pulse"><Clock className="w-3 h-3 text-black" /></div>}
+                                                        {hasActiveOrder && (
+                                                            <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/50 animate-bounce transition-all">
+                                                                <Bell className="w-4 h-4 text-foreground" />
+                                                            </div>
+                                                        )}
+                                                        {hasReservation && <div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center shadow-lg"><Calendar className="w-3 h-3 text-foreground" /></div>}
+                                                        {hasPreOrder && <div className="w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center shadow-lg"><Clock className="w-3 h-3 text-black" /></div>}
                                                     </div>
 
                                                     {/* Hover Info */}
-                                                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 z-20">
+                                                    <div className="absolute inset-0 bg-sidebar/80 backdrop-blur-sm flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 z-20">
                                                         <div className="flex flex-col items-center gap-2">
-                                                            <div className="flex items-center gap-1.5 text-[10px] font-black text-white uppercase tracking-widest"><Users className="w-3 h-3 text-emerald-500" />{element.capacity}</div>
+                                                            <div className="flex items-center gap-1.5 text-[10px] font-black text-foreground uppercase tracking-widest"><Users className="w-3 h-3 text-primary" />{element.capacity}</div>
                                                         </div>
                                                     </div>
                                                 </>
@@ -496,13 +511,13 @@ export default function FloorMap() {
                                             {/* --- CONTENT FOR ZONES --- */}
                                             {['kitchen', 'restroom', 'bar', 'entrance'].includes(element.type) && (
                                                 <div className="flex flex-col items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity">
-                                                    <span className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em]">{element.type === 'entrance' ? element.metadata?.subtype || 'DOOR' : element.type}</span>
-                                                    {element.type !== 'entrance' && <span className="text-xs font-black text-white tracking-tight uppercase">{element.name}</span>}
+                                                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">{element.type === 'entrance' ? element.metadata?.subtype || 'DOOR' : element.type}</span>
+                                                    {element.type !== 'entrance' && <span className="text-xs font-black text-foreground tracking-tight uppercase">{element.name}</span>}
                                                     {element.type === 'entrance' && (
                                                         <div className={cn(
                                                             "mt-1 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest",
-                                                            element.metadata?.subtype === 'entry' ? "bg-emerald-500 text-black" :
-                                                                element.metadata?.subtype === 'exit' ? "bg-red-500 text-white" : "bg-white/10 text-white"
+                                                            element.metadata?.subtype === 'entry' ? "bg-primary text-black" :
+                                                                element.metadata?.subtype === 'exit' ? "bg-red-500 text-foreground" : "bg-white/10 text-foreground"
                                                         )}>
                                                             {element.metadata?.subtype === 'entry' ? 'ENTER' : element.metadata?.subtype === 'exit' ? 'EXIT' : 'DOOR'}
                                                         </div>
@@ -515,7 +530,7 @@ export default function FloorMap() {
                                                 <div className="flex gap-1.5 w-full">
                                                     <Button
                                                         size="icon" variant="ghost"
-                                                        className="w-8 h-8 rounded-lg bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white"
+                                                        className="w-8 h-8 rounded-lg bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-foreground"
                                                         onClick={(e) => handleDeleteLocation(element.id, e)}
                                                     >
                                                         <AlertCircle className="w-4 h-4" />
@@ -538,12 +553,12 @@ export default function FloorMap() {
                     )
                 ) : (
                     rooms.length === 0 ? (
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-600 p-12 text-center">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground p-12 text-center">
                             <AlertCircle className="w-12 h-12 mb-4 opacity-20" />
                             <span className="font-black uppercase tracking-[0.2em] text-[10px]">No IRD Infrastructure Detected</span>
                             <Button
                                 variant="ghost"
-                                className="mt-6 text-[10px] font-black uppercase tracking-widest hover:text-emerald-500 transition-colors"
+                                className="mt-6 text-[10px] font-black uppercase tracking-widest hover:text-primary transition-colors"
                                 onClick={async () => {
                                     await supabase.rpc('initialize_sample_locations')
                                     window.location.reload()
@@ -557,32 +572,38 @@ export default function FloorMap() {
                             {rooms.map((room) => {
                                 const hasReservation = reservations.some(r => r.location_id === room.id)
                                 const hasPreOrder = preOrders.some(p => p.location_id === room.id)
+                                const hasActiveOrder = activeOrders.some(o => o.location_id === room.id)
 
                                 return (
                                     <div
                                         key={room.id}
                                         className={cn(
                                             "aspect-square rounded-[32px] border-2 transition-all duration-500 cursor-pointer group shadow-2xl backdrop-blur-xl flex flex-col items-center justify-center relative overflow-hidden",
-                                            room.status === 'available' ? "bg-black/40 border-white/5 hover:border-emerald-500/40 hover:bg-emerald-500/5 shadow-emerald-500/5" :
+                                            room.status === 'available' ? "bg-sidebar/40 border-white/5 hover:border-primary/40 hover:bg-primary/5 shadow-primary/5" :
                                                 room.status === 'occupied' ? "bg-amber-500/10 border-amber-500/20 hover:border-amber-500/40 shadow-amber-500/5" :
                                                     room.status === 'dirty' ? "bg-red-500/10 border-red-500/20 hover:border-red-500/40 shadow-red-500/5" :
-                                                        "bg-black/80 border-white/5"
+                                                        "bg-sidebar/80 border-white/5"
                                         )}
                                         onClick={() => !isEditMode && setSelectedLocation(room)}
                                     >
                                         {/* Status Glow / Ring */}
                                         <div className={cn(
                                             "absolute inset-2 rounded-[24px] border border-dashed opacity-10 group-hover:opacity-30 transition-opacity",
-                                            room.status === 'available' ? "border-emerald-500" :
+                                            room.status === 'available' ? "border-primary" :
                                                 room.status === 'occupied' ? "border-amber-500" :
                                                     room.status === 'dirty' ? "border-red-500" : "border-white"
                                         )} />
 
                                         {/* Top Indicators Badge Container */}
                                         <div className="absolute top-4 right-4 flex flex-col items-end gap-2">
+                                            {hasActiveOrder && (
+                                                <div className="w-10 h-10 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/40 animate-bounce">
+                                                    <Bell className="w-5 h-5 text-foreground" />
+                                                </div>
+                                            )}
                                             {hasReservation && (
                                                 <div className="w-6 h-6 bg-purple-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/40 animate-pulse">
-                                                    <Calendar className="w-3.5 h-3.5 text-white" />
+                                                    <Calendar className="w-3.5 h-3.5 text-foreground" />
                                                 </div>
                                             )}
                                             {hasPreOrder && (
@@ -593,16 +614,16 @@ export default function FloorMap() {
                                         </div>
 
                                         <div className="relative z-10 text-center space-y-1">
-                                            <div className="text-[10px] font-black text-neutral-600 uppercase tracking-[0.3em] group-hover:text-neutral-400 transition-colors">Room</div>
-                                            <div className="text-3xl font-black text-white leading-none tracking-tighter uppercase group-hover:scale-110 transition-transform duration-500">{room.name}</div>
+                                            <div className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em] group-hover:text-muted-foreground transition-colors">Room</div>
+                                            <div className="text-3xl font-black text-foreground leading-none tracking-tighter uppercase group-hover:scale-110 transition-transform duration-500">{room.name}</div>
                                         </div>
 
                                         {/* Hover Revealed Info (Bottom Slide Up) - Only show if NOT in edit mode */}
                                         {!isEditMode && (
-                                            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 z-20">
+                                            <div className="absolute inset-0 bg-sidebar/80 backdrop-blur-sm flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 z-20">
                                                 <div className="flex flex-col items-center gap-3">
-                                                    <div className="flex items-center gap-2 text-xs font-black text-white uppercase tracking-widest">
-                                                        <Users className="w-4 h-4 text-emerald-500" />
+                                                    <div className="flex items-center gap-2 text-xs font-black text-foreground uppercase tracking-widest">
+                                                        <Users className="w-4 h-4 text-primary" />
                                                         CAPACITY: {room.capacity}
                                                     </div>
                                                     {room.status === 'occupied' && (
@@ -620,14 +641,14 @@ export default function FloorMap() {
 
                                         {/* Edit Mode Toolbar Layer */}
                                         {isEditMode && (
-                                            <div className="absolute inset-0 bg-black/90 z-30 flex flex-col items-center justify-center p-6 gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="absolute inset-0 bg-sidebar/90 z-30 flex flex-col items-center justify-center p-6 gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
                                                 <div className="flex items-center justify-between w-full">
                                                     <span className="text-[9px] font-black uppercase tracking-widest text-amber-500">Edit Context</span>
-                                                    <Button size="icon" variant="ghost" className="w-9 h-9 rounded-xl bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-white" onClick={(e) => handleDeleteLocation(room.id, e)}><AlertCircle className="w-5 h-5" /></Button>
+                                                    <Button size="icon" variant="ghost" className="w-9 h-9 rounded-xl bg-red-500/20 text-red-500 hover:bg-red-500 hover:text-foreground" onClick={(e) => handleDeleteLocation(room.id, e)}><AlertCircle className="w-5 h-5" /></Button>
                                                 </div>
 
                                                 <div className="flex flex-col items-center gap-2 w-full">
-                                                    <span className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Capacity: <span className="text-white">{room.capacity}</span></span>
+                                                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Capacity: <span className="text-foreground">{room.capacity}</span></span>
                                                     <div className="grid grid-cols-2 gap-3 w-full">
                                                         <Button variant="ghost" className="h-10 rounded-xl bg-white/5 hover:bg-white/10 text-[9px] font-black uppercase tracking-widest gap-2" onClick={(e) => handleUpdateCapacity(room.id, Math.max(1, room.capacity - 1), e)}><Users className="w-3.5 h-3.5" /> -</Button>
                                                         <Button variant="ghost" className="h-10 rounded-xl bg-white/5 hover:bg-white/10 text-[9px] font-black uppercase tracking-widest gap-2" onClick={(e) => handleUpdateCapacity(room.id, room.capacity + 1, e)}><Users className="w-3.5 h-3.5" /> +</Button>
@@ -645,24 +666,24 @@ export default function FloorMap() {
 
                 {/* Architect Palette Toolbar */}
                 {isEditMode && view === 'floor' && (
-                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 p-2 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl z-40 transition-all duration-500 animate-in slide-in-from-bottom-4">
+                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 p-2 rounded-2xl bg-sidebar/80 backdrop-blur-xl border border-white/10 shadow-2xl z-40 transition-all duration-500 animate-in slide-in-from-bottom-4">
                         <div className="flex items-center gap-1 pr-4 border-r border-white/10 mr-2">
-                            <span className="text-[10px] font-black uppercase text-neutral-500 tracking-widest pl-2">Palette</span>
+                            <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest pl-2">Palette</span>
                         </div>
-                        <Button onClick={() => handleAddLocation('table')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-500 text-neutral-400 group" title="Add Table"><div className="w-5 h-5 rounded-[10px] border-2 border-current transition-transform group-hover:scale-110" /></Button>
-                        <Button onClick={() => handleAddLocation('wall')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-neutral-500/10 hover:text-white text-neutral-400 group" title="Add Wall"><div className="w-6 h-1.5 bg-current rounded-sm transition-transform group-hover:scale-110" /></Button>
-                        <Button onClick={() => handleAddLocation('kitchen')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-amber-500/10 hover:text-amber-500 text-neutral-400 group" title="Add Kitchen"><div className="w-5 h-5 rounded-md border-2 border-dashed border-current transition-transform group-hover:scale-110" /></Button>
-                        <Button onClick={() => handleAddLocation('restroom')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-blue-500/10 hover:text-blue-500 text-neutral-400 group" title="Add Restroom"><div className="w-4 h-4 rounded-sm border border-current flex items-center justify-center text-[8px] font-black scale-110">W</div></Button>
-                        <Button onClick={() => handleAddLocation('entrance', undefined, undefined, 'entry')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-emerald-500/10 hover:text-emerald-500 text-neutral-400 group" title="Add Entry"><div className="w-5 h-5 rounded-md border-2 border-current border-dashed flex items-center justify-center text-[8px] font-black text-emerald-500">IN</div></Button>
-                        <Button onClick={() => handleAddLocation('entrance', undefined, undefined, 'exit')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-red-500/10 hover:text-red-500 text-neutral-400 group" title="Add Exit"><div className="w-5 h-5 rounded-md border-2 border-current border-dashed flex items-center justify-center text-[8px] font-black text-red-500">OUT</div></Button>
-                        <Button onClick={() => handleAddLocation('obstacle')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-red-500/10 hover:text-red-500 text-neutral-400 group" title="Add Obstacle"><div className="w-5 h-5 rounded-md bg-white/10 border border-current flex items-center justify-center"><X className="w-3 h-3" /></div></Button>
+                        <Button onClick={() => handleAddLocation('table')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-primary/10 hover:text-primary text-muted-foreground group" title="Add Table"><div className="w-5 h-5 rounded-[10px] border-2 border-current transition-transform group-hover:scale-110" /></Button>
+                        <Button onClick={() => handleAddLocation('wall')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-muted/10 hover:text-foreground text-muted-foreground group" title="Add Wall"><div className="w-6 h-1.5 bg-current rounded-sm transition-transform group-hover:scale-110" /></Button>
+                        <Button onClick={() => handleAddLocation('kitchen')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-amber-500/10 hover:text-amber-500 text-muted-foreground group" title="Add Kitchen"><div className="w-5 h-5 rounded-md border-2 border-dashed border-current transition-transform group-hover:scale-110" /></Button>
+                        <Button onClick={() => handleAddLocation('restroom')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-blue-500/10 hover:text-blue-500 text-muted-foreground group" title="Add Restroom"><div className="w-4 h-4 rounded-sm border border-current flex items-center justify-center text-[8px] font-black scale-110">W</div></Button>
+                        <Button onClick={() => handleAddLocation('entrance', undefined, undefined, 'entry')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-primary/10 hover:text-primary text-muted-foreground group" title="Add Entry"><div className="w-5 h-5 rounded-md border-2 border-current border-dashed flex items-center justify-center text-[8px] font-black text-primary">IN</div></Button>
+                        <Button onClick={() => handleAddLocation('entrance', undefined, undefined, 'exit')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-red-500/10 hover:text-red-500 text-muted-foreground group" title="Add Exit"><div className="w-5 h-5 rounded-md border-2 border-current border-dashed flex items-center justify-center text-[8px] font-black text-red-500">OUT</div></Button>
+                        <Button onClick={() => handleAddLocation('obstacle')} variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-xl hover:bg-red-500/10 hover:text-red-500 text-muted-foreground group" title="Add Obstacle"><div className="w-5 h-5 rounded-md bg-white/10 border border-current flex items-center justify-center"><X className="w-3 h-3" /></div></Button>
                     </div>
                 )}
 
                 {/* Room Management Toolbar */}
                 {isEditMode && view === 'rooms' && (
-                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 p-2 rounded-2xl bg-black/80 backdrop-blur-xl border border-white/10 shadow-2xl z-40 transition-all duration-500 animate-in slide-in-from-bottom-4">
-                        <Button onClick={() => handleAddLocation('room')} className="h-10 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase text-[10px] tracking-widest group gap-2">
+                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-2 p-2 rounded-2xl bg-sidebar/80 backdrop-blur-xl border border-white/10 shadow-2xl z-40 transition-all duration-500 animate-in slide-in-from-bottom-4">
+                        <Button onClick={() => handleAddLocation('room')} className="h-10 px-6 rounded-xl bg-primary hover:bg-primary text-foreground font-black uppercase text-[10px] tracking-widest group gap-2">
                             <Users className="w-4 h-4" />
                             Add New Room
                         </Button>

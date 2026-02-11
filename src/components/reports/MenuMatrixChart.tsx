@@ -35,9 +35,9 @@ const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
         const data = payload[0].payload
         return (
-            <div className="bg-neutral-900 border border-neutral-800 p-3 rounded-lg shadow-xl">
-                <p className="font-bold text-white mb-1">{data.name}</p>
-                <div className="space-y-1 text-xs text-neutral-400">
+            <div className="bg-card border border-border p-3 rounded-lg shadow-xl">
+                <p className="font-bold text-foreground mb-1">{data.name}</p>
+                <div className="space-y-1 text-xs text-muted-foreground">
                     <p>Type: <span style={{ color: CATEGORY_COLORS[data.category as keyof typeof CATEGORY_COLORS] }}>{data.category}</span></p>
                     <p>Sales: {data.popularity}</p>
                     <p>Profit: ${data.profitability.toFixed(2)}</p>
@@ -61,17 +61,17 @@ export function MenuMatrixChart({ data }: MenuMatrixChartProps) {
     // Dogs: Low Profit, Low Pop
 
     return (
-        <Card className="col-span-2 bg-neutral-900/50 border-neutral-800">
+        <Card className="col-span-2 bg-card/50 border-border">
             <CardHeader>
                 <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-medium text-white flex items-center gap-2">
+                    <CardTitle className="text-lg font-medium text-foreground flex items-center gap-2">
                         Menu Matrix
                         <TooltipProvider>
                             <UITooltip>
                                 <TooltipTrigger>
-                                    <Info className="h-4 w-4 text-neutral-500" />
+                                    <Info className="h-4 w-4 text-muted-foreground" />
                                 </TooltipTrigger>
-                                <TooltipContent className="bg-neutral-900 border-neutral-800 text-neutral-300">
+                                <TooltipContent className="bg-card border-border text-foreground">
                                     <p>Analyze menu performance based on Profit vs. Popularity.</p>
                                 </TooltipContent>
                             </UITooltip>
@@ -123,7 +123,7 @@ export function MenuMatrixChart({ data }: MenuMatrixChartProps) {
                     {Object.entries(CATEGORY_COLORS).map(([name, color]) => (
                         <div key={name} className="flex items-center gap-2">
                             <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
-                            <span className="text-xs text-neutral-400">{name}</span>
+                            <span className="text-xs text-muted-foreground">{name}</span>
                         </div>
                     ))}
                 </div>

@@ -26,7 +26,7 @@ const INTEGRATIONS = {
             name: 'Square',
             description: 'Import menu items, prices, and sales data',
             logo: '/integrations/square.svg',
-            color: 'bg-black',
+            color: 'bg-sidebar',
             status: 'available',
             docsUrl: 'https://developer.squareup.com',
         },
@@ -166,18 +166,18 @@ export default function IntegrationsPage() {
                 <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                            <div className={`w-12 h-12 ${integration.color} rounded-xl flex items-center justify-center text-white font-bold text-lg`}>
+                            <div className={`w-12 h-12 ${integration.color} rounded-xl flex items-center justify-center text-foreground font-bold text-lg`}>
                                 {integration.name.charAt(0)}
                             </div>
                             <div>
-                                <h3 className="font-semibold text-white">{integration.name}</h3>
-                                <p className="text-xs text-neutral-500">{integration.description}</p>
+                                <h3 className="font-semibold text-foreground">{integration.name}</h3>
+                                <p className="text-xs text-muted-foreground">{integration.description}</p>
                             </div>
                         </div>
                         {integration.status === 'coming_soon' ? (
-                            <Badge className="bg-neutral-800 text-neutral-400 text-xs">Coming Soon</Badge>
+                            <Badge className="bg-secondary text-muted-foreground text-xs">Coming Soon</Badge>
                         ) : isConnected ? (
-                            <Badge className="bg-emerald-500/20 text-emerald-500 text-xs">
+                            <Badge className="bg-primary/20 text-primary text-xs">
                                 <CheckCircle2 className="w-3 h-3 mr-1" />
                                 Connected
                             </Badge>
@@ -187,8 +187,8 @@ export default function IntegrationsPage() {
                     {isConnected && (
                         <div className="mb-4 p-3 bg-white/5 rounded-lg">
                             <div className="flex justify-between text-xs">
-                                <span className="text-neutral-500">Last synced</span>
-                                <span className="text-neutral-300">
+                                <span className="text-muted-foreground">Last synced</span>
+                                <span className="text-foreground">
                                     {connection.lastSync
                                         ? new Date(connection.lastSync).toLocaleString()
                                         : 'Never'}
@@ -196,8 +196,8 @@ export default function IntegrationsPage() {
                             </div>
                             {connection.itemCount !== undefined && (
                                 <div className="flex justify-between text-xs mt-1">
-                                    <span className="text-neutral-500">Items imported</span>
-                                    <span className="text-emerald-500 font-medium">{connection.itemCount}</span>
+                                    <span className="text-muted-foreground">Items imported</span>
+                                    <span className="text-primary font-medium">{connection.itemCount}</span>
                                 </div>
                             )}
                         </div>
@@ -207,7 +207,7 @@ export default function IntegrationsPage() {
                         {integration.status === 'coming_soon' ? (
                             <Button
                                 variant="outline"
-                                className="flex-1 border-white/10 text-neutral-500"
+                                className="flex-1 border-white/10 text-muted-foreground"
                                 disabled
                             >
                                 Coming Soon
@@ -218,7 +218,7 @@ export default function IntegrationsPage() {
                                     variant="outline"
                                     onClick={() => handleSync(integration.id)}
                                     disabled={isSyncing}
-                                    className="flex-1 border-white/10 text-neutral-300"
+                                    className="flex-1 border-white/10 text-foreground"
                                 >
                                     <RefreshCw className={`w-4 h-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
                                     {isSyncing ? 'Syncing...' : 'Sync Now'}
@@ -235,7 +235,7 @@ export default function IntegrationsPage() {
                             <Button
                                 onClick={() => handleConnect(integration.id)}
                                 disabled={isConnecting}
-                                className="flex-1 bg-emerald-600 hover:bg-emerald-500"
+                                className="flex-1 bg-primary hover:bg-primary"
                             >
                                 {isConnecting ? (
                                     <>
@@ -254,7 +254,7 @@ export default function IntegrationsPage() {
                             variant="ghost"
                             size="icon"
                             asChild
-                            className="text-neutral-500 hover:text-white"
+                            className="text-muted-foreground hover:text-foreground"
                         >
                             <a href={integration.docsUrl} target="_blank" rel="noopener noreferrer">
                                 <ExternalLink className="w-4 h-4" />
@@ -276,26 +276,26 @@ export default function IntegrationsPage() {
                     </Button>
                 </Link>
                 <div>
-                    <h1 className="text-2xl font-bold text-white">Integrations</h1>
-                    <p className="text-sm text-neutral-500">Connect your existing systems to import data automatically</p>
+                    <h1 className="text-2xl font-bold text-foreground">Integrations</h1>
+                    <p className="text-sm text-muted-foreground">Connect your existing systems to import data automatically</p>
                 </div>
             </div>
 
             {/* CSV Import Card */}
-            <Card className="glass-card border-emerald-500/20">
+            <Card className="glass-card border-primary/20">
                 <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center">
-                                <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                            <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center">
+                                <CheckCircle2 className="w-6 h-6 text-primary" />
                             </div>
                             <div>
-                                <h3 className="font-semibold text-white">CSV/Spreadsheet Upload</h3>
-                                <p className="text-xs text-neutral-500">Import ingredients from any spreadsheet</p>
+                                <h3 className="font-semibold text-foreground">CSV/Spreadsheet Upload</h3>
+                                <p className="text-xs text-muted-foreground">Import ingredients from any spreadsheet</p>
                             </div>
                         </div>
                         <Link href="/pantry/import">
-                            <Button className="bg-emerald-600 hover:bg-emerald-500">
+                            <Button className="bg-primary hover:bg-primary">
                                 Upload File
                             </Button>
                         </Link>
@@ -306,8 +306,8 @@ export default function IntegrationsPage() {
             {/* POS Systems */}
             <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                    <ShoppingCart className="w-5 h-5 text-neutral-500" />
-                    <h2 className="text-lg font-semibold text-white">Point of Sale (POS)</h2>
+                    <ShoppingCart className="w-5 h-5 text-muted-foreground" />
+                    <h2 className="text-lg font-semibold text-foreground">Point of Sale (POS)</h2>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                     {INTEGRATIONS.pos.map(renderIntegrationCard)}
@@ -317,8 +317,8 @@ export default function IntegrationsPage() {
             {/* Accounting */}
             <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                    <Calculator className="w-5 h-5 text-neutral-500" />
-                    <h2 className="text-lg font-semibold text-white">Accounting Software</h2>
+                    <Calculator className="w-5 h-5 text-muted-foreground" />
+                    <h2 className="text-lg font-semibold text-foreground">Accounting Software</h2>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                     {INTEGRATIONS.accounting.map(renderIntegrationCard)}
@@ -328,8 +328,8 @@ export default function IntegrationsPage() {
             {/* Suppliers */}
             <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                    <Truck className="w-5 h-5 text-neutral-500" />
-                    <h2 className="text-lg font-semibold text-white">Suppliers</h2>
+                    <Truck className="w-5 h-5 text-muted-foreground" />
+                    <h2 className="text-lg font-semibold text-foreground">Suppliers</h2>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                     {INTEGRATIONS.suppliers.map(renderIntegrationCard)}
@@ -339,12 +339,12 @@ export default function IntegrationsPage() {
             {/* Help Section */}
             <Card className="glass-card">
                 <CardContent className="p-6 text-center">
-                    <AlertCircle className="w-8 h-8 text-neutral-600 mx-auto mb-3" />
-                    <h3 className="font-medium text-white mb-1">Need a different integration?</h3>
-                    <p className="text-sm text-neutral-500 mb-4">
+                    <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
+                    <h3 className="font-medium text-foreground mb-1">Need a different integration?</h3>
+                    <p className="text-sm text-muted-foreground mb-4">
                         We're always adding new integrations. Let us know what you need.
                     </p>
-                    <Button variant="outline" className="border-white/10 text-neutral-300">
+                    <Button variant="outline" className="border-white/10 text-foreground">
                         Request Integration
                     </Button>
                 </CardContent>

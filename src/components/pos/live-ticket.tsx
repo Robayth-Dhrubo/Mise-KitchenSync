@@ -64,7 +64,7 @@ export default function LiveTicket({ orderId, initialItems = [] }: LiveTicketPro
 
     if (items.length === 0) {
         return (
-            <div className="h-full flex flex-col items-center justify-center text-neutral-600 opacity-30">
+            <div className="h-full flex flex-col items-center justify-center text-muted-foreground opacity-30">
                 <ChefHat className="w-16 h-16 mb-4" />
                 <p className="font-black uppercase tracking-[0.2em] text-sm">Ticket Empty</p>
                 <p className="text-xs font-medium mt-2">Add items from the menu</p>
@@ -80,42 +80,42 @@ export default function LiveTicket({ orderId, initialItems = [] }: LiveTicketPro
                         <div key={course} className="space-y-3">
                             <div className="flex items-center gap-4">
                                 <span className="h-px flex-1 bg-white/10" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">{course}</span>
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{course}</span>
                                 <span className="h-px flex-1 bg-white/10" />
                             </div>
                             {courseItems.map(item => (
-                                <div key={item.id} className="group relative bg-neutral-900 border border-white/5 rounded-xl p-4 hover:border-blue-500/30 transition-all">
+                                <div key={item.id} className="group relative bg-card border border-white/5 rounded-xl p-4 hover:border-blue-500/30 transition-all">
                                     <div className="flex justify-between items-start mb-2">
                                         <div className="pr-8">
-                                            <div className="font-bold text-white text-sm uppercase">{item.recipe?.name}</div>
+                                            <div className="font-bold text-foreground text-sm uppercase">{item.recipe?.name}</div>
                                             {item.notes && <div className="text-xs text-amber-500 italic mt-1">{item.notes}</div>}
                                         </div>
-                                        <div className="text-lg font-black text-white tabular-nums">${(item.unit_price * item.quantity).toFixed(2)}</div>
+                                        <div className="text-lg font-black text-foreground tabular-nums">${(item.unit_price * item.quantity).toFixed(2)}</div>
                                     </div>
 
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-1 bg-black/40 rounded-lg p-1">
+                                        <div className="flex items-center gap-1 bg-sidebar/40 rounded-lg p-1">
                                             <button
                                                 onClick={() => updateQuantity(item.id, item.quantity, -1)}
-                                                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white/10 text-neutral-400 hover:text-white transition-colors"
+                                                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
                                             >
                                                 <Minus className="w-4 h-4" />
                                             </button>
-                                            <div className="w-8 text-center font-black text-white">{item.quantity}</div>
+                                            <div className="w-8 text-center font-black text-foreground">{item.quantity}</div>
                                             <button
                                                 onClick={() => updateQuantity(item.id, item.quantity, 1)}
-                                                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white/10 text-neutral-400 hover:text-white transition-colors"
+                                                className="w-8 h-8 flex items-center justify-center rounded-md hover:bg-white/10 text-muted-foreground hover:text-foreground transition-colors"
                                             >
                                                 <Plus className="w-4 h-4" />
                                             </button>
                                         </div>
                                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className="p-2 text-neutral-500 hover:text-white transition-colors">
+                                            <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
                                                 <Pencil className="w-4 h-4" />
                                             </button>
                                             <button
                                                 onClick={() => deleteItem(item.id)}
-                                                className="p-2 text-neutral-500 hover:text-red-500 transition-colors"
+                                                className="p-2 text-muted-foreground hover:text-red-500 transition-colors"
                                             >
                                                 <Trash2 className="w-4 h-4" />
                                             </button>
@@ -129,10 +129,10 @@ export default function LiveTicket({ orderId, initialItems = [] }: LiveTicketPro
             </div>
 
             {/* Summary Footer */}
-            <div className="p-6 bg-neutral-900 border-t border-white/10">
+            <div className="p-6 bg-card border-t border-white/10">
                 <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm font-bold text-neutral-500 uppercase tracking-widest">Subtotal</span>
-                    <span className="text-3xl font-black text-white tracking-tighter tabular-nums">${subtotal.toFixed(2)}</span>
+                    <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">Subtotal</span>
+                    <span className="text-3xl font-black text-foreground tracking-tighter tabular-nums">${subtotal.toFixed(2)}</span>
                 </div>
             </div>
         </div>

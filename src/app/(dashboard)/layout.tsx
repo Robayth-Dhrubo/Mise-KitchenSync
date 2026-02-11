@@ -9,7 +9,7 @@ export default function DashboardLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className="flex min-h-screen bg-neutral-950">
+        <div className="flex min-h-screen bg-background">
             {/* Left Sidebar - Always visible on lg+ screens */}
             <aside className="hidden lg:block fixed left-0 top-0 w-64 h-screen z-50">
                 <NavContent />

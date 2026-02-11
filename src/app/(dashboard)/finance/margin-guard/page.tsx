@@ -41,10 +41,10 @@ interface MarginAlert {
 // Skeleton component for loading states
 function StatCardSkeleton() {
     return (
-        <Card className="bg-zinc-900/40 border-zinc-800/50 backdrop-blur-xl">
+        <Card className="bg-card/40 border-border/50 backdrop-blur-xl">
             <CardContent className="pt-6">
-                <div className="h-4 w-20 bg-zinc-800 rounded animate-pulse mb-3" />
-                <div className="h-8 w-16 bg-zinc-800 rounded animate-pulse" />
+                <div className="h-4 w-20 bg-secondary rounded animate-pulse mb-3" />
+                <div className="h-8 w-16 bg-secondary rounded animate-pulse" />
             </CardContent>
         </Card>
     )
@@ -52,47 +52,47 @@ function StatCardSkeleton() {
 
 function AlertCardSkeleton() {
     return (
-        <Card className="bg-zinc-900/80 border-zinc-800/50">
+        <Card className="bg-card/80 border-border/50">
             <CardContent className="p-0">
                 <div className="grid grid-cols-1 lg:grid-cols-4 min-h-[160px]">
-                    <div className="p-8 border-r border-zinc-800/50">
+                    <div className="p-8 border-r border-border/50">
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 bg-zinc-800 rounded-lg animate-pulse" />
+                            <div className="w-8 h-8 bg-secondary rounded-lg animate-pulse" />
                             <div className="space-y-2">
-                                <div className="h-5 w-32 bg-zinc-800 rounded animate-pulse" />
-                                <div className="h-3 w-20 bg-zinc-800 rounded animate-pulse" />
+                                <div className="h-5 w-32 bg-secondary rounded animate-pulse" />
+                                <div className="h-3 w-20 bg-secondary rounded animate-pulse" />
                             </div>
                         </div>
                     </div>
-                    <div className="p-8 border-r border-zinc-800/50">
+                    <div className="p-8 border-r border-border/50">
                         <div className="grid grid-cols-2 gap-8">
                             <div className="space-y-2">
-                                <div className="h-3 w-16 bg-zinc-800 rounded animate-pulse" />
-                                <div className="h-8 w-20 bg-zinc-800 rounded animate-pulse" />
+                                <div className="h-3 w-16 bg-secondary rounded animate-pulse" />
+                                <div className="h-8 w-20 bg-secondary rounded animate-pulse" />
                             </div>
                             <div className="space-y-2">
-                                <div className="h-3 w-12 bg-zinc-800 rounded animate-pulse" />
-                                <div className="h-8 w-16 bg-zinc-800 rounded animate-pulse" />
+                                <div className="h-3 w-12 bg-secondary rounded animate-pulse" />
+                                <div className="h-8 w-16 bg-secondary rounded animate-pulse" />
                             </div>
                         </div>
                     </div>
-                    <div className="p-8 border-r border-zinc-800/50">
+                    <div className="p-8 border-r border-border/50">
                         <div className="flex justify-between">
                             <div className="space-y-2">
-                                <div className="h-3 w-20 bg-zinc-800 rounded animate-pulse" />
-                                <div className="h-6 w-16 bg-zinc-800 rounded animate-pulse" />
+                                <div className="h-3 w-20 bg-secondary rounded animate-pulse" />
+                                <div className="h-6 w-16 bg-secondary rounded animate-pulse" />
                             </div>
                             <div className="space-y-2 text-right">
-                                <div className="h-3 w-16 bg-zinc-800 rounded animate-pulse ml-auto" />
-                                <div className="h-8 w-20 bg-zinc-800 rounded animate-pulse" />
+                                <div className="h-3 w-16 bg-secondary rounded animate-pulse ml-auto" />
+                                <div className="h-8 w-20 bg-secondary rounded animate-pulse" />
                             </div>
                         </div>
                     </div>
                     <div className="p-8">
-                        <div className="h-12 w-full bg-zinc-800 rounded animate-pulse mb-3" />
+                        <div className="h-12 w-full bg-secondary rounded animate-pulse mb-3" />
                         <div className="grid grid-cols-2 gap-3">
-                            <div className="h-8 bg-zinc-800 rounded animate-pulse" />
-                            <div className="h-8 bg-zinc-800 rounded animate-pulse" />
+                            <div className="h-8 bg-secondary rounded animate-pulse" />
+                            <div className="h-8 bg-secondary rounded animate-pulse" />
                         </div>
                     </div>
                 </div>
@@ -205,11 +205,11 @@ export default function MarginGuardPage() {
                         <div className="w-10 h-10 bg-amber-500/10 rounded-xl flex items-center justify-center border border-amber-500/20">
                             <ShieldAlert className="w-6 h-6 text-amber-500 animate-pulse" />
                         </div>
-                        <h1 className="text-3xl font-black text-white tracking-tight uppercase font-display">
+                        <h1 className="text-3xl font-black text-foreground tracking-tight uppercase font-display">
                             Margin <span className="text-amber-500">Guard</span>
                         </h1>
                     </div>
-                    <p className="text-zinc-400 max-w-2xl font-medium">
+                    <p className="text-muted-foreground max-w-2xl font-medium">
                         Real-time inflation protection. We detect ingredient price hikes and suggest updates to protect your profit margins.
                     </p>
                 </div>
@@ -218,7 +218,7 @@ export default function MarginGuardPage() {
                     <Button
                         variant="outline"
                         size="sm"
-                        className="bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                        className="bg-card border-border text-muted-foreground hover:text-foreground"
                         onClick={fetchAlerts}
                         disabled={isLoading}
                     >
@@ -238,31 +238,31 @@ export default function MarginGuardPage() {
                     </>
                 ) : (
                     <>
-                        <Card className="bg-zinc-900/40 border-zinc-800/50 backdrop-blur-xl">
+                        <Card className="bg-card/40 border-border/50 backdrop-blur-xl">
                             <CardContent className="pt-6">
                                 <div className="flex items-center justify-between mb-2">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Active Alerts</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Active Alerts</p>
                                     <AlertTriangle className="w-4 h-4 text-amber-500" />
                                 </div>
-                                <h3 className="text-2xl font-black text-white tabular-nums">{alerts.length}</h3>
+                                <h3 className="text-2xl font-black text-foreground tabular-nums">{alerts.length}</h3>
                             </CardContent>
                         </Card>
-                        <Card className="bg-zinc-900/40 border-zinc-800/50 backdrop-blur-xl">
+                        <Card className="bg-card/40 border-border/50 backdrop-blur-xl">
                             <CardContent className="pt-6">
                                 <div className="flex items-center justify-between mb-2">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Avg Margin Impact</p>
-                                    <TrendingUp className="w-4 h-4 text-emerald-500" />
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Avg Margin Impact</p>
+                                    <TrendingUp className="w-4 h-4 text-primary" />
                                 </div>
-                                <h3 className="text-2xl font-black text-white tabular-nums">{avgMarginImpact}</h3>
+                                <h3 className="text-2xl font-black text-foreground tabular-nums">{avgMarginImpact}</h3>
                             </CardContent>
                         </Card>
-                        <Card className="bg-zinc-900/40 border-zinc-800/50 backdrop-blur-xl">
+                        <Card className="bg-card/40 border-border/50 backdrop-blur-xl">
                             <CardContent className="pt-6">
                                 <div className="flex items-center justify-between mb-2">
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Target Margin</p>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Target Margin</p>
                                     <DollarSign className="w-4 h-4 text-blue-500" />
                                 </div>
-                                <h3 className="text-2xl font-black text-white tabular-nums">30%</h3>
+                                <h3 className="text-2xl font-black text-foreground tabular-nums">30%</h3>
                             </CardContent>
                         </Card>
                     </>
@@ -271,7 +271,7 @@ export default function MarginGuardPage() {
 
             {/* Alert Stream */}
             <div className="space-y-4">
-                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500 ml-1">Live Alert Stream</h2>
+                <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Live Alert Stream</h2>
 
                 {isLoading ? (
                     <div className="space-y-6">
@@ -279,10 +279,10 @@ export default function MarginGuardPage() {
                         <AlertCardSkeleton />
                     </div>
                 ) : alerts.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-20 bg-emerald-500/5 rounded-3xl border border-dashed border-emerald-500/20">
-                        <CheckCircle2 className="w-12 h-12 text-emerald-500/40 mb-4" />
-                        <p className="text-emerald-500/60 font-black uppercase tracking-widest text-xs">All Margins Secured</p>
-                        <p className="text-emerald-500/40 text-[10px] mt-2 font-bold uppercase">No inflation impact detected</p>
+                    <div className="flex flex-col items-center justify-center py-20 bg-primary/5 rounded-3xl border border-dashed border-primary/20">
+                        <CheckCircle2 className="w-12 h-12 text-primary/40 mb-4" />
+                        <p className="text-primary/60 font-black uppercase tracking-widest text-xs">All Margins Secured</p>
+                        <p className="text-primary/40 text-[10px] mt-2 font-bold uppercase">No inflation impact detected</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 gap-6">
@@ -311,18 +311,18 @@ const AlertCard = ({ alert, onApply, onIgnore }: {
     const isAtRisk = Number(foodCostPct) > alert.recipe.target_food_cost_pct
 
     return (
-        <Card className="bg-zinc-900/80 border-zinc-800/50 shadow-2xl hover:border-amber-500/30 transition-all duration-500 group overflow-hidden">
+        <Card className="bg-card/80 border-border/50 shadow-2xl hover:border-amber-500/30 transition-all duration-500 group overflow-hidden">
             <CardContent className="p-0">
                 <div className="grid grid-cols-1 lg:grid-cols-4 min-h-[160px]">
                     {/* Impact Info */}
-                    <div className="p-8 border-r border-zinc-800/50 bg-gradient-to-br from-amber-500/5 to-transparent">
+                    <div className="p-8 border-r border-border/50 bg-gradient-to-br from-amber-500/5 to-transparent">
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center border border-zinc-700 overflow-hidden">
-                                <ChefHat className="w-4 h-4 text-zinc-400" />
+                            <div className="w-8 h-8 rounded-lg bg-secondary flex items-center justify-center border border-border overflow-hidden">
+                                <ChefHat className="w-4 h-4 text-muted-foreground" />
                             </div>
                             <div>
-                                <h4 className="text-lg font-black text-white leading-none">{alert.recipe.name}</h4>
-                                <span className="text-[10px] text-zinc-500 font-bold uppercase">Recipe Impact</span>
+                                <h4 className="text-lg font-black text-foreground leading-none">{alert.recipe.name}</h4>
+                                <span className="text-[10px] text-muted-foreground font-bold uppercase">Recipe Impact</span>
                             </div>
                         </div>
                         <div className="space-y-2">
@@ -334,10 +334,10 @@ const AlertCard = ({ alert, onApply, onIgnore }: {
                     </div>
 
                     {/* Margin Metrics */}
-                    <div className="p-8 border-r border-zinc-800/50 flex flex-col justify-center gap-6">
+                    <div className="p-8 border-r border-border/50 flex flex-col justify-center gap-6">
                         <div className="grid grid-cols-2 gap-8">
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2">Food Cost %</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Food Cost %</p>
                                 <div className={cn(
                                     "text-3xl font-black tabular-nums leading-none",
                                     isAtRisk ? "text-red-500" : "text-amber-500"
@@ -346,13 +346,13 @@ const AlertCard = ({ alert, onApply, onIgnore }: {
                                 </div>
                             </div>
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-2">Limit</p>
-                                <div className="text-3xl font-black text-white tabular-nums leading-none">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-2">Limit</p>
+                                <div className="text-3xl font-black text-foreground tabular-nums leading-none">
                                     {alert.recipe.target_food_cost_pct}%
                                 </div>
                             </div>
                         </div>
-                        <div className="w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+                        <div className="w-full h-1 bg-secondary rounded-full overflow-hidden">
                             <div
                                 className={cn("h-full transition-all duration-1000", isAtRisk ? "bg-red-500" : "bg-amber-500")}
                                 style={{ width: `${Math.min(Number(foodCostPct), 100)}%` }}
@@ -361,18 +361,18 @@ const AlertCard = ({ alert, onApply, onIgnore }: {
                     </div>
 
                     {/* Pricing Strategy */}
-                    <div className="p-8 border-r border-zinc-800/50 flex flex-col justify-center bg-zinc-900/40">
+                    <div className="p-8 border-r border-border/50 flex flex-col justify-center bg-card/40">
                         <div className="flex items-center justify-between mb-4">
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Current Price</p>
-                                <p className="text-xl font-black text-zinc-400 underline decoration-red-500/50 decoration-2">${alert.current_menu_price}</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Current Price</p>
+                                <p className="text-xl font-black text-muted-foreground underline decoration-red-500/50 decoration-2">${alert.current_menu_price}</p>
                             </div>
                             <div className="text-center px-4">
-                                <ArrowIcon className="w-5 h-5 text-zinc-700 mx-auto" />
+                                <ArrowIcon className="w-5 h-5 text-muted-foreground mx-auto" />
                             </div>
                             <div className="text-right">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500">Suggested</p>
-                                <p className="text-3xl font-black text-white tabular-nums">${alert.suggested_price}</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-primary">Suggested</p>
+                                <p className="text-3xl font-black text-foreground tabular-nums">${alert.suggested_price}</p>
                             </div>
                         </div>
                     </div>
@@ -380,7 +380,7 @@ const AlertCard = ({ alert, onApply, onIgnore }: {
                     {/* Actions */}
                     <div className="p-8 flex flex-col justify-center gap-3">
                         <Button
-                            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-tighter shadow-lg shadow-emerald-900/20 active:scale-95 transition-all py-6 h-auto text-lg"
+                            className="w-full bg-primary hover:bg-primary text-foreground font-black uppercase tracking-tighter shadow-lg shadow-[#5A4820]/20 active:scale-95 transition-all py-6 h-auto text-lg"
                             onClick={() => onApply(alert)}
                         >
                             <CheckCircle2 className="w-5 h-5 mr-3" />
@@ -389,7 +389,7 @@ const AlertCard = ({ alert, onApply, onIgnore }: {
                         <div className="grid grid-cols-2 gap-3">
                             <Button
                                 variant="ghost"
-                                className="font-black uppercase tracking-widest text-[10px] text-zinc-500 hover:text-white"
+                                className="font-black uppercase tracking-widest text-[10px] text-muted-foreground hover:text-foreground"
                                 onClick={() => onIgnore(alert.id)}
                             >
                                 <XCircle className="w-3 h-3 mr-2" />
@@ -397,7 +397,7 @@ const AlertCard = ({ alert, onApply, onIgnore }: {
                             </Button>
                             <Button
                                 variant="ghost"
-                                className="font-black uppercase tracking-widest text-[10px] text-zinc-500 hover:text-emerald-400"
+                                className="font-black uppercase tracking-widest text-[10px] text-muted-foreground hover:text-primary"
                             >
                                 <Edit3 className="w-3 h-3 mr-2" />
                                 Adjust

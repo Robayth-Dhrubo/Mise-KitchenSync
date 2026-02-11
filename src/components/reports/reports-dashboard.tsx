@@ -126,15 +126,15 @@ export function ReportsDashboard({ salesLogs, recipes }: ReportsDashboardProps) 
         <div className="space-y-8 pb-20">
             {/* Top Stats */}
             <div className="grid gap-6 md:grid-cols-3">
-                <Card className="glass-card shadow-emerald-500/[0.02]">
+                <Card className="glass-card shadow-primary/[0.02]">
                     <CardContent className="p-8">
                         <div className="flex items-center gap-6">
-                            <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/5">
-                                <DollarSign className="w-8 h-8 text-emerald-500" />
+                            <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center shadow-lg shadow-primary/5">
+                                <DollarSign className="w-8 h-8 text-primary" />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-neutral-600 mb-1">Gross Revenue</p>
-                                <h3 className="text-3xl font-black text-white tracking-tighter tabular-nums">${stats.totalSales.toLocaleString()}</h3>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Gross Revenue</p>
+                                <h3 className="text-3xl font-black text-foreground tracking-tighter tabular-nums">${stats.totalSales.toLocaleString()}</h3>
                             </div>
                         </div>
                     </CardContent>
@@ -146,8 +146,8 @@ export function ReportsDashboard({ salesLogs, recipes }: ReportsDashboardProps) 
                                 <TrendingUp className="w-8 h-8 text-blue-500" />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-neutral-600 mb-1">Total Servings</p>
-                                <h3 className="text-3xl font-black text-white tracking-tighter tabular-nums">{stats.totalItemsSold.toLocaleString()}</h3>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Total Servings</p>
+                                <h3 className="text-3xl font-black text-foreground tracking-tighter tabular-nums">{stats.totalItemsSold.toLocaleString()}</h3>
                             </div>
                         </div>
                     </CardContent>
@@ -159,8 +159,8 @@ export function ReportsDashboard({ salesLogs, recipes }: ReportsDashboardProps) 
                                 <Package className="w-8 h-8 text-purple-500" />
                             </div>
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-neutral-600 mb-1">Dish Reach</p>
-                                <h3 className="text-3xl font-black text-white tracking-tighter tabular-nums">{stats.uniqueRecipes} Unique</h3>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Dish Reach</p>
+                                <h3 className="text-3xl font-black text-foreground tracking-tighter tabular-nums">{stats.uniqueRecipes} Unique</h3>
                             </div>
                         </div>
                     </CardContent>
@@ -174,8 +174,8 @@ export function ReportsDashboard({ salesLogs, recipes }: ReportsDashboardProps) 
                 {/* Daily Revenue Chart */}
                 <Card className="glass-card overflow-hidden">
                     <CardHeader className="p-8 border-b border-white/5">
-                        <CardTitle className="text-xl font-black text-white flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                        <CardTitle className="text-xl font-black text-foreground flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                                 <TrendingUp className="w-5 h-5" />
                             </div>
                             Revenue Velocity
@@ -222,7 +222,7 @@ export function ReportsDashboard({ salesLogs, recipes }: ReportsDashboardProps) 
                 {/* Best Sellers Chart */}
                 <Card className="glass-card overflow-hidden">
                     <CardHeader className="p-8 border-b border-white/5">
-                        <CardTitle className="text-xl font-black text-white flex items-center gap-3">
+                        <CardTitle className="text-xl font-black text-foreground flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
                                 <Users className="w-5 h-5" />
                             </div>
@@ -261,7 +261,7 @@ export function ReportsDashboard({ salesLogs, recipes }: ReportsDashboardProps) 
                 {/* Ingredient Usage Chart */}
                 <Card className="glass-card md:col-span-2 overflow-hidden">
                     <CardHeader className="p-8 border-b border-white/5">
-                        <CardTitle className="text-xl font-black text-white flex items-center gap-3">
+                        <CardTitle className="text-xl font-black text-foreground flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-500">
                                 <Package className="w-5 h-5" />
                             </div>

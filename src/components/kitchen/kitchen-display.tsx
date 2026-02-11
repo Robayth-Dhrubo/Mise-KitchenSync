@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils'
-import { Clock, ChefHat, Utensils, Timer, Volume2, CheckSquare } from 'lucide-react'
+import { Clock, ChefHat, Utensils, Timer, Volume2, CheckSquare, ExternalLink } from 'lucide-react'
 import { toast } from 'sonner'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -29,10 +29,10 @@ const statusConfig = {
         next: 'ready',
     },
     ready: {
-        border: 'border-emerald-500/50 ring-2 ring-emerald-500/30 shadow-lg shadow-emerald-500/10',
-        bg: 'bg-emerald-500/5',
-        badge: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30',
-        button: 'bg-emerald-600 hover:bg-emerald-500',
+        border: 'border-primary/50 ring-2 ring-[#997F50]/30 shadow-lg shadow-primary/10',
+        bg: 'bg-primary/5',
+        badge: 'bg-primary/20 text-primary border-primary/30',
+        button: 'bg-primary hover:bg-primary',
         buttonText: 'Delivered',
         next: 'delivered',
     },
@@ -146,9 +146,14 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
         })
 
         // Perform actual DB update
+        const updatePayload: any = { preparation_status: nextStatus }
+        if (nextStatus === 'delivered') {
+            updatePayload.tracking_pin = null
+        }
+
         const { error } = await supabase
             .from('orders')
-            .update({ preparation_status: nextStatus })
+            .update(updatePayload)
             .eq('id', orderId)
 
         if (error) {
@@ -176,20 +181,20 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
         return (
             <div className="space-y-6 relative">
                 {/* Ambient Background Glows */}
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-600/5 rounded-full blur-[140px] -z-10" />
+                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] -z-10" />
 
                 {/* View Toggle */}
                 <div className="flex items-center gap-4">
-                    <div className="flex bg-zinc-900 rounded-lg p-1">
+                    <div className="flex bg-card rounded-lg p-1">
                         <button
                             onClick={() => setViewMode('active')}
-                            className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all bg-zinc-800 text-white shadow")}
+                            className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all bg-secondary text-foreground shadow")}
                         >
                             Active
                         </button>
                         <button
                             onClick={() => setViewMode('history')}
-                            className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all text-zinc-500 hover:text-white")}
+                            className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all text-muted-foreground hover:text-foreground")}
                         >
                             Past Orders
                         </button>
@@ -198,11 +203,11 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
 
                 <div className="min-h-[50vh] flex flex-col items-center justify-center">
                     <div className="text-center">
-                        <div className="w-24 h-24 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-6">
-                            <ChefHat className="w-12 h-12 text-emerald-500" />
+                        <div className="w-24 h-24 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
+                            <ChefHat className="w-12 h-12 text-primary" />
                         </div>
-                        <h2 className="text-2xl font-bold text-white mb-2">Service is Clear</h2>
-                        <p className="text-zinc-500">All caught up. No active orders.</p>
+                        <h2 className="text-2xl font-bold text-foreground mb-2">Service is Clear</h2>
+                        <p className="text-muted-foreground">All caught up. No active orders.</p>
                     </div>
                 </div>
             </div>
@@ -214,22 +219,22 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
             {/* Controls Bar */}
             <div className="flex items-center gap-4">
                 {/* View Toggle */}
-                <div className="flex bg-zinc-900 rounded-lg p-1">
+                <div className="flex bg-card rounded-lg p-1">
                     <button
                         onClick={() => setViewMode('active')}
-                        className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all", viewMode === 'active' ? "bg-zinc-800 text-white shadow" : "text-zinc-500 hover:text-white")}
+                        className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all", viewMode === 'active' ? "bg-secondary text-foreground shadow" : "text-muted-foreground hover:text-foreground")}
                     >
                         Active
                     </button>
                     <button
                         onClick={() => setViewMode('history')}
-                        className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all", viewMode === 'history' ? "bg-zinc-800 text-white shadow" : "text-zinc-500 hover:text-white")}
+                        className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all", viewMode === 'history' ? "bg-secondary text-foreground shadow" : "text-muted-foreground hover:text-foreground")}
                     >
                         History
                     </button>
                 </div>
 
-                <div className="flex items-center gap-2 text-zinc-400 bg-zinc-900 px-4 py-2 rounded-lg ml-auto md:ml-0">
+                <div className="flex items-center gap-2 text-muted-foreground bg-card px-4 py-2 rounded-lg ml-auto md:ml-0">
                     <Clock className="w-4 h-4" />
                     <span className="font-mono text-lg">
                         {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
@@ -238,7 +243,7 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
 
                 <button
                     onClick={() => audioRef.current?.play().catch(() => { })}
-                    className="p-2 text-zinc-500 hover:text-white transition hidden md:block"
+                    className="p-2 text-muted-foreground hover:text-foreground transition hidden md:block"
                     title="Test Sound"
                 >
                     <Volume2 className="w-5 h-5" />
@@ -256,23 +261,23 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
                     // If status is 'delivered', we need config for it
                     if (status === 'delivered') {
                         return (
-                            <div key={order.id} className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-5 opacity-75 grayscale hover:grayscale-0 transition-all">
+                            <div key={order.id} className="bg-card/50 border border-border rounded-2xl p-5 opacity-75 grayscale hover:grayscale-0 transition-all">
                                 <div className="flex justify-between mb-4">
-                                    <span className="font-mono text-xs text-zinc-500">#{order.id.slice(0, 8)}</span>
-                                    <span className="bg-zinc-800 text-zinc-400 px-2 py-1 rounded text-xs uppercase font-bold">Delivered</span>
+                                    <span className="font-mono text-xs text-muted-foreground">#{order.id.slice(0, 8)}</span>
+                                    <span className="bg-secondary text-muted-foreground px-2 py-1 rounded text-xs uppercase font-bold">Delivered</span>
                                 </div>
-                                <h3 className="text-lg font-bold text-zinc-300 mb-2">
+                                <h3 className="text-lg font-bold text-foreground mb-2">
                                     {order.table_or_room ? `Room ${order.table_or_room}` : 'Walk-in'}
                                 </h3>
                                 <ul className="space-y-2 mb-4">
                                     {order.order_items?.map((item: any) => (
-                                        <li key={item.id} className="flex gap-2 text-sm text-zinc-400">
-                                            <span className="font-bold text-zinc-300">{item.quantity}x</span>
-                                            {item.recipe?.name}
+                                        <li key={item.id} className="flex gap-2 text-sm text-muted-foreground">
+                                            <span className="font-bold text-foreground">{item.quantity}x</span>
+                                            {item.recipe?.name || item.recipe_name}
                                         </li>
                                     ))}
                                 </ul>
-                                <div className="text-xs text-zinc-600 flex items-center gap-2">
+                                <div className="text-xs text-muted-foreground flex items-center gap-2">
                                     <CheckSquare className="w-3 h-3" />
                                     <span>Completed {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}</span>
                                 </div>
@@ -286,26 +291,26 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
                         <div
                             key={order.id}
                             className={cn(
-                                "bg-zinc-900 border-2 rounded-2xl overflow-hidden flex flex-col transition-all duration-300",
+                                "bg-card border-2 rounded-2xl overflow-hidden flex flex-col transition-all duration-300",
                                 config.border,
                                 config.bg,
                                 isExiting && "opacity-0 scale-95 translate-y-4"
                             )}
                         >
                             {/* Card Header */}
-                            <div className="p-5 border-b border-zinc-800">
+                            <div className="p-5 border-b border-border">
                                 <div className="flex items-center justify-between mb-3">
-                                    <span className="text-xs font-mono text-zinc-600">#{order.id.slice(0, 8)}</span>
+                                    <span className="text-xs font-mono text-muted-foreground">#{order.id.slice(0, 8)}</span>
                                     <span className={cn("text-xs font-bold uppercase px-2.5 py-1 rounded-full border", config.badge)}>
                                         {status}
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                        <Utensils className="w-5 h-5 text-zinc-500" />
+                                    <h3 className="text-xl font-bold text-foreground flex items-center gap-2">
+                                        <Utensils className="w-5 h-5 text-muted-foreground" />
                                         {order.table_or_room ? `Room ${order.table_or_room}` : 'Walk-in'}
                                     </h3>
-                                    <div className="flex items-center gap-1.5 text-xs text-zinc-500">
+                                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                         <Timer className="w-3.5 h-3.5" />
                                         {formatDistanceToNow(new Date(order.created_at), { addSuffix: true })}
                                     </div>
@@ -317,11 +322,11 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
                                 <ul className="space-y-3">
                                     {order.order_items?.map((item: any) => (
                                         <li key={item.id} className="flex items-start gap-3">
-                                            <span className="w-7 h-7 rounded-lg bg-zinc-800 flex items-center justify-center text-sm font-bold text-white shrink-0">
+                                            <span className="w-7 h-7 rounded-lg bg-secondary flex items-center justify-center text-sm font-bold text-foreground shrink-0">
                                                 {item.quantity}
                                             </span>
-                                            <span className="text-white font-medium leading-tight pt-1">
-                                                {item.recipe?.name || 'Unknown Item'}
+                                            <span className="text-foreground font-medium leading-tight pt-1">
+                                                {item.recipe?.name || item.recipe_name || 'Unknown Item'}
                                             </span>
                                         </li>
                                     ))}
@@ -329,16 +334,35 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
                             </div>
 
                             {/* Card Footer - Action Button */}
-                            <div className="p-4 bg-black/30">
-                                <button
-                                    onClick={() => updateOrderStatus(order.id, status)}
-                                    className={cn(
-                                        "w-full h-14 rounded-xl text-white font-bold text-lg transition-all active:scale-[0.98]",
-                                        config.button
-                                    )}
-                                >
-                                    {config.buttonText}
-                                </button>
+                            <div className="p-4 bg-sidebar/30">
+                                <div className="space-y-2">
+                                    <button
+                                        onClick={() => updateOrderStatus(order.id, status)}
+                                        className={cn(
+                                            "w-full h-14 rounded-xl text-foreground font-bold text-lg transition-all active:scale-[0.98]",
+                                            config.button
+                                        )}
+                                    >
+                                        {config.buttonText}
+                                    </button>
+
+                                    <div className="flex gap-2">
+                                        <div className="flex-1 h-12 bg-white/5 rounded-2xl border border-white/5 flex items-center justify-center gap-3 px-4 shadow-inner">
+                                            <span className="text-[10px] font-black text-foreground/30 uppercase tracking-[0.2em]">PIN</span>
+                                            <span className="text-sm font-black text-primary font-mono tracking-widest">{order.tracking_pin || '----'}</span>
+                                        </div>
+                                        <a
+                                            href={`/guest/${order.table_or_room}?pin=${order.tracking_pin}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex-1 h-12 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 flex items-center justify-center gap-2 transition-all active:scale-95 group"
+                                            title="View Guest Tracking / Receipt"
+                                        >
+                                            <span className="text-[10px] font-black text-foreground uppercase tracking-[0.2em]">SYNC</span>
+                                            <ExternalLink className="w-3 h-3 text-foreground/40 group-hover:text-primary transition-colors" />
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )

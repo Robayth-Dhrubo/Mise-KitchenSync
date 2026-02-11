@@ -9,8 +9,8 @@ export async function POST(request: Request) {
 
     // Check if user is admin
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        'http://127.0.0.1:54321', // process.env.NEXT_PUBLIC_SUPABASE_URL!
+        'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH', // process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
         {
             cookies: {
                 getAll() {
@@ -50,8 +50,8 @@ export async function POST(request: Request) {
 
     // Use service role client for admin operations
     const serviceClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        'http://127.0.0.1:54321', // process.env.NEXT_PUBLIC_SUPABASE_URL!
+        'sb_secret_N7UND0UgjKTVK-Uodkm0Hg_xSvEMPvz', // process.env.SUPABASE_SERVICE_ROLE_KEY!
         {
             auth: {
                 autoRefreshToken: false,

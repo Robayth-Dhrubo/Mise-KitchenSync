@@ -48,15 +48,15 @@ export default async function ReportsPage() {
         <div className="p-8 space-y-12 relative max-w-7xl mx-auto">
             {/* Ambient Background Glows */}
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-purple-600/5 rounded-full blur-[140px] -z-10" />
-            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-600/5 rounded-full blur-[120px] -z-10" />
+            <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[120px] -z-10" />
 
             <div className="flex items-center gap-4">
-                <div className="p-3 bg-emerald-500/10 rounded-xl">
-                    <BarChart3 className="w-8 h-8 text-emerald-500" />
+                <div className="p-3 bg-primary/10 rounded-xl">
+                    <BarChart3 className="w-8 h-8 text-primary" />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-bold text-white tracking-tight">Analytics</h1>
-                    <p className="text-zinc-500 text-sm mt-1">
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight">Analytics</h1>
+                    <p className="text-muted-foreground text-sm mt-1">
                         Service performance and profit margins
                     </p>
                 </div>

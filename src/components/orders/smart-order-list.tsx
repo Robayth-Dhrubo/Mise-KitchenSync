@@ -324,27 +324,27 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
         return (
             <div className="space-y-6">
                 {/* Empty State with Add Button */}
-                <Card className="bg-neutral-900 border-neutral-800">
+                <Card className="bg-card border-border">
                     <CardContent className="flex flex-col items-center justify-center py-12 text-center">
-                        <CheckCircle2 className="w-12 h-12 text-emerald-500 mb-4" />
-                        <h3 className="text-xl font-bold text-white">All Par Levels Met</h3>
-                        <p className="text-neutral-400 mt-2 mb-6">You have sufficient stock for all ingredients.</p>
+                        <CheckCircle2 className="w-12 h-12 text-primary mb-4" />
+                        <h3 className="text-xl font-bold text-foreground">All Par Levels Met</h3>
+                        <p className="text-muted-foreground mt-2 mb-6">You have sufficient stock for all ingredients.</p>
 
                         <div className="relative">
                             <Button
                                 variant="outline"
-                                className="border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/10"
+                                className="border-primary/20 text-primary hover:bg-primary/10"
                                 onClick={() => setIsAddOpen(!isAddOpen)}
                             >
                                 Manually Add Item
                             </Button>
 
                             {isAddOpen && (
-                                <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-64 bg-neutral-950 border border-neutral-800 rounded-xl shadow-2xl z-50 overflow-hidden">
-                                    <div className="p-2 border-b border-neutral-800">
+                                <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-64 bg-sidebar border border-border rounded-xl shadow-2xl z-50 overflow-hidden">
+                                    <div className="p-2 border-b border-border">
                                         <Input
                                             placeholder="Search ingredients..."
-                                            className="h-8 bg-neutral-900 border-none text-xs"
+                                            className="h-8 bg-card border-none text-xs"
                                             value={itemSearch}
                                             onChange={e => setItemSearch(e.target.value)}
                                             autoFocus
@@ -354,14 +354,14 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
                                         {searchResults.map(i => (
                                             <button
                                                 key={i.id}
-                                                className="w-full text-left px-4 py-2 text-sm text-neutral-400 hover:bg-emerald-500/10 hover:text-emerald-500 transition-colors"
+                                                className="w-full text-left px-4 py-2 text-sm text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
                                                 onClick={() => handleAddItem(i.id)}
                                             >
                                                 {i.name}
                                             </button>
                                         ))}
                                         {searchResults.length === 0 && (
-                                            <div className="p-4 text-xs text-neutral-600 text-center">No items found</div>
+                                            <div className="p-4 text-xs text-muted-foreground text-center">No items found</div>
                                         )}
                                     </div>
                                 </div>
@@ -375,11 +375,11 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
 
     return (
         <div className="space-y-6">
-            <Card className="bg-neutral-900 border-neutral-800">
+            <Card className="bg-card border-border">
                 <CardHeader>
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
-                            <CardTitle className="text-white flex items-center gap-2">
+                            <CardTitle className="text-foreground flex items-center gap-2">
                                 <AlertTriangle className="w-5 h-5 text-amber-500" />
                                 Needs Ordering ({visibleItems.length})
                             </CardTitle>
@@ -390,17 +390,17 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className="border-neutral-700 hover:bg-neutral-800"
+                                    className="border-border hover:bg-secondary"
                                     onClick={() => setIsAddOpen(!isAddOpen)}
                                 >
                                     + Add Item
                                 </Button>
                                 {isAddOpen && (
-                                    <div className="absolute top-full left-0 mt-2 w-96 bg-neutral-900 border border-white/10 rounded-xl shadow-2xl z-[100] overflow-hidden ring-1 ring-black/50">
-                                        <div className="p-3 border-b border-white/5 bg-black/20">
+                                    <div className="absolute top-full left-0 mt-2 w-96 bg-card border border-white/10 rounded-xl shadow-2xl z-[100] overflow-hidden ring-1 ring-black/50">
+                                        <div className="p-3 border-b border-white/5 bg-sidebar/20">
                                             <Input
                                                 placeholder="Search products..."
-                                                className="h-9 bg-black/40 border-white/10 text-white placeholder:text-neutral-500 focus:border-emerald-500/50"
+                                                className="h-9 bg-sidebar/40 border-white/10 text-foreground placeholder:text-muted-foreground focus:border-primary/50"
                                                 value={itemSearch}
                                                 onChange={e => setItemSearch(e.target.value)}
                                                 autoFocus
@@ -416,9 +416,9 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
                                             {searchResults.map(item => (
                                                 <div key={item.id} className="border-b border-white/5 last:border-0">
                                                     {/* Ingredient header */}
-                                                    <div className="px-4 py-2 bg-black/20">
-                                                        <div className="font-bold text-white">{item.name}</div>
-                                                        <div className="text-[10px] uppercase tracking-wider text-neutral-500">{item.category || 'General'}</div>
+                                                    <div className="px-4 py-2 bg-sidebar/20">
+                                                        <div className="font-bold text-foreground">{item.name}</div>
+                                                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{item.category || 'General'}</div>
                                                     </div>
 
                                                     {/* Vendor options */}
@@ -427,24 +427,24 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
                                                             {item.vendorOptions.map((vo, idx) => (
                                                                 <button
                                                                     key={vo.vendorId}
-                                                                    className="w-full text-left px-4 py-2 hover:bg-emerald-500/10 transition-colors flex items-center justify-between group"
+                                                                    className="w-full text-left px-4 py-2 hover:bg-primary/10 transition-colors flex items-center justify-between group"
                                                                     onClick={() => handleAddItem(item.id, vo.vendorId, vo.vendorName, vo.price)}
                                                                 >
                                                                     <div className="flex items-center gap-2">
                                                                         {idx === 0 && (
-                                                                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 uppercase">
+                                                                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-primary/20 text-primary uppercase">
                                                                                 Lowest
                                                                             </span>
                                                                         )}
-                                                                        <span className="text-sm text-neutral-300 group-hover:text-emerald-400">
+                                                                        <span className="text-sm text-foreground group-hover:text-primary">
                                                                             {vo.vendorName}
                                                                         </span>
                                                                     </div>
                                                                     <div className="text-right">
-                                                                        <div className={`font-bold ${idx === 0 ? 'text-emerald-400' : 'text-neutral-400'}`}>
+                                                                        <div className={`font-bold ${idx === 0 ? 'text-primary' : 'text-muted-foreground'}`}>
                                                                             ${vo.price.toFixed(2)}
                                                                         </div>
-                                                                        <div className="text-[10px] text-neutral-600">
+                                                                        <div className="text-[10px] text-muted-foreground">
                                                                             /{vo.unit}
                                                                         </div>
                                                                     </div>
@@ -452,8 +452,8 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
                                                             ))}
                                                         </div>
                                                     ) : (
-                                                        <div className="px-4 py-2 flex items-center justify-between bg-black/10">
-                                                            <div className="text-sm text-neutral-500">No prices yet</div>
+                                                        <div className="px-4 py-2 flex items-center justify-between bg-sidebar/10">
+                                                            <div className="text-sm text-muted-foreground">No prices yet</div>
                                                             <div className="flex gap-2">
                                                                 <Button
                                                                     size="sm"
@@ -480,7 +480,7 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
                                                 </div>
                                             ))}
                                             {searchResults.length === 0 && (
-                                                <div className="p-8 text-sm text-neutral-500 text-center">
+                                                <div className="p-8 text-sm text-muted-foreground text-center">
                                                     {itemSearch ? 'No matching products.' : 'Start typing to search...'}
                                                 </div>
                                             )}
@@ -494,15 +494,15 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
                                 variant="ghost"
                                 size="sm"
                                 onClick={handleReset}
-                                className="text-neutral-500 hover:text-white"
+                                className="text-muted-foreground hover:text-foreground"
                                 title="Reset to default suggestions"
                             >
                                 <RefreshCw className="w-4 h-4" />
                             </Button>
 
-                            <div className="text-right pl-4 border-l border-neutral-800">
-                                <div className="text-xs text-neutral-400">Estimated Cost</div>
-                                <div className="text-xl font-bold text-emerald-400">${totalCost.toLocaleString()}</div>
+                            <div className="text-right pl-4 border-l border-border">
+                                <div className="text-xs text-muted-foreground">Estimated Cost</div>
+                                <div className="text-xl font-bold text-primary">${totalCost.toLocaleString()}</div>
                             </div>
                         </div>
                     </div>
@@ -510,13 +510,13 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
                 <CardContent>
                     <Table>
                         <TableHeader>
-                            <TableRow className="border-neutral-800 hover:bg-transparent">
-                                <TableHead className="text-neutral-400">Ingredient</TableHead>
-                                <TableHead className="text-neutral-400">Vendor</TableHead>
-                                <TableHead className="text-neutral-400">Stock / Par</TableHead>
-                                <TableHead className="text-neutral-400 w-[120px]">Order Qty</TableHead>
-                                <TableHead className="text-neutral-400 text-right">Unit Price</TableHead>
-                                <TableHead className="text-neutral-400 text-right">Line Total</TableHead>
+                            <TableRow className="border-border hover:bg-transparent">
+                                <TableHead className="text-muted-foreground">Ingredient</TableHead>
+                                <TableHead className="text-muted-foreground">Vendor</TableHead>
+                                <TableHead className="text-muted-foreground">Stock / Par</TableHead>
+                                <TableHead className="text-muted-foreground w-[120px]">Order Qty</TableHead>
+                                <TableHead className="text-muted-foreground text-right">Unit Price</TableHead>
+                                <TableHead className="text-muted-foreground text-right">Line Total</TableHead>
                                 <TableHead className="w-[50px]"></TableHead>
                             </TableRow>
                         </TableHeader>
@@ -528,46 +528,46 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
                                 const lineTotal = qty * unitPrice
 
                                 return (
-                                    <TableRow key={item.id} className="border-neutral-800 hover:bg-neutral-800/50 group">
-                                        <TableCell className="font-medium text-white">
+                                    <TableRow key={item.id} className="border-border hover:bg-secondary/50 group">
+                                        <TableCell className="font-medium text-foreground">
                                             {item.name}
-                                            <div className="text-xs text-neutral-500">{item.purchase_unit}</div>
+                                            <div className="text-xs text-muted-foreground">{item.purchase_unit}</div>
                                         </TableCell>
                                         <TableCell>
                                             <Badge
                                                 variant="outline"
-                                                className={`text-xs ${vendorInfo?.vendorId ? 'border-emerald-500/30 text-emerald-400' : 'border-neutral-700 text-neutral-500'}`}
+                                                className={`text-xs ${vendorInfo?.vendorId ? 'border-primary/30 text-primary' : 'border-border text-muted-foreground'}`}
                                             >
                                                 {vendorInfo?.vendorName || 'Direct'}
                                             </Badge>
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
-                                                <span className={(item.current_stock ?? 0) < (item.par_level || 5) ? "text-red-400 font-bold" : "text-emerald-400 font-bold"}>
+                                                <span className={(item.current_stock ?? 0) < (item.par_level || 5) ? "text-red-400 font-bold" : "text-primary font-bold"}>
                                                     {item.current_stock ?? 0}
                                                 </span>
-                                                <span className="text-neutral-600">/</span>
-                                                <span className="text-neutral-300">{item.par_level || 5}</span>
+                                                <span className="text-muted-foreground">/</span>
+                                                <span className="text-foreground">{item.par_level || 5}</span>
                                             </div>
                                         </TableCell>
                                         <TableCell>
                                             <Input
                                                 type="number"
-                                                className="bg-neutral-950 border-neutral-700 text-white w-20"
+                                                className="bg-sidebar border-border text-foreground w-20"
                                                 value={qty}
                                                 onChange={(e) => handleQuantityChange(item.id, e.target.value)}
                                             />
                                         </TableCell>
-                                        <TableCell className="text-right text-neutral-400">
+                                        <TableCell className="text-right text-muted-foreground">
                                             ${unitPrice.toFixed(2)}
                                         </TableCell>
-                                        <TableCell className="text-right font-bold text-white">
+                                        <TableCell className="text-right font-bold text-foreground">
                                             ${lineTotal.toLocaleString()}
                                         </TableCell>
                                         <TableCell>
                                             <button
                                                 onClick={() => handleRemoveItem(item.id)}
-                                                className="opacity-0 group-hover:opacity-100 p-2 text-neutral-600 hover:text-red-500 transition-all"
+                                                className="opacity-0 group-hover:opacity-100 p-2 text-muted-foreground hover:text-red-500 transition-all"
                                                 title="Remove from order"
                                             >
                                                 &times;
@@ -584,7 +584,7 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
             <div className="flex justify-end">
                 <Button
                     size="lg"
-                    className="bg-emerald-600 hover:bg-emerald-500 text-white gap-2"
+                    className="bg-primary hover:bg-primary text-foreground gap-2"
                     onClick={() => sendOrderMutation.mutate()}
                     disabled={sendOrderMutation.isPending}
                 >
@@ -595,7 +595,7 @@ export function SmartOrderList({ ingredients, vendors, vendorProducts, activeOrd
 
             {/* Vendor Price Management Dialog */}
             <Dialog open={!!managePricesItem} onOpenChange={(open) => !open && setManagePricesItem(null)}>
-                <DialogContent className="bg-neutral-900 border-neutral-800 text-white max-w-2xl">
+                <DialogContent className="bg-card border-border text-foreground max-w-2xl">
                     {managePricesItem && (
                         <VendorPriceManager
                             ingredient={managePricesItem}

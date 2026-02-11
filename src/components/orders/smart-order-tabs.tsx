@@ -15,16 +15,16 @@ interface SmartOrderTabsProps {
 export function SmartOrderTabs({ ingredients, history, vendors, vendorProducts }: SmartOrderTabsProps) {
     return (
         <Tabs defaultValue="new" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8 bg-neutral-900 border border-white/5">
+            <TabsList className="grid w-full grid-cols-2 mb-8 bg-card border border-white/5">
                 <TabsTrigger
                     value="new"
-                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white uppercase font-bold tracking-widest"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-foreground uppercase font-bold tracking-widest"
                 >
                     New Order
                 </TabsTrigger>
                 <TabsTrigger
                     value="history"
-                    className="data-[state=active]:bg-emerald-600 data-[state=active]:text-white uppercase font-bold tracking-widest"
+                    className="data-[state=active]:bg-primary data-[state=active]:text-foreground uppercase font-bold tracking-widest"
                 >
                     Order History
                 </TabsTrigger>

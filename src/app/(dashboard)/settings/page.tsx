@@ -88,7 +88,7 @@ export default function SettingsPage() {
     if (isLoading) {
         return (
             <div className="flex items-center justify-center py-20">
-                <Loader2 className="w-8 h-8 animate-spin text-emerald-500" />
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
             </div>
         )
     }
@@ -97,35 +97,35 @@ export default function SettingsPage() {
         <div className="p-8 space-y-6 max-w-2xl mx-auto">
             {/* Header */}
             <div className="flex items-center gap-4">
-                <div className="p-3 bg-emerald-500/10 rounded-xl">
-                    <SettingsIcon className="w-8 h-8 text-emerald-500" />
+                <div className="p-3 bg-primary/10 rounded-xl">
+                    <SettingsIcon className="w-8 h-8 text-primary" />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-bold text-white tracking-tight">Settings</h1>
-                    <p className="text-zinc-500 text-sm mt-1">Manage your account and restaurant preferences</p>
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight">Settings</h1>
+                    <p className="text-muted-foreground text-sm mt-1">Manage your account and restaurant preferences</p>
                 </div>
             </div>
 
             {/* Account Info */}
-            <Card className="bg-neutral-900/50 border-neutral-800">
+            <Card className="bg-card/50 border-border">
                 <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                        <User className="w-5 h-5 text-emerald-500" />
+                    <CardTitle className="text-foreground flex items-center gap-2">
+                        <User className="w-5 h-5 text-primary" />
                         Account
                     </CardTitle>
-                    <CardDescription className="text-neutral-500">
+                    <CardDescription className="text-muted-foreground">
                         Your account information
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
                         <div>
-                            <Label className="text-neutral-400 text-sm">Email</Label>
-                            <p className="text-white font-medium">{user?.email}</p>
+                            <Label className="text-muted-foreground text-sm">Email</Label>
+                            <p className="text-foreground font-medium">{user?.email}</p>
                         </div>
                         <div>
-                            <Label className="text-neutral-400 text-sm">Account Role</Label>
-                            <p className="text-white font-medium capitalize">{profile?.role || 'Chef'}</p>
+                            <Label className="text-muted-foreground text-sm">Account Role</Label>
+                            <p className="text-foreground font-medium capitalize">{profile?.role || 'Chef'}</p>
                         </div>
                     </div>
                 </CardContent>
@@ -133,31 +133,31 @@ export default function SettingsPage() {
 
             {/* Restaurant Settings */}
             <form onSubmit={handleSubmit}>
-                <Card className="bg-neutral-900/50 border-neutral-800">
+                <Card className="bg-card/50 border-border">
                     <CardHeader>
-                        <CardTitle className="text-white flex items-center gap-2">
-                            <Building2 className="w-5 h-5 text-emerald-500" />
+                        <CardTitle className="text-foreground flex items-center gap-2">
+                            <Building2 className="w-5 h-5 text-primary" />
                             Restaurant
                         </CardTitle>
-                        <CardDescription className="text-neutral-500">
+                        <CardDescription className="text-muted-foreground">
                             Configure your restaurant details
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
-                            <Label className="text-neutral-300">Restaurant Name</Label>
+                            <Label className="text-foreground">Restaurant Name</Label>
                             <Input
                                 value={formData.restaurant_name}
                                 onChange={(e) => setFormData({ ...formData, restaurant_name: e.target.value })}
                                 placeholder="Your Restaurant Name"
-                                className="bg-neutral-800/50 border-neutral-700 text-white"
+                                className="bg-secondary/50 border-border text-foreground"
                             />
                         </div>
 
-                        <Separator className="bg-neutral-800" />
+                        <Separator className="bg-secondary" />
 
                         <div className="space-y-2">
-                            <Label className="text-neutral-300 flex items-center gap-2">
+                            <Label className="text-foreground flex items-center gap-2">
                                 <DollarSign className="w-4 h-4" />
                                 Currency Symbol
                             </Label>
@@ -166,9 +166,9 @@ export default function SettingsPage() {
                                 onChange={(e) => setFormData({ ...formData, currency_symbol: e.target.value })}
                                 placeholder="$"
                                 maxLength={3}
-                                className="bg-neutral-800/50 border-neutral-700 text-white w-24"
+                                className="bg-secondary/50 border-border text-foreground w-24"
                             />
-                            <p className="text-sm text-neutral-500">
+                            <p className="text-sm text-muted-foreground">
                                 This symbol will be used throughout the app (e.g., $, €, £)
                             </p>
                         </div>
@@ -179,7 +179,7 @@ export default function SettingsPage() {
                     <Button
                         type="submit"
                         disabled={updateMutation.isPending}
-                        className="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600"
+                        className="bg-gradient-to-r from-[#997F50] to-[#7A6330] hover:from-[#997F50] hover:to-[#997F50]"
                     >
                         {updateMutation.isPending ? (
                             <>
@@ -197,22 +197,22 @@ export default function SettingsPage() {
             </form>
 
             {/* App Info */}
-            <Card className="bg-neutral-900/50 border-neutral-800">
+            <Card className="bg-card/50 border-border">
                 <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                        <SettingsIcon className="w-5 h-5 text-emerald-500" />
+                    <CardTitle className="text-foreground flex items-center gap-2">
+                        <SettingsIcon className="w-5 h-5 text-primary" />
                         About Mise
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                            <span className="text-neutral-500">Version</span>
-                            <span className="text-neutral-300">1.0.0</span>
+                            <span className="text-muted-foreground">Version</span>
+                            <span className="text-foreground">1.0.0</span>
                         </div>
                         <div className="flex justify-between">
-                            <span className="text-neutral-500">Tagline</span>
-                            <span className="text-neutral-300">The Operating System for Profitable Service Operations</span>
+                            <span className="text-muted-foreground">Tagline</span>
+                            <span className="text-foreground">The Operating System for Profitable Service Operations</span>
                         </div>
                     </div>
                 </CardContent>

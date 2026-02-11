@@ -89,7 +89,7 @@ export default async function RecipeDetailPage({
     function getMarginBadge(marginStatus: string) {
         switch (marginStatus) {
             case 'excellent':
-                return { bg: 'bg-emerald-900/50', text: 'text-emerald-400', border: 'border-emerald-600', icon: TrendingUp }
+                return { bg: 'bg-[#5A4820]/50', text: 'text-primary', border: 'border-primary', icon: TrendingUp }
             case 'good':
                 return { bg: 'bg-blue-900/50', text: 'text-blue-400', border: 'border-blue-600', icon: TrendingUp }
             case 'warning':
@@ -97,7 +97,7 @@ export default async function RecipeDetailPage({
             case 'danger':
                 return { bg: 'bg-red-900/50', text: 'text-red-400', border: 'border-red-600', icon: TrendingDown }
             default:
-                return { bg: 'bg-zinc-800', text: 'text-zinc-400', border: 'border-zinc-600', icon: Minus }
+                return { bg: 'bg-secondary', text: 'text-muted-foreground', border: 'border-border', icon: Minus }
         }
     }
 
@@ -105,15 +105,15 @@ export default async function RecipeDetailPage({
     const MarginIcon = marginBadge?.icon || Minus
 
     return (
-        <div className="min-h-screen bg-zinc-950 text-white">
+        <div className="min-h-screen bg-sidebar text-foreground">
             {/* Header */}
-            <header className="border-b border-zinc-800 bg-zinc-900/50 backdrop-blur-sm sticky top-0 z-50">
+            <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
                 <div className="max-w-5xl mx-auto px-6 py-4 flex items-center gap-4">
-                    <Link href="/menu" className="text-zinc-400 hover:text-white transition">
+                    <Link href="/menu" className="text-muted-foreground hover:text-foreground transition">
                         <ChevronLeft className="w-5 h-5" />
                     </Link>
                     <div className="flex items-center gap-3">
-                        <ChefHat className="w-7 h-7 text-emerald-500" />
+                        <ChefHat className="w-7 h-7 text-primary" />
                         <h1 className="text-xl font-bold">Recipe Bible</h1>
                     </div>
                 </div>
@@ -121,21 +121,21 @@ export default async function RecipeDetailPage({
 
             <main className="max-w-5xl mx-auto px-6 py-8">
                 {/* Hero Section */}
-                <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-8 mb-8">
+                <div className="bg-card border border-border rounded-2xl p-8 mb-8">
                     <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
                         <div>
                             {recipe.category && (
-                                <span className="text-xs font-medium text-emerald-400 bg-emerald-900/30 px-2 py-1 rounded mb-3 inline-block">
+                                <span className="text-xs font-medium text-primary bg-[#5A4820]/30 px-2 py-1 rounded mb-3 inline-block">
                                     {recipe.category}
                                 </span>
                             )}
                             <h1 className="text-3xl font-bold mb-2">{recipe.name}</h1>
                             {recipe.description && (
-                                <p className="text-zinc-400 max-w-lg">{recipe.description}</p>
+                                <p className="text-muted-foreground max-w-lg">{recipe.description}</p>
                             )}
 
                             {/* Prep/Cook Time */}
-                            <div className="flex items-center gap-4 mt-4 text-sm text-zinc-400">
+                            <div className="flex items-center gap-4 mt-4 text-sm text-muted-foreground">
                                 {recipe.prep_time_minutes && (
                                     <div className="flex items-center gap-1">
                                         <Clock className="w-4 h-4" />
@@ -160,9 +160,9 @@ export default async function RecipeDetailPage({
                         {/* Price & Margin Card */}
                         <div className="flex-shrink-0">
                             <div className="text-center mb-4">
-                                <span className="text-sm text-zinc-400">Menu Price</span>
+                                <span className="text-sm text-muted-foreground">Menu Price</span>
                                 <div className="flex items-center justify-center gap-1">
-                                    <DollarSign className="w-6 h-6 text-emerald-500" />
+                                    <DollarSign className="w-6 h-6 text-primary" />
                                     <span className="text-4xl font-bold">{recipe.menu_price.toFixed(2)}</span>
                                 </div>
                             </div>
@@ -178,20 +178,20 @@ export default async function RecipeDetailPage({
                                     </div>
                                     <div className="grid grid-cols-2 gap-4 text-sm">
                                         <div>
-                                            <span className="text-zinc-400 block">Food Cost</span>
+                                            <span className="text-muted-foreground block">Food Cost</span>
                                             <span className={`font-bold ${marginBadge.text}`}>
                                                 {analysis.food_cost_pct}%
                                             </span>
                                         </div>
                                         <div>
-                                            <span className="text-zinc-400 block">Gross Margin</span>
+                                            <span className="text-muted-foreground block">Gross Margin</span>
                                             <span className={`font-bold ${marginBadge.text}`}>
                                                 ${analysis.gross_margin.toFixed(2)}
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="mt-3 pt-3 border-t border-zinc-700">
-                                        <span className="text-xs text-zinc-400">Plate Cost</span>
+                                    <div className="mt-3 pt-3 border-t border-border">
+                                        <span className="text-xs text-muted-foreground">Plate Cost</span>
                                         <span className={`font-bold ${marginBadge.text} ml-2`}>
                                             ${analysis.total_cost.toFixed(2)}
                                         </span>
@@ -205,9 +205,9 @@ export default async function RecipeDetailPage({
                 {/* Two Column Layout */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     {/* Ingredients */}
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+                    <div className="bg-card border border-border rounded-xl p-6">
                         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-emerald-900/50 rounded-full flex items-center justify-center text-emerald-400 text-sm">
+                            <span className="w-8 h-8 bg-[#5A4820]/50 rounded-full flex items-center justify-center text-primary text-sm">
                                 📦
                             </span>
                             Ingredients
@@ -218,16 +218,16 @@ export default async function RecipeDetailPage({
                                 {recipeItems.map((item: RecipeIngredient) => (
                                     <div
                                         key={item.id}
-                                        className="flex items-center justify-between p-3 bg-zinc-800 rounded-lg"
+                                        className="flex items-center justify-between p-3 bg-secondary rounded-lg"
                                     >
                                         <div>
                                             <span className="font-medium">{item.ingredient?.name || 'Unknown'}</span>
-                                            <span className="text-zinc-400 ml-2 text-sm">
+                                            <span className="text-muted-foreground ml-2 text-sm">
                                                 {item.quantity_needed} {item.unit_used}
                                             </span>
                                         </div>
                                         {item.ingredient?.purchase_price && (
-                                            <span className="text-emerald-400 text-sm">
+                                            <span className="text-primary text-sm">
                                                 ${((item.quantity_needed * item.ingredient.purchase_price) / 10).toFixed(2)}
                                             </span>
                                         )}
@@ -235,14 +235,14 @@ export default async function RecipeDetailPage({
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-zinc-500 text-center py-8">No ingredients added yet</p>
+                            <p className="text-muted-foreground text-center py-8">No ingredients added yet</p>
                         )}
                     </div>
 
                     {/* Cooking Steps */}
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+                    <div className="bg-card border border-border rounded-xl p-6">
                         <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                            <span className="w-8 h-8 bg-emerald-900/50 rounded-full flex items-center justify-center text-emerald-400 text-sm">
+                            <span className="w-8 h-8 bg-[#5A4820]/50 rounded-full flex items-center justify-center text-primary text-sm">
                                 🍳
                             </span>
                             Cooking Steps
@@ -255,19 +255,19 @@ export default async function RecipeDetailPage({
                                         key={step.id}
                                         className="relative pl-8"
                                     >
-                                        <div className="absolute left-0 top-0 w-6 h-6 bg-emerald-600 rounded-full flex items-center justify-center text-xs font-bold">
+                                        <div className="absolute left-0 top-0 w-6 h-6 bg-primary rounded-full flex items-center justify-center text-xs font-bold">
                                             {step.step_number}
                                         </div>
-                                        <div className="bg-zinc-800 rounded-lg p-4">
-                                            <p className="text-zinc-200">{step.instruction}</p>
+                                        <div className="bg-secondary rounded-lg p-4">
+                                            <p className="text-foreground">{step.instruction}</p>
                                             {step.duration_minutes && (
-                                                <div className="flex items-center gap-1 mt-2 text-xs text-zinc-400">
+                                                <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
                                                     <Clock className="w-3 h-3" />
                                                     <span>{step.duration_minutes} min</span>
                                                 </div>
                                             )}
                                             {step.tip && (
-                                                <div className="mt-2 text-xs text-emerald-400 bg-emerald-900/20 px-2 py-1 rounded">
+                                                <div className="mt-2 text-xs text-primary bg-[#5A4820]/20 px-2 py-1 rounded">
                                                     💡 {step.tip}
                                                 </div>
                                             )}
@@ -276,7 +276,7 @@ export default async function RecipeDetailPage({
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-zinc-500 text-center py-8">No cooking steps added yet</p>
+                            <p className="text-muted-foreground text-center py-8">No cooking steps added yet</p>
                         )}
                     </div>
                 </div>

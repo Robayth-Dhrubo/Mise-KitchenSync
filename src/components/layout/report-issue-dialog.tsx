@@ -53,21 +53,21 @@ export function ReportIssueDialog({ children }: { children: React.ReactNode }) {
             <DialogTrigger asChild>
                 {children}
             </DialogTrigger>
-            <DialogContent className="bg-neutral-900 border-white/10 text-white sm:max-w-md">
+            <DialogContent className="bg-card border-white/10 text-foreground sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <Ticket className="w-5 h-5 text-emerald-500" />
+                        <Ticket className="w-5 h-5 text-primary" />
                         Report an Issue
                     </DialogTitle>
-                    <DialogDescription className="text-neutral-400">
+                    <DialogDescription className="text-muted-foreground">
                         Describe the technical or operational issue you are facing.
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4 mt-4">
                     <div className="space-y-2">
-                        <Label className="text-xs text-neutral-400">ISSUE TITLE</Label>
+                        <Label className="text-xs text-muted-foreground">ISSUE TITLE</Label>
                         <Input
-                            className="bg-black/50 border-white/10"
+                            className="bg-sidebar/50 border-white/10"
                             placeholder="e.g. Printer Offline"
                             value={formData.title}
                             onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -76,10 +76,10 @@ export function ReportIssueDialog({ children }: { children: React.ReactNode }) {
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label className="text-xs text-neutral-400">CATEGORY</Label>
+                            <Label className="text-xs text-muted-foreground">CATEGORY</Label>
                             <Select value={formData.category} onValueChange={v => setFormData({ ...formData, category: v })}>
-                                <SelectTrigger className="bg-black/50 border-white/10"><SelectValue /></SelectTrigger>
-                                <SelectContent className="bg-neutral-900 border-white/10">
+                                <SelectTrigger className="bg-sidebar/50 border-white/10"><SelectValue /></SelectTrigger>
+                                <SelectContent className="bg-card border-white/10">
                                     <SelectItem value="hardware">Hardware</SelectItem>
                                     <SelectItem value="software">Software</SelectItem>
                                     <SelectItem value="network">Network/WiFi</SelectItem>
@@ -89,10 +89,10 @@ export function ReportIssueDialog({ children }: { children: React.ReactNode }) {
                             </Select>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-xs text-neutral-400">PRIORITY</Label>
+                            <Label className="text-xs text-muted-foreground">PRIORITY</Label>
                             <Select value={formData.priority} onValueChange={v => setFormData({ ...formData, priority: v })}>
-                                <SelectTrigger className="bg-black/50 border-white/10"><SelectValue /></SelectTrigger>
-                                <SelectContent className="bg-neutral-900 border-white/10">
+                                <SelectTrigger className="bg-sidebar/50 border-white/10"><SelectValue /></SelectTrigger>
+                                <SelectContent className="bg-card border-white/10">
                                     <SelectItem value="low">Low</SelectItem>
                                     <SelectItem value="medium">Medium</SelectItem>
                                     <SelectItem value="high">High</SelectItem>
@@ -102,24 +102,24 @@ export function ReportIssueDialog({ children }: { children: React.ReactNode }) {
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-xs text-neutral-400">LOCATION (Optional)</Label>
+                        <Label className="text-xs text-muted-foreground">LOCATION (Optional)</Label>
                         <Input
-                            className="bg-black/50 border-white/10"
+                            className="bg-sidebar/50 border-white/10"
                             placeholder="e.g. Service Station 1"
                             value={formData.location}
                             onChange={e => setFormData({ ...formData, location: e.target.value })}
                         />
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-xs text-neutral-400">DESCRIPTION</Label>
+                        <Label className="text-xs text-muted-foreground">DESCRIPTION</Label>
                         <Textarea
-                            className="bg-black/50 border-white/10 min-h-[80px]"
+                            className="bg-sidebar/50 border-white/10 min-h-[80px]"
                             placeholder="Details..."
                             value={formData.description}
                             onChange={e => setFormData({ ...formData, description: e.target.value })}
                         />
                     </div>
-                    <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white" disabled={isLoading}>
+                    <Button type="submit" className="w-full bg-primary hover:bg-primary text-foreground" disabled={isLoading}>
                         {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Submit Ticket'}
                     </Button>
                 </form>

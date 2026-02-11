@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { Plus, Minus, ShoppingBag, ChevronRight, Star, Clock, CreditCard, ShieldCheck, ArrowLeft, CheckCircle2, Eye, Zap, ZapOff, Info, Pencil, BookOpen } from 'lucide-react'
+import { Plus, Minus, ShoppingBag, ChevronRight, Star, Clock, CreditCard, ShieldCheck, ArrowLeft, CheckCircle2, Eye, Zap, ZapOff, Info, Pencil, BookOpen, LogOut, Receipt, Download, Share2, Trash2, MapPin, ChefHat, Utensils, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -16,14 +16,16 @@ interface GuestPortalProps {
     recipes: any[]
     room: string
     hotelId: string
+    locationId?: string
+    locationType?: 'table' | 'room'
     isPreview?: boolean
 }
 
-type MenuStep = 'menu' | 'cart' | 'payment' | 'success'
+type MenuStep = 'menu' | 'cart' | 'payment' | 'success' | 'tracking' | 'receipt'
 
 import { DEMO_ASSETS, ASSET_IMAGES } from './menu-data'
 
-export function GuestMenu({ recipes: initialRecipes, room, hotelId, isPreview = false }: GuestPortalProps) {
+export function GuestMenu({ recipes: initialRecipes, room, hotelId, locationId, locationType, isPreview = false }: GuestPortalProps) {
     const router = useRouter()
     const supabase = createClient()
     const [cart, setCart] = useState<Record<string, any>>({})
@@ -33,74 +35,130 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, isPreview = 
     const [activeCategory, setActiveCategory] = useState<string>('all')
     const [showPrintOptions, setShowPrintOptions] = useState(false)
     const [hideRecipesForPrint, setHideRecipesForPrint] = useState(false)
+    const [activeOrders, setActiveOrders] = useState<any[]>([])
+    const [sessionId, setSessionId] = useState<string | null>(null)
+    const [guestName, setGuestName] = useState<string>('')
+    const [recoveryPin, setRecoveryPin] = useState<string>('')
+    const [isRecovering, setIsRecovering] = useState(false)
+    const [unlockedPins, setUnlockedPins] = useState<Set<string>>(new Set())
+    const [selectedOrderForReceipt, setSelectedOrderForReceipt] = useState<any>(null)
+    const [lastTrackingPin, setLastTrackingPin] = useState<string | null>(null)
+
+    // Handle deep-linking via PIN parameter
+    useEffect(() => {
+        if (typeof window === 'undefined') return
+        const params = new URLSearchParams(window.location.search)
+        const pin = params.get('pin')
+
+        if (pin && pin.length === 4 && activeOrders.length === 0) {
+            const syncFromUrl = async () => {
+                const { data } = await supabase
+                    .from('orders')
+                    .select('*, order_items(*, recipe:recipes(name))')
+                    .eq('location_id', locationId)
+                    .eq('tracking_pin', pin)
+                    .neq('preparation_status', 'delivered')
+                    .order('created_at', { ascending: false });
+
+                if (data && data.length > 0) {
+                    setActiveOrders(data);
+                    localStorage.setItem('guest_session_id', data[0].guest_session_id);
+                    setSessionId(data[0].guest_session_id);
+                    setStep('tracking');
+                    toast.success('Sequence Synchronized');
+                }
+            };
+            syncFromUrl();
+        }
+    }, [locationId, supabase, activeOrders.length])
+
+    // Handle Session and Name initialization
+    useEffect(() => {
+        if (typeof window === 'undefined') return
+
+        // Handle Session ID
+        let id = localStorage.getItem('guest_session_id')
+        if (!id) {
+            id = crypto.randomUUID()
+            localStorage.setItem('guest_session_id', id)
+        }
+        setSessionId(id)
+
+        // Handle Guest Name
+        const name = localStorage.getItem('guest_name')
+        if (name) setGuestName(name)
+
+        // Handle Unlocked PINs
+        const stored = localStorage.getItem('unlocked_pins')
+        if (stored) {
+            try {
+                setUnlockedPins(new Set(JSON.parse(stored)))
+            } catch (e) {
+                console.error("Failed to parse unlocked pins")
+            }
+        }
+    }, [])
 
     const handlePrint = (withRecipes: boolean) => {
         setHideRecipesForPrint(!withRecipes)
         setShowPrintOptions(false)
-        // Small delay to allow state update before print
         setTimeout(() => {
             window.print()
-            // Reset after print
             setTimeout(() => setHideRecipesForPrint(false), 500)
         }, 100)
     }
 
-
-    // Realtime subscription - auto-refresh when ingredients or recipes change
+    // Realtime subscription
     useEffect(() => {
         const channel = supabase
             .channel('menu-realtime')
-            .on(
-                'postgres_changes',
-                { event: '*', schema: 'public', table: 'ingredients' },
-                () => {
-                    // Refresh the page to get updated stock data
-                    router.refresh()
-                }
-            )
-            .on(
-                'postgres_changes',
-                { event: '*', schema: 'public', table: 'recipes' },
-                () => {
-                    router.refresh()
-                }
-            )
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'ingredients' }, () => router.refresh())
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'recipes' }, () => router.refresh())
             .subscribe()
 
-        return () => {
-            supabase.removeChannel(channel)
-        }
+        return () => { supabase.removeChannel(channel) }
     }, [supabase, router])
 
-    const toggleAvailability = async (recipe: any) => {
-        const newStatus = !recipe.is_available
-        setIsUpdating(recipe.id)
-        try {
-            const { error } = await supabase.rpc('update_recipe_availability', {
-                p_is_available: newStatus,
-                p_recipe_id: recipe.id
-            })
+    // Subscription for active orders
+    useEffect(() => {
+        if (!locationId || isPreview || !sessionId) return
 
-            if (error) throw error
+        const fetchOrders = async () => {
+            const { data } = await supabase
+                .from('orders')
+                .select('*, order_items(*, recipe:recipes(name))')
+                .eq('location_id', locationId)
+                .or(`guest_session_id.eq.${sessionId},tracking_pin.eq.${sessionId}`)
+                .neq('preparation_status', 'delivered')
+                .neq('preparation_status', 'cancelled')
+                .order('created_at', { ascending: false })
 
-            toast.success(newStatus ? 'Dish reactivated' : 'Dish deactivated')
-            router.refresh()
-        } catch (error: any) {
-            console.error('Error updating availability:', error)
-            toast.error('Sync failed: ' + error.message)
-        } finally {
-            setIsUpdating(null)
+            if (data) setActiveOrders(data)
         }
-    }
 
-    // Normalize properties and filter by availability
+        fetchOrders()
+
+        const channel = supabase
+            .channel(`location-orders-${locationId}`)
+            .on('postgres_changes', {
+                event: '*',
+                schema: 'public',
+                table: 'orders',
+                filter: `location_id=eq.${locationId}`
+            }, (payload) => {
+                fetchOrders();
+            })
+            .subscribe()
+
+        return () => { supabase.removeChannel(channel) }
+    }, [locationId, supabase, isPreview, sessionId])
+
     const recipes = initialRecipes
         .map(r => ({
             ...r,
             image: r.image_url || r.image || ASSET_IMAGES.main,
             category: r.category || 'other',
             is_in_stock: isRecipeInStock(r.recipe_items || []),
-            // Calculate max servings from limiting ingredient
             max_servings: r.recipe_items?.length > 0
                 ? Math.min(...r.recipe_items.map((item: any) =>
                     item.ingredient?.current_stock
@@ -109,9 +167,8 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, isPreview = 
                 ))
                 : 999
         }))
-        // Guest view: hide items that are off air OR sold out
-        // Chef preview: show everything
-        .filter(r => isPreview || (r.is_available !== false && r.is_in_stock))
+        // We show all items, but mark OOS ones visually
+        .filter(r => true)
 
     const categories = ['all', ...Array.from(new Set(recipes.map(r => r.category || 'other')))]
 
@@ -131,6 +188,7 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, isPreview = 
                 quantity: (prev[recipe.id]?.quantity || 0) + 1
             }
         }))
+        toast.success(`Added ${recipe.name}`)
     }
 
     const removeFromCart = (id: string) => {
@@ -145,43 +203,72 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, isPreview = 
         })
     }
 
+    const deleteFromCart = (id: string) => {
+        setCart(prev => {
+            const newCart = { ...prev }
+            delete newCart[id]
+            return newCart
+        })
+        toast.success('Item removed')
+    }
+
     const total = Object.values(cart).reduce((acc, item) => acc + (item.recipe.menu_price * item.quantity), 0)
     const itemCount = Object.values(cart).reduce((acc, item) => acc + item.quantity, 0)
 
     const placeOrder = async () => {
         setIsSubmitting(true)
         try {
-            // Attempt real order creation
+            const pin = Math.floor(1000 + Math.random() * 9000).toString()
+
             const { data: order, error: orderError } = await supabase
                 .from('orders')
                 .insert({
                     user_id: hotelId,
+                    location_id: locationId,
                     table_or_room: room,
+                    guest_name: guestName,
+                    type: locationType === 'room' ? 'room_service' : 'dine_in',
                     source: 'guest',
-                    status: 'paid',
-                    total_amount: total
+                    status: 'paid', // Simulating immediate payment
+                    preparation_status: 'received',
+                    total_amount: total,
+                    guest_session_id: sessionId,
+                    tracking_pin: pin
                 })
                 .select()
                 .single()
 
-            if (orderError) {
-                console.warn('DB Order failed (table missing?), falling back to simulation:', orderError.message);
-                // Simulation mode for demo if tables are missing
-                await new Promise(r => setTimeout(r, 1500));
-            } else {
-                // Create Order Items
-                const items = Object.values(cart).map(item => ({
-                    order_id: order.id,
-                    recipe_id: typeof item.recipe.id === 'string' && item.recipe.id.length < 5 ? null : item.recipe.id, // Handle demo IDs
-                    quantity: item.quantity,
-                    unit_price: item.recipe.menu_price
-                }))
+            if (orderError) throw new Error(orderError.message)
 
-                await supabase.from('order_items').insert(items)
+            const items = Object.values(cart).map(item => ({
+                order_id: order.id,
+                recipe_id: typeof item.recipe.id === 'string' && item.recipe.id.length < 5 ? null : item.recipe.id,
+                quantity: item.quantity,
+                unit_price: item.recipe.menu_price,
+                recipe_name: item.recipe.name
+            }))
+
+            const { error: itemError } = await supabase.from('order_items').insert(items)
+            if (itemError) throw new Error(itemError.message)
+
+            if (locationId) {
+                await supabase.from('locations').update({ status: 'occupied' }).eq('id', locationId)
             }
 
+            // Auto-unlock the newly placed order
+            setLastTrackingPin(pin)
+            const newUnlocked = new Set(unlockedPins)
+            newUnlocked.add(pin)
+            setUnlockedPins(newUnlocked)
+            localStorage.setItem('unlocked_pins', JSON.stringify(Array.from(newUnlocked)))
+
+            // Prepare order object for immediate receipt display
+            const orderWithItems = { ...order, order_items: items.map(i => ({ ...i, recipe: { name: i.recipe_name } })) }
+            setActiveOrders(prev => [orderWithItems, ...prev])
+            setSelectedOrderForReceipt(orderWithItems)
             setStep('success')
-            toast.success('Transaction Secure. Chef is on it.')
+            setCart({}) // Clear cart
+            toast.success('Order Placed Successfully')
         } catch (err: any) {
             toast.error(err.message)
         } finally {
@@ -189,392 +276,494 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, isPreview = 
         }
     }
 
-    if (step === 'success') {
-        return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center p-8 text-center relative overflow-hidden">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-emerald-600/10 rounded-full blur-[120px] -z-10" />
+    // --- Sub-components for Cleaner Render ---
 
-                <div className="w-32 h-32 bg-emerald-500/20 rounded-[40px] flex items-center justify-center mb-8 animate-in zoom-in-50 duration-700 shadow-2xl shadow-emerald-500/20 rotate-6">
-                    <CheckCircle2 className="w-16 h-16 text-emerald-500" />
+    const HeroSection = () => (
+        <div className="relative h-[22vh] min-h-[160px] w-full overflow-hidden">
+            <div className="absolute inset-0 z-0">
+                <img
+                    src={ASSET_IMAGES.hero || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1920&q=80"}
+                    alt="Restaurant Ambiance"
+                    className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent" />
+            </div>
+            <div className="absolute bottom-0 left-0 w-full p-4 md:p-6 z-10">
+                <div className="max-w-7xl mx-auto flex items-end justify-between">
+                    <div>
+                        <div className="flex items-center gap-2 mb-1">
+                            <Badge variant="outline" className="bg-primary/20 text-foreground border-primary/30 backdrop-blur-md uppercase tracking-widest text-[9px] font-bold px-2 py-0.5">
+                                {locationType === 'room' ? 'In-Room Dining' : 'Menu'}
+                            </Badge>
+                            <Badge variant="secondary" className="bg-primary text-primary-foreground uppercase tracking-widest text-[9px] font-bold px-2 py-0.5">
+                                Open
+                            </Badge>
+                        </div>
+                        <h1 className="text-2xl md:text-3xl font-black text-foreground font-display uppercase tracking-tight">
+                            Room {room}
+                        </h1>
+                    </div>
                 </div>
-                <h1 className="text-5xl font-black text-white mb-4 font-display tracking-tighter">Order Secured.</h1>
-                <p className="text-neutral-500 max-w-sm mb-12 font-medium leading-relaxed">
-                    Transaction finalized. Our executive team is now preparing your selection for delivery to <span className="text-emerald-400 font-bold">Station {room}</span>.
-                </p>
-                <div className="space-y-4 w-full max-w-xs">
-                    <Button onClick={() => { setStep('menu'); setCart({}); }} className="w-full h-16 rounded-2xl bg-white/5 border border-white/10 text-white font-black uppercase tracking-widest hover:bg-white/10 transition-all font-display">
-                        New Order
-                    </Button>
+            </div>
+        </div>
+    )
+
+    const TrackingCard = ({ order }: { order: any }) => (
+        <Card className="bg-card/60 border-primary/15 backdrop-blur-md overflow-hidden group hover:border-primary/25 transition-all">
+            <CardContent className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                    <div className="space-y-1">
+                        <p className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest">Order #{order.id.slice(0, 4)}</p>
+                        <Badge className={cn(
+                            "text-[9px] font-black tracking-widest uppercase border-0",
+                            order.preparation_status === 'received' ? "bg-blue-500/20 text-blue-400" :
+                                order.preparation_status === 'preparing' ? "bg-amber-500/20 text-amber-400" :
+                                    order.preparation_status === 'ready' ? "bg-primary/20 text-primary animate-pulse" :
+                                        "bg-muted text-muted-foreground"
+                        )}>
+                            {order.preparation_status}
+                        </Badge>
+                    </div>
+                    <div className="text-right">
+                        <span className="text-xs font-bold text-foreground">${order.total_amount.toFixed(2)}</span>
+                    </div>
+                </div>
+
+                <div className="space-y-3 mb-6">
+                    {order.order_items?.map((item: any, idx: number) => (
+                        <div key={idx} className="flex justify-between text-xs items-center">
+                            <span className="text-foreground/80 font-medium">
+                                <span className="text-primary font-bold mr-2">{item.quantity}x</span>
+                                {item.recipe?.name || item.recipe_name}
+                            </span>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-full bg-primary/10 h-1 rounded-full overflow-hidden mb-4">
+                    <div className={cn(
+                        "h-full transition-all duration-1000 ease-out",
+                        order.preparation_status === 'received' ? "w-1/4 bg-blue-500" :
+                            order.preparation_status === 'preparing' ? "w-2/4 bg-primary" :
+                                order.preparation_status === 'ready' ? "w-full bg-primary" : "w-0"
+                    )} />
+                </div>
+
+                <Button
+                    variant="outline"
+                    className="w-full border-primary/15 hover:bg-primary/10 text-[10px] uppercase font-bold tracking-widest h-8"
+                    onClick={() => {
+                        setSelectedOrderForReceipt(order)
+                        setStep('receipt')
+                    }}
+                >
+                    View Receipt
+                </Button>
+            </CardContent>
+        </Card>
+    )
+
+    // --- Steps Render Logic ---
+
+    if (step === 'receipt' && selectedOrderForReceipt) {
+        // ... (Keep existing receipt logic, simplified for brevity or reused)
+        return (
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 sm:p-8">
+                <Card className="max-w-md w-full bg-card text-foreground p-0 overflow-hidden font-mono shadow-2xl relative">
+                    {/* Receipt Header */}
+                    <div className="p-8 text-center border-b border-black/10 border-dashed">
+                        <div className="flex justify-center mb-4">
+                            <div className="w-12 h-12 bg-sidebar rounded-full flex items-center justify-center">
+                                <ChefHat className="text-foreground w-6 h-6" />
+                            </div>
+                        </div>
+                        <h2 className="text-2xl font-black uppercase tracking-tight mb-1">Mise Kitchen</h2>
+                        <p className="text-xs text-muted-foreground uppercase tracking-widest mb-6">Official Receipt</p>
+
+                        <div className="grid grid-cols-2 gap-4 text-[10px] uppercase font-bold text-muted-foreground">
+                            <div className="text-left">
+                                <span className="block text-muted-foreground font-normal">Date</span>
+                                {new Date(selectedOrderForReceipt.created_at).toLocaleDateString()}
+                            </div>
+                            <div className="text-right">
+                                <span className="block text-muted-foreground font-normal">Order #</span>
+                                {selectedOrderForReceipt.id.slice(0, 8)}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Receipt Items */}
+                    <div className="p-8 bg-background">
+                        <div className="space-y-3">
+                            {selectedOrderForReceipt.order_items?.map((item: any, idx: number) => (
+                                <div key={idx} className="flex justify-between text-xs group">
+                                    <div className="flex gap-3">
+                                        <span className="font-bold">{item.quantity}x</span>
+                                        <span className="uppercase text-[#333]">{item.recipe?.name || item.recipe_name}</span>
+                                    </div>
+                                    <span className="font-bold">${(item.quantity * item.unit_price).toFixed(2)}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-6 pt-6 border-t border-black/10 border-dashed space-y-2">
+                            <div className="flex justify-between text-base font-black uppercase">
+                                <span>Total</span>
+                                <span>${selectedOrderForReceipt.total_amount.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div className="p-4 bg-sidebar text-foreground flex gap-2">
+                        <Button className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 font-bold uppercase text-[10px] tracking-widest" onClick={() => window.print()}>
+                            Print
+                        </Button>
+                        <Button variant="outline" className="flex-1 border-white/20 text-foreground hover:bg-white/10 font-bold uppercase text-[10px] tracking-widest" onClick={() => setStep('menu')}>
+                            Close
+                        </Button>
+                    </div>
+                </Card>
+            </div>
+        )
+    }
+
+    if (step === 'success') {
+        // ... (Keep success screen, minor style tweaks)
+        return (
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6 text-center">
+                <div className="max-w-md w-full space-y-8 animate-in slide-in-from-bottom-8 fade-in duration-700">
+                    <div className="w-24 h-24 bg-primary rounded-full flex items-center justify-center mx-auto shadow-[0_0_40px_rgba(120,93,50,0.4)]">
+                        <CheckCircle2 className="w-12 h-12 text-foreground" />
+                    </div>
+
+                    <div className="space-y-4">
+                        <h1 className="text-4xl md:text-5xl font-black text-foreground font-display uppercase tracking-tight leading-none">
+                            Order<br /><span className="text-primary">Confirmed</span>
+                        </h1>
+                        <p className="text-muted-foreground font-medium">
+                            The kitchen has received your order for <span className="text-foreground font-bold">{room}</span>.
+                        </p>
+                    </div>
+
+                    {(lastTrackingPin || activeOrders[0]?.tracking_pin) && (
+                        <div className="bg-card border border-primary/15 p-6 rounded-2xl">
+                            <p className="text-[10px] font-black text-primary uppercase tracking-widest mb-3">Order PIN</p>
+                            <div className="text-5xl font-black text-foreground font-mono tracking-widest">
+                                {lastTrackingPin || activeOrders[0].tracking_pin}
+                            </div>
+                            <p className="text-[10px] text-muted-foreground/50 mt-3">Save this PIN to track your order on any device.</p>
+                        </div>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <Button onClick={() => setStep('menu')} className="h-12 bg-primary text-foreground hover:bg-primary/90 font-bold uppercase tracking-widest">
+                            Back to Menu
+                        </Button>
+                        <Button onClick={() => setStep('tracking')} variant="outline" className="h-12 border-primary/20 text-foreground hover:bg-primary/10 font-bold uppercase tracking-widest">
+                            Track Order
+                        </Button>
+                    </div>
                 </div>
             </div>
         )
     }
 
+    // MAIN MENU RENDER
     return (
-        <div className="min-h-screen bg-black text-white relative flex flex-col">
-            {/* Ambient background */}
-            <div className="fixed inset-0 pointer-events-none">
-                <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-neutral-600/5 rounded-full blur-[140px]" />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-emerald-600/5 rounded-full blur-[140px]" />
-            </div>
+        <div className="min-h-screen bg-background text-foreground pb-32">
 
-            {/* Header */}
-            <div className="relative sticky top-0 z-30 p-6 bg-black/40 backdrop-blur-3xl border-b border-white/5">
-                <div className="max-w-3xl mx-auto space-y-6">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-4">
-                            {step !== 'menu' && (
-                                <Button variant="ghost" size="icon" onClick={() => setStep(step === 'payment' ? 'cart' : 'menu')} className="w-10 h-10 rounded-xl hover:bg-white/5 mr-2">
-                                    <ArrowLeft className="w-5 h-5 text-neutral-400" />
-                                </Button>
-                            )}
-                            <div className="flex items-center gap-4">
-                                <div className="p-3 bg-emerald-500/10 rounded-xl hidden md:block">
-                                    <BookOpen className="w-8 h-8 text-emerald-500" />
+            {/* Top Navigation Bar */}
+            <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-primary/10">
+                <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        {step !== 'menu' ? (
+                            <Button variant="ghost" size="icon" onClick={() => setStep('menu')} className="hover:bg-primary/10 rounded-full">
+                                <ArrowLeft className="w-5 h-5" />
+                            </Button>
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+                                    <ChefHat className="w-5 h-5 text-foreground" />
                                 </div>
-                                <div>
-                                    <h1 className="text-3xl font-black text-white tracking-tighter font-display leading-none">
-                                        {step === 'menu' ? 'Menu' : step === 'cart' ? 'Your Selection' : 'Secure Vault'}
-                                    </h1>
-                                    <p className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] mt-2">
-                                        {isPreview ? 'Live Menu Preview' : `Station ${room} • Operational`}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {isPreview && (
-                            <div className="flex gap-2">
-                                <div className="relative">
-                                    <Button
-                                        onClick={() => setShowPrintOptions(!showPrintOptions)}
-                                        variant="outline"
-                                        className="h-12 px-6 bg-white/5 border-white/10 text-white font-bold rounded-xl hover:bg-white/10 transition-all print:hidden"
-                                    >
-                                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                                        </svg>
-                                        Print Menu
-                                        <ChevronRight className={cn("w-4 h-4 ml-2 transition-transform", showPrintOptions && "rotate-90")} />
-                                    </Button>
-                                    {showPrintOptions && (
-                                        <div className="absolute top-full mt-2 right-0 bg-black/90 border border-white/10 rounded-xl shadow-xl overflow-hidden z-50 min-w-[200px]">
-                                            <button
-                                                onClick={() => handlePrint(false)}
-                                                className="w-full px-4 py-3 text-left text-sm font-bold text-white hover:bg-white/10 transition-all flex items-center gap-3"
-                                            >
-                                                <ShoppingBag className="w-4 h-4 text-emerald-500" />
-                                                Menu Only
-                                                <span className="text-[10px] text-neutral-500 ml-auto">(Public)</span>
-                                            </button>
-                                            <button
-                                                onClick={() => handlePrint(true)}
-                                                className="w-full px-4 py-3 text-left text-sm font-bold text-white hover:bg-white/10 transition-all flex items-center gap-3 border-t border-white/5"
-                                            >
-                                                <Eye className="w-4 h-4 text-blue-500" />
-                                                With Recipes
-                                                <span className="text-[10px] text-neutral-500 ml-auto">(Internal)</span>
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                                <Link href="/menu/new">
-                                    <Button className="h-12 px-6 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all print:hidden">
-                                        <Plus className="w-4 h-4 mr-2" />
-                                        Add Item
-                                    </Button>
-                                </Link>
+                                <span className="font-display font-bold text-lg tracking-tight hidden sm:block">Mise.</span>
                             </div>
                         )}
                     </div>
 
-                    {step === 'menu' && (
-                        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide no-scrollbar">
-                            {categories.map(cat => (
-                                <Button
-                                    key={cat}
-                                    onClick={() => setActiveCategory(cat)}
-                                    className={cn(
-                                        "h-10 px-6 rounded-full font-black text-[9px] uppercase tracking-widest transition-all",
-                                        activeCategory === cat ? "bg-white text-black" : "bg-white/5 text-neutral-500 hover:text-white"
-                                    )}
-                                >
-                                    {cat}
-                                </Button>
-                            ))}
-                        </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                        {activeOrders.length > 0 && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setStep('tracking')}
+                                className="bg-primary/10 text-primary hover:bg-primary/20 font-bold uppercase text-[10px] tracking-widest"
+                            >
+                                <Clock className="w-3 h-3 mr-2" />
+                                Tracking ({activeOrders.length})
+                            </Button>
+                        )}
+                        {!isPreview && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                    if (confirm('Exit guest session?')) {
+                                        localStorage.removeItem('guest_session_id');
+                                        router.push('/');
+                                    }
+                                }}
+                                className="hover:bg-primary/10 text-muted-foreground hover:text-foreground"
+                            >
+                                <LogOut className="w-5 h-5" />
+                            </Button>
+                        )}
+                    </div>
                 </div>
-            </div>
+            </nav>
 
-            {/* Main scrollable area */}
-            <main className="flex-1 relative z-10 px-6 py-8 max-w-7xl mx-auto w-full pb-32">
+            {/* Scrollable Content */}
+            <main className="pt-16">
                 {step === 'menu' && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                        {filteredRecipes.map((recipe) => (
-                            <Card key={recipe.id} className={cn(
-                                "glass-card border-white/5 overflow-hidden transition-all duration-500 group relative flex flex-col bg-white/[0.02]",
-                                recipe.is_available === false ? "opacity-40 grayscale-[0.5]" : "hover:border-emerald-500/40"
-                            )}>
-                                {/* High-Fidelity Image Header */}
-                                <div className="aspect-[4/3] w-full relative overflow-hidden shrink-0">
-                                    <img src={recipe.image} alt={recipe.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    <>
+                        <HeroSection />
 
-                                    {/* Action Overlays */}
-                                    <div className="absolute top-4 right-4 z-20 flex flex-col gap-1.5 items-end">
-                                        <Badge className="bg-black/60 backdrop-blur-xl border-white/10 text-white font-black tracking-tighter text-lg px-3 py-1 font-display">
-                                            ${recipe.menu_price}
-                                        </Badge>
-                                        {recipe.is_available === false && (
-                                            <Badge className="bg-orange-500/20 text-orange-500 border-0 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md">
-                                                OFF AIR
-                                            </Badge>
+                        {/* Sticky Category Header */}
+                        <div className="sticky top-16 z-40 bg-background/90 backdrop-blur-md border-b border-primary/10 py-4 overflow-x-auto no-scrollbar">
+                            <div className="max-w-7xl mx-auto px-4 flex gap-2">
+                                {categories.map(cat => (
+                                    <button
+                                        key={cat}
+                                        onClick={() => setActiveCategory(cat)}
+                                        className={cn(
+                                            "px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-all",
+                                            activeCategory === cat
+                                                ? "bg-primary text-foreground shadow-lg shadow-primary/20"
+                                                : "bg-primary/5 text-muted-foreground hover:bg-primary/10 hover:text-foreground"
                                         )}
-                                        {!recipe.is_in_stock && recipe.is_available !== false && (
-                                            <Badge className="bg-red-500/20 text-red-500 border-0 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md">
-                                                SOLD OUT
-                                            </Badge>
-                                        )}
-                                        {recipe.is_in_stock && recipe.max_servings <= 5 && recipe.max_servings > 0 && (
-                                            <Badge className="bg-amber-500/20 text-amber-500 border-0 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md">
-                                                Only {recipe.max_servings} Left!
-                                            </Badge>
-                                        )}
-                                    </div>
+                                    >
+                                        {cat}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
 
-                                    {recipe.allergies?.length > 0 && (
-                                        <div className="absolute top-4 left-4 z-20 flex gap-1 flex-wrap max-w-[70%]">
-                                            {recipe.allergies.map((allergy: string) => (
-                                                <Badge key={allergy} variant="outline" className="bg-amber-500/10 backdrop-blur-md border-amber-500/20 text-[7px] uppercase tracking-[0.2em] font-black text-amber-500 px-1.5 py-0.5">
-                                                    {allergy}
-                                                </Badge>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
+                        {/* Menu Grid */}
+                        <div className="max-w-7xl mx-auto px-4 py-8 space-y-12">
+                            {/* Category Groups */}
+                            {(() => {
+                                const sortOrder = ['starters', 'mains', 'desserts', 'drinks', 'other']
+                                const categoriesToShow = activeCategory === 'all'
+                                    ? Array.from(new Set(recipes.map(r => r.category || 'other'))).sort((a, b) => {
+                                        const idxA = sortOrder.indexOf(a)
+                                        const idxB = sortOrder.indexOf(b)
+                                        return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB)
+                                    })
+                                    : [activeCategory]
 
-                                <CardContent className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                                    <div className="space-y-2">
-                                        <div className="flex flex-col">
-                                            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-500 mb-1">{recipe.category}</span>
-                                            <h3 className="text-xl font-black text-white group-hover:text-emerald-400 transition-colors font-display tracking-tight leading-tight">{recipe.name}</h3>
-                                        </div>
-                                        <p className="text-[11px] text-neutral-400 font-medium leading-relaxed line-clamp-2 min-h-[2.5rem]">
-                                            {recipe.description}
-                                        </p>
+                                return categoriesToShow.map(cat => {
+                                    const catRecipes = recipes.filter(r => (r.category || 'other') === cat)
+                                    if (catRecipes.length === 0) return null
 
-
-                                        {isPreview && recipe.recipe_items?.length > 0 && !hideRecipesForPrint && (
-                                            <div className="pt-2 space-y-2 border-t border-white/5 mt-2 print:hidden">
-                                                <div className="flex items-center gap-2 text-[8px] font-black text-neutral-500 uppercase tracking-widest">
-                                                    <Info className="w-3 h-3" />
-                                                    Composition Manifest
-                                                </div>
-                                                <div className="flex flex-wrap gap-1.5">
-                                                    {recipe.recipe_items.map((item: any, idx: number) => (
-                                                        <Badge key={idx} variant="outline" className="bg-white/5 border-white/5 text-[7px] text-neutral-400 font-medium px-1.5 py-0.5 lowercase">
-                                                            {item.quantity_needed}{item.ingredient?.unit} {item.ingredient?.name}
-                                                        </Badge>
-                                                    ))}
-                                                </div>
+                                    return (
+                                        <div key={cat} className="animate-in fade-in duration-500">
+                                            <div className="flex items-center gap-3 mb-4 px-1">
+                                                <h2 className="text-lg font-bold font-display text-foreground uppercase tracking-wide">{cat}</h2>
+                                                <div className="h-px bg-border flex-1" />
+                                                <span className="text-[10px] text-muted-foreground uppercase tracking-widest">{catRecipes.length}</span>
                                             </div>
-                                        )}
 
-                                    </div>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                                                {catRecipes.map(recipe => (
+                                                    <div key={recipe.id} className={cn(
+                                                        "group bg-card rounded-xl overflow-hidden border border-border/50 hover:border-primary/20 transition-all duration-200",
+                                                        !recipe.is_in_stock && "opacity-50"
+                                                    )}>
+                                                        {/* Image */}
+                                                        <div className="relative aspect-[4/3] overflow-hidden">
+                                                            <img
+                                                                src={recipe.image}
+                                                                alt={recipe.name}
+                                                                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                            />
+                                                            {!recipe.is_in_stock && (
+                                                                <div className="absolute inset-0 bg-background/60 flex items-center justify-center backdrop-blur-sm">
+                                                                    <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Sold Out</span>
+                                                                </div>
+                                                            )}
+                                                            <div className="absolute top-2 right-2">
+                                                                <span className="bg-background/80 backdrop-blur-sm text-xs font-bold text-foreground px-2 py-1 rounded-md">
+                                                                    ${recipe.menu_price.toFixed(0)}
+                                                                </span>
+                                                            </div>
+                                                        </div>
 
-                                    <div className="pt-2">
-                                        {isPreview ? (
-                                            <div className="flex flex-col gap-2">
-                                                <div className="grid grid-cols-2 gap-2">
-                                                    <Link href={`/menu/${recipe.id}/edit`} className="w-full">
-                                                        <Button variant="outline" className="w-full bg-white/5 border-white/10 text-white font-black text-[8px] uppercase tracking-widest h-11 rounded-xl hover:bg-white/10 transition-all font-display">
-                                                            <Pencil className="w-3 h-3 mr-2 text-emerald-500" />
-                                                            Edit
-                                                        </Button>
-                                                    </Link>
-                                                    <Link href={`/recipes/${recipe.id}`} className="w-full">
-                                                        <Button variant="outline" className="w-full bg-white/5 border-white/10 text-white font-black text-[8px] uppercase tracking-widest h-11 rounded-xl hover:bg-white/10 transition-all font-display">
-                                                            <Eye className="w-3 h-3 mr-2 text-blue-500" />
-                                                            View Recipe
-                                                        </Button>
-                                                    </Link>
-                                                </div>
-                                                {/* Show SOLD OUT indicator if out of stock */}
-                                                {!recipe.is_in_stock ? (
-                                                    <div className="w-full font-black text-[8px] uppercase tracking-widest h-11 rounded-xl bg-red-600/20 text-red-400 border border-red-500/20 flex items-center justify-center gap-2 font-display">
-                                                        <ZapOff className="w-3 h-3" />
-                                                        Sold Out (Auto)
+                                                        {/* Info */}
+                                                        <div className="p-3">
+                                                            <h3 className="text-sm font-semibold text-foreground leading-tight mb-1 line-clamp-1 group-hover:text-primary transition-colors">
+                                                                {recipe.name}
+                                                            </h3>
+                                                            <p className="text-[11px] text-muted-foreground line-clamp-2 leading-snug mb-2.5">
+                                                                {recipe.description || "Seasonal ingredients, chef's preparation."}
+                                                            </p>
+                                                            <button
+                                                                onClick={() => addToCart(recipe)}
+                                                                disabled={!recipe.is_in_stock}
+                                                                className={cn(
+                                                                    "w-full flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all",
+                                                                    recipe.is_in_stock
+                                                                        ? "bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground active:scale-[0.97]"
+                                                                        : "bg-muted text-muted-foreground cursor-not-allowed"
+                                                                )}
+                                                            >
+                                                                {cart[recipe.id] ? (
+                                                                    <>
+                                                                        <span className="bg-primary text-primary-foreground w-4 h-4 rounded-full flex items-center justify-center text-[8px] font-black">{cart[recipe.id].quantity}</span>
+                                                                        Added
+                                                                    </>
+                                                                ) : (
+                                                                    <>Add <Plus className="w-3 h-3" /></>
+                                                                )}
+                                                            </button>
+                                                        </div>
                                                     </div>
-                                                ) : (
-                                                    <Button
-                                                        onClick={() => toggleAvailability(recipe)}
-                                                        disabled={isUpdating === recipe.id}
-                                                        className={cn(
-                                                            "w-full font-black text-[8px] uppercase tracking-widest h-11 rounded-xl transition-all font-display",
-                                                            recipe.is_available === false
-                                                                ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-                                                                : "bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20"
-                                                        )}
-                                                    >
-                                                        {recipe.is_available === false ? (
-                                                            <Zap className="w-3 h-3 mr-2" />
-                                                        ) : (
-                                                            <ZapOff className="w-3 h-3 mr-2" />
-                                                        )}
-                                                        {recipe.is_available === false ? 'Go Live' : 'Air Off'}
-                                                    </Button>
-                                                )}
+                                                ))}
                                             </div>
-                                        ) : cart[recipe.id] ? (
-                                            <div className="flex items-center justify-between bg-black/40 rounded-2xl border border-white/10 p-1 backdrop-blur-2xl ring-1 ring-emerald-500/20">
-                                                <Button size="icon" variant="ghost" className="h-10 w-10 rounded-xl hover:bg-white/5 hover:text-red-400 transition-colors" onClick={() => removeFromCart(recipe.id)}>
-                                                    <Minus className="w-4 h-4" />
-                                                </Button>
-                                                <span className="text-sm font-black text-emerald-500 tabular-nums">{cart[recipe.id].quantity}</span>
-                                                <Button size="icon" variant="ghost" className="h-10 w-10 rounded-xl hover:bg-white/5 hover:text-emerald-400 transition-colors" onClick={() => addToCart(recipe)}>
-                                                    <Plus className="w-4 h-4" />
-                                                </Button>
-                                            </div>
-                                        ) : (
-                                            <Button
-                                                onClick={() => (recipe.is_available !== false && recipe.is_in_stock) && addToCart(recipe)}
-                                                disabled={recipe.is_available === false || !recipe.is_in_stock}
-                                                className={cn(
-                                                    "w-full bg-white/5 text-white font-black text-[9px] uppercase tracking-[0.2em] h-11 rounded-2xl transition-all font-display duration-300",
-                                                    (recipe.is_available !== false && recipe.is_in_stock) ? "hover:bg-emerald-500 hover:text-black border border-white/10 hover:border-emerald-400 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.1)]" : "opacity-30 cursor-not-allowed border-white/5"
-                                                )}
-                                            >
-                                                {recipe.is_available === false ? 'Unavailable' : !recipe.is_in_stock ? 'Sold Out' : 'Add to Selection'}
-                                            </Button>
-                                        )}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        ))}
+                                        </div>
+                                    )
+                                })
+                            })()}
+                        </div>
+                    </>
+                )}
+
+                {step === 'tracking' && (
+                    <div className="max-w-3xl mx-auto px-4 py-12">
+                        <h2 className="text-3xl font-black font-display text-foreground uppercase tracking-tight mb-8">Active Missions</h2>
+                        {activeOrders.length > 0 ? (
+                            <div className="space-y-6">
+                                {activeOrders.map(order => (
+                                    <TrackingCard key={order.id} order={order} />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-20 border border-primary/10 rounded-3xl bg-primary/5">
+                                <Clock className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                                <p className="text-muted-foreground font-medium">No active orders found.</p>
+                                <Button onClick={() => setStep('menu')} variant="link" className="text-primary">Place an order</Button>
+                            </div>
+                        )}
                     </div>
                 )}
 
-                {
-                    step === 'cart' && (
-                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <section className="space-y-4">
-                                {Object.values(cart).map((item) => (
-                                    <div key={item.recipe.id} className="flex items-center justify-between p-6 bg-white/5 rounded-3xl border border-white/5 relative overflow-hidden group">
-                                        <div className="absolute inset-0 opacity-5 pointer-events-none border-l-4 border-emerald-500" />
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-16 h-16 rounded-2xl overflow-hidden shrink-0 border border-white/10">
-                                                <img src={item.recipe.image} alt="" className="w-full h-full object-cover" />
+                {step === 'cart' && (
+                    <div className="max-w-2xl mx-auto px-4 py-12">
+                        <h2 className="text-3xl font-black font-display text-foreground uppercase tracking-tight mb-8">Your Selection</h2>
+
+                        {itemCount > 0 ? (
+                            <div className="space-y-6">
+                                <div className="space-y-4">
+                                    {Object.values(cart).map((item: any) => (
+                                        <Card key={item.recipe.id} className="bg-primary/5 border-primary/10 overflow-hidden">
+                                            <div className="flex gap-4 p-4">
+                                                <div className="w-20 h-20 bg-muted rounded-lg overflow-hidden shrink-0">
+                                                    <img src={item.recipe.image} alt={item.recipe.name} className="w-full h-full object-cover" />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h4 className="font-bold text-foreground truncate pr-4">{item.recipe.name}</h4>
+                                                        <span className="font-bold text-foreground">${(item.recipe.menu_price * item.quantity).toFixed(2)}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="flex items-center bg-background rounded-lg border border-primary/15">
+                                                            <button
+                                                                onClick={() => removeFromCart(item.recipe.id)}
+                                                                className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                                                            >
+                                                                <Minus className="w-3 h-3" />
+                                                            </button>
+                                                            <span className="w-8 text-center text-sm font-bold">{item.quantity}</span>
+                                                            <button
+                                                                onClick={() => addToCart(item.recipe)}
+                                                                className="w-8 h-8 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                                                            >
+                                                                <Plus className="w-3 h-3" />
+                                                            </button>
+                                                        </div>
+                                                        <button
+                                                            onClick={() => deleteFromCart(item.recipe.id)}
+                                                            className="text-[10px] font-bold uppercase text-muted-foreground/50 hover:text-red-400 transition-colors"
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h4 className="font-black text-white text-lg tracking-tight font-display">{item.recipe.name}</h4>
-                                                <p className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">{item.quantity} units • ${item.recipe.menu_price} ea.</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="font-black text-xl text-white tabular-nums font-display">${(item.recipe.menu_price * item.quantity).toFixed(2)}</p>
-                                        </div>
+                                        </Card>
+                                    ))}
+                                </div>
+
+                                <div className="space-y-4 pt-6 mt-6 border-t border-primary/15">
+                                    <div className="flex justify-between text-sm text-muted-foreground">
+                                        <span>Subtotal</span>
+                                        <span>${total.toFixed(2)}</span>
                                     </div>
-                                ))}
-                            </section>
-
-                            <section className="p-8 bg-black/40 border border-white/5 rounded-[40px] space-y-6 shadow-2xl shadow-emerald-500/5">
-                                <div className="flex justify-between items-center text-neutral-500 font-bold uppercase text-[10px] tracking-[0.2em]">
-                                    <span>Subtotal</span>
-                                    <span className="text-white tabular-nums px-2 py-1 bg-white/5 rounded-lg">${total.toFixed(2)}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-neutral-500 font-bold uppercase text-[10px] tracking-[0.2em]">
-                                    <span>Vault Surcharge</span>
-                                    <span className="text-emerald-500">Exempt</span>
-                                </div>
-                                <div className="h-px bg-white/5" />
-                                <div className="flex justify-between items-end">
-                                    <span className="text-neutral-500 font-black uppercase text-[10px] tracking-[0.3em] pb-1">Total Assets</span>
-                                    <span className="text-4xl font-black text-white tracking-tighter tabular-nums font-display">${total.toFixed(2)}</span>
-                                </div>
-                            </section>
-                        </div>
-                    )
-                }
-
-                {
-                    step === 'payment' && (
-                        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <section className="glass-card border-white/5 p-10 space-y-10 relative overflow-hidden bg-emerald-500/[0.02]">
-                                <div className="absolute bottom-0 right-0 p-10 opacity-5">
-                                    <ShieldCheck className="w-48 h-48 text-emerald-500" />
-                                </div>
-
-                                <div className="space-y-6">
-                                    <div className="flex items-center gap-3">
-                                        <CreditCard className="w-5 h-5 text-emerald-500" />
-                                        <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-500">Liquidity Verification</h3>
+                                    <div className="flex justify-between text-sm text-muted-foreground">
+                                        <span>Taxes & Fees (Est.)</span>
+                                        <span>${(total * 0.15).toFixed(2)}</span>
                                     </div>
-                                    <div className="space-y-4">
-                                        <div className="h-20 bg-black/40 border border-white/10 rounded-2xl flex items-center px-8 text-white font-bold tracking-widest group cursor-pointer hover:border-emerald-500/30 transition-all font-display bg-gradient-to-r from-emerald-500/5 to-transparent">
-                                            <div className="flex flex-col">
-                                                <span className="text-lg tracking-[0.2em]">•••• •••• •••• 8842</span>
-                                                <span className="text-[9px] font-black text-neutral-600 uppercase tracking-widest mt-1">Digital Identity Verified</span>
-                                            </div>
-                                            <Badge className="ml-auto bg-emerald-500/10 text-emerald-500 border-0 uppercase font-black tracking-widest text-[9px] px-3 py-1">Active Vault</Badge>
-                                        </div>
-                                        <p className="text-[10px] text-neutral-600 font-bold uppercase tracking-widest px-1">Assets will be reconciled against your station identity.</p>
+                                    <div className="flex justify-between text-xl font-black text-foreground pt-4 border-t border-primary/15">
+                                        <span>Total</span>
+                                        <span>${(total * 1.15).toFixed(2)}</span>
                                     </div>
                                 </div>
 
-                                <div className="space-y-6">
-                                    <div className="flex items-center gap-3">
-                                        <ShieldCheck className="w-5 h-5 text-blue-500" />
-                                        <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Security Checkpoint</h3>
-                                    </div>
-                                    <div className="p-6 rounded-2xl bg-black border border-white/5 flex gap-4 items-center">
-                                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-lg shadow-emerald-500/50" />
-                                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">End-to-End Encryption Sequence Verified</p>
-                                    </div>
+                                <div className="space-y-3 pt-8">
+                                    <Button
+                                        onClick={placeOrder}
+                                        disabled={isSubmitting}
+                                        className="w-full h-14 bg-primary hover:bg-primary/90 text-foreground font-black uppercase tracking-widest text-lg rounded-xl transition-all shadow-lg hover:shadow-primary/30"
+                                    >
+                                        {isSubmitting ? 'Confirming...' : 'Place Order'}
+                                    </Button>
+                                    <p className="text-center text-[10px] text-muted-foreground uppercase tracking-widest">
+                                        Secure Transaction • Mise Financial Layer
+                                    </p>
                                 </div>
-                            </section>
-                        </div>
-                    )
-                }
+                            </div>
+                        ) : (
+                            <div className="text-center py-20">
+                                <ShoppingBag className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                                <p className="text-muted-foreground/50 mb-6">Your cart is empty.</p>
+                                <Button onClick={() => setStep('menu')} variant="outline" className="border-primary/15 text-foreground">Browse Menu</Button>
+                            </div>
+                        )}
+                    </div>
+                )}
             </main>
 
-            {/* Footer Floating Bar */}
-            {
-                itemCount > 0 && (
-                    <div className="fixed bottom-8 left-0 right-0 z-40 px-6 pointer-events-none">
-                        <div className="max-w-3xl mx-auto pointer-events-auto">
-                            <Button
-                                onClick={() => {
-                                    if (step === 'menu') setStep('cart');
-                                    else if (step === 'cart') setStep('payment');
-                                    else if (step === 'payment') placeOrder();
-                                }}
-                                disabled={isSubmitting}
-                                className={cn(
-                                    "w-full h-20 rounded-[32px] shadow-2xl flex items-center justify-between px-10 transition-all duration-500 active:scale-[0.98] group",
-                                    step === 'payment' ? "bg-white text-black hover:bg-neutral-200" : "bg-emerald-600 hover:bg-emerald-500 text-white"
-                                )}
-                            >
-                                <div className="flex items-center gap-6">
-                                    <div className={cn(
-                                        "w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg",
-                                        step === 'payment' ? "bg-black/5" : "bg-emerald-700/50"
-                                    )}>
-                                        {itemCount}
-                                    </div>
-                                    <span className="font-black text-lg uppercase tracking-widest font-display">
-                                        {step === 'menu' ? 'Review Selection' : step === 'cart' ? 'Proceed to Vault' : isSubmitting ? 'Securing Transaction...' : 'Pay & Order'}
-                                    </span>
+            {/* Sticky Bottom Cart Bar */}
+            {step === 'menu' && itemCount > 0 && (
+                <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md z-50 animate-in slide-in-from-bottom-10 fade-in duration-500">
+                    <button
+                        onClick={() => setStep('cart')}
+                        className="w-full bg-primary hover:bg-primary/90 text-foreground p-1 rounded-full shadow-[0_10px_40px_rgba(120,93,50,0.3)] transition-all group"
+                    >
+                        <div className="flex items-center justify-between bg-background/20 rounded-full px-6 py-3">
+                            <div className="flex items-center gap-3">
+                                <div className="bg-background text-foreground w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm">
+                                    {itemCount}
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    <span className="font-black text-2xl font-display tabular-nums">${total.toFixed(2)}</span>
-                                    <ChevronRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-                                </div>
-                            </Button>
+                                <span className="font-bold text-sm uppercase tracking-wide opacity-80 group-hover:opacity-100">View Active Order</span>
+                            </div>
+                            <span className="font-black text-lg group-hover:scale-105 transition-transform">
+                                ${total.toFixed(2)}
+                            </span>
                         </div>
-                    </div>
-                )
-            }
+                    </button>
+                </div>
+            )}
         </div>
     )
 }

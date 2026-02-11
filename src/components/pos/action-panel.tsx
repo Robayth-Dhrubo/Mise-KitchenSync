@@ -36,7 +36,7 @@ export default function ActionPanel({ orderId, status, onPay }: ActionPanelProps
             <Button
                 size="lg"
                 onClick={onPay}
-                className="w-full h-20 bg-blue-600 hover:bg-blue-500 text-white text-xl font-black uppercase tracking-tighter rounded-2xl shadow-xl shadow-blue-900/20 active:scale-95 transition-all"
+                className="w-full h-20 bg-blue-600 hover:bg-blue-500 text-foreground text-xl font-black uppercase tracking-tighter rounded-2xl shadow-xl shadow-blue-900/20 active:scale-95 transition-all"
             >
                 <div className="flex items-center gap-3">
                     <CreditCard className="w-6 h-6" />
@@ -52,7 +52,7 @@ export default function ActionPanel({ orderId, status, onPay }: ActionPanelProps
                 size="lg"
                 disabled={isLoading}
                 onClick={handleFire}
-                className="w-full h-20 bg-emerald-600 hover:bg-emerald-500 text-white text-xl font-black uppercase tracking-tighter rounded-2xl shadow-xl shadow-emerald-900/20 active:scale-95 transition-all group"
+                className="w-full h-20 bg-primary hover:bg-primary text-foreground text-xl font-black uppercase tracking-tighter rounded-2xl shadow-xl shadow-[#5A4820]/20 active:scale-95 transition-all group"
             >
                 {isLoading ? (
                     <div className="flex items-center gap-3">
@@ -70,7 +70,7 @@ export default function ActionPanel({ orderId, status, onPay }: ActionPanelProps
     }
 
     return (
-        <Button disabled variant="outline" className="w-full h-20 text-neutral-500 font-bold uppercase tracking-widest bg-neutral-900 border-white/10">
+        <Button disabled variant="outline" className="w-full h-20 text-muted-foreground font-bold uppercase tracking-widest bg-card border-white/10">
             Ticket Closed
         </Button>
     )

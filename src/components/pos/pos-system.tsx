@@ -35,7 +35,7 @@ const isRecipeInStock = (recipeItems: any[]) => {
     })
 }
 
-export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: any[] }) {
+export default function PosSystem({ recipes: initialRecipes = [], initialLocation = null }: { recipes?: any[], initialLocation?: any }) {
     const router = useRouter()
     const supabase = useMemo(() => createClient(), [])
     const queryClient = useQueryClient()
@@ -44,7 +44,7 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
     const [category, setCategory] = useState<string>('All')
     const [orderType, setOrderType] = useState<'dine_in' | 'takeaway' | 'room_service'>('dine_in')
     const [recipes, setRecipes] = useState<any[]>(initialRecipes)
-    const [location, setLocation] = useState<any>(null)
+    const [location, setLocation] = useState<any>(initialLocation)
     const [manualLocation, setManualLocation] = useState('')
     const [showMobileCart, setShowMobileCart] = useState(false)
     const [isPreorder, setIsPreorder] = useState(false)
@@ -55,7 +55,11 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
         if (initialRecipes?.length > 0) {
             setRecipes(initialRecipes)
         }
-    }, [initialRecipes])
+        if (initialLocation) {
+            setLocation(initialLocation)
+            setOrderType(initialLocation.type === 'room' ? 'room_service' : 'dine_in')
+        }
+    }, [initialRecipes, initialLocation])
 
     // Fetch initial data - removed internal fetch to use props from server component
 
@@ -229,15 +233,15 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                     <Button
                         variant="ghost"
                         // onClick={() => router.push('/pos')} // Assuming this navigates back
-                        className="w-12 h-12 rounded-2xl bg-white/5 text-neutral-500 hover:text-white hover:bg-white/10"
+                        className="w-12 h-12 rounded-2xl bg-white/5 text-muted-foreground hover:text-foreground hover:bg-white/10"
                     >
                         <ChevronLeft className="w-5 h-5" />
                     </Button>
                     <div>
-                        <h1 className="text-2xl font-black text-white tracking-tighter uppercase leading-none mb-1">
+                        <h1 className="text-2xl font-black text-foreground tracking-tighter uppercase leading-none mb-1">
                             {location ? location.name : 'New Order'}
                         </h1>
-                        <p className="text-[10px] font-black text-neutral-600 uppercase tracking-widest">
+                        <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">
                             Authorized Staff Entry
                         </p>
                     </div>
@@ -250,10 +254,10 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                         className={cn(
                             "lg:hidden h-10 px-6 rounded-xl font-black uppercase text-[10px] tracking-[0.2em] transition-all gap-3 shrink-0 border-0",
                             showMobileCart
-                                ? "bg-white/10 text-white"
+                                ? "bg-white/10 text-foreground"
                                 : Object.keys(cart).length > 0
-                                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 animate-pulse"
-                                    : "bg-emerald-500/10 text-emerald-500"
+                                    ? "bg-primary text-foreground shadow-lg shadow-primary/20 animate-pulse"
+                                    : "bg-primary/10 text-primary"
                         )}
                     >
                         <ShoppingCart className="w-4 h-4" />
@@ -271,16 +275,16 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                     {/* Unified Search and Categories Row */}
                     <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 shrink-0 items-start sm:items-center">
                         <div className="relative group flex-1 w-full sm:w-auto">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-600 group-focus-within:text-emerald-500 transition-colors" />
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                             <Input
                                 placeholder="IDENTIFY ASSET..."
-                                className="h-11 pl-11 bg-black/40 border-white/5 rounded-2xl text-sm font-black text-white placeholder:text-neutral-800 focus:border-emerald-500/50 transition-all shadow-inner w-full"
+                                className="h-11 pl-11 bg-sidebar/40 border-white/5 rounded-2xl text-sm font-black text-foreground placeholder:text-[#333] focus:border-primary/50 transition-all shadow-inner w-full"
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
                             />
                         </div>
 
-                        <div className="flex bg-black/20 p-1 rounded-2xl border border-white/5 items-center gap-1 overflow-x-auto no-scrollbar max-w-full sm:max-w-none">
+                        <div className="flex bg-sidebar/20 p-1 rounded-2xl border border-white/5 items-center gap-1 overflow-x-auto no-scrollbar max-w-full sm:max-w-none">
                             {(['All', 'Starters', 'Mains', 'Desserts'] as const).map((cat) => (
                                 <Button
                                     key={cat}
@@ -290,8 +294,8 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                                     className={cn(
                                         "h-9 px-4 rounded-xl font-black uppercase text-[10px] tracking-widest transition-all whitespace-nowrap",
                                         category === cat
-                                            ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20"
-                                            : "text-neutral-500 hover:text-white"
+                                            ? "bg-primary text-foreground shadow-lg shadow-primary/20"
+                                            : "text-muted-foreground hover:text-foreground"
                                     )}
                                 >
                                     {cat}
@@ -320,7 +324,7 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                                         key={recipe.id}
                                         className={cn(
                                             "glass-card border-white/5 overflow-hidden transition-all duration-500 group relative flex flex-col bg-white/[0.02] h-auto rounded-[40px]",
-                                            !isAvailable ? "opacity-40 grayscale-[0.5]" : "hover:border-emerald-500/40 cursor-pointer shadow-lg hover:shadow-emerald-500/10"
+                                            !isAvailable ? "opacity-40 grayscale-[0.5]" : "hover:border-primary/40 cursor-pointer shadow-lg hover:shadow-primary/10"
                                         )}
                                         onClick={() => isAvailable && addToCart(recipe)}
                                     >
@@ -333,15 +337,15 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
                                                 />
                                             ) : (
-                                                <div className="w-full h-full bg-gradient-to-br from-neutral-900 to-black flex items-center justify-center">
-                                                    <Utensils className="w-12 h-12 text-white/5" />
+                                                <div className="w-full h-full bg-gradient-to-br from-[#2A2A2A] to-black flex items-center justify-center">
+                                                    <Utensils className="w-12 h-12 text-foreground/5" />
                                                 </div>
                                             )}
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                                             {/* Action Overlays */}
                                             <div className="absolute top-4 right-4 z-20 flex flex-col gap-1.5 items-end">
-                                                <Badge className="bg-black/60 backdrop-blur-xl border-white/10 text-white font-black tracking-tighter text-lg px-3 py-1 font-display">
+                                                <Badge className="bg-sidebar/60 backdrop-blur-xl border-white/10 text-foreground font-black tracking-tighter text-lg px-3 py-1 font-display">
                                                     ${recipe.menu_price}
                                                 </Badge>
                                                 {!isAvailable && (
@@ -371,20 +375,20 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                                         <CardContent className="p-5 flex-1 flex flex-col justify-between space-y-4">
                                             <div className="space-y-2">
                                                 <div className="flex flex-col">
-                                                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-emerald-500 mb-1">{categorize(recipe)}</span>
-                                                    <h3 className="text-xl font-black text-white group-hover:text-emerald-400 transition-colors font-display tracking-tight leading-tight">{recipe.name}</h3>
+                                                    <span className="text-[9px] font-black uppercase tracking-[0.3em] text-primary mb-1">{categorize(recipe)}</span>
+                                                    <h3 className="text-xl font-black text-foreground group-hover:text-primary transition-colors font-display tracking-tight leading-tight">{recipe.name}</h3>
                                                 </div>
 
                                                 {/* Composition Manifest */}
                                                 {recipe.recipe_items?.length > 0 && (
                                                     <div className="pt-2 space-y-2 border-t border-white/5 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                                        <div className="flex items-center gap-2 text-[8px] font-black text-neutral-500 uppercase tracking-widest">
+                                                        <div className="flex items-center gap-2 text-[8px] font-black text-muted-foreground uppercase tracking-widest">
                                                             <Info className="w-3 h-3" />
                                                             Composition Manifest
                                                         </div>
                                                         <div className="flex flex-wrap gap-1.5">
                                                             {recipe.recipe_items.map((item: any, idx: number) => (
-                                                                <Badge key={idx} variant="outline" className="bg-white/5 border-white/5 text-[7px] text-neutral-400 font-medium px-1.5 py-0.5 lowercase">
+                                                                <Badge key={idx} variant="outline" className="bg-white/5 border-white/5 text-[7px] text-muted-foreground font-medium px-1.5 py-0.5 lowercase">
                                                                     {item.quantity_needed}{item.ingredient?.unit} {item.ingredient?.name}
                                                                 </Badge>
                                                             ))}
@@ -397,13 +401,13 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                                                 <div className="flex flex-col gap-2">
                                                     <div className="flex gap-2">
                                                         <Link href={`/menu/${recipe.id}/edit`} className="flex-1" onClick={e => e.stopPropagation()}>
-                                                            <Button variant="outline" size="sm" className="w-full h-11 bg-white/5 border-white/10 text-white text-[8px] font-black uppercase tracking-widest hover:bg-white/10 rounded-xl">
-                                                                <Pencil className="w-3 h-3 mr-2 text-emerald-500" />
+                                                            <Button variant="outline" size="sm" className="w-full h-11 bg-white/5 border-white/10 text-foreground text-[8px] font-black uppercase tracking-widest hover:bg-white/10 rounded-xl">
+                                                                <Pencil className="w-3 h-3 mr-2 text-primary" />
                                                                 Edit
                                                             </Button>
                                                         </Link>
                                                         <Link href={`/recipes/${recipe.id}`} className="flex-1" onClick={e => e.stopPropagation()}>
-                                                            <Button variant="outline" size="sm" className="w-full h-11 bg-white/5 border-white/10 text-white text-[8px] font-black uppercase tracking-widest hover:bg-white/10 rounded-xl">
+                                                            <Button variant="outline" size="sm" className="w-full h-11 bg-white/5 border-white/10 text-foreground text-[8px] font-black uppercase tracking-widest hover:bg-white/10 rounded-xl">
                                                                 <Eye className="w-3 h-3 mr-2 text-blue-500" />
                                                                 View Recipe
                                                             </Button>
@@ -418,8 +422,8 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                                                         className={cn(
                                                             "w-full font-black text-[8px] uppercase tracking-widest h-11 rounded-xl transition-all font-display",
                                                             !recipe.is_available
-                                                                ? "bg-emerald-600 hover:bg-emerald-500 text-white"
-                                                                : "bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20"
+                                                                ? "bg-primary hover:bg-primary text-foreground"
+                                                                : "bg-red-600/20 hover:bg-red-600 text-red-500 hover:text-foreground border border-red-500/20"
                                                         )}
                                                     >
                                                         {!recipe.is_available ? (
@@ -445,23 +449,23 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                 )}>
                     <CardHeader className="p-6 sm:p-8 border-b border-white/5 shrink-0 space-y-4">
                         <div className="flex items-center justify-between">
-                            <CardTitle className="text-2xl font-black text-white flex items-center gap-5">
-                                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
-                                    <ShoppingCart className="w-6 h-6 text-emerald-500" />
+                            <CardTitle className="text-2xl font-black text-foreground flex items-center gap-5">
+                                <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                                    <ShoppingCart className="w-6 h-6 text-primary" />
                                 </div>
                                 Live Ticket
                             </CardTitle>
                             <Button
                                 variant="ghost"
                                 onClick={() => setShowMobileCart(false)}
-                                className="lg:hidden w-10 h-10 rounded-xl bg-white/5 text-neutral-500 hover:text-white"
+                                className="lg:hidden w-10 h-10 rounded-xl bg-white/5 text-muted-foreground hover:text-foreground"
                             >
                                 <ChevronLeft className="w-5 h-5 rotate-180" />
                             </Button>
                         </div>
 
                         {/* Redesigned Order Type Selector Consolidated in Sidebar */}
-                        <div className="flex bg-black/40 p-1 rounded-2xl border border-white/5 items-center gap-1 w-full box-border">
+                        <div className="flex bg-sidebar/40 p-1 rounded-2xl border border-white/5 items-center gap-1 w-full box-border">
                             {(['dine_in', 'room_service', 'takeaway'] as const).map((type) => (
                                 <Button
                                     key={type}
@@ -470,7 +474,7 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                                     onClick={() => setOrderType(type)}
                                     className={cn(
                                         "flex-1 h-9 px-2 rounded-xl font-black uppercase text-[8px] tracking-[0.1em] transition-all",
-                                        orderType === type ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20" : "text-neutral-500 hover:text-white"
+                                        orderType === type ? "bg-primary text-foreground shadow-lg shadow-primary/20" : "text-muted-foreground hover:text-foreground"
                                     )}
                                 >
                                     {type.replace('_', ' ')}
@@ -481,20 +485,20 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                         {/* Contextual Input Moved to Sidebar Header */}
                         {!location && (
                             <div className="group relative">
-                                <div className="absolute inset-0 bg-emerald-500/5 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-700" />
-                                <div className="relative flex items-center gap-3 bg-black/60 backdrop-blur-md p-3 rounded-2xl border border-white/5 group-focus-within:border-emerald-500/30 transition-all duration-300">
+                                <div className="absolute inset-0 bg-primary/5 rounded-2xl blur-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-700" />
+                                <div className="relative flex items-center gap-3 bg-sidebar/60 backdrop-blur-md p-3 rounded-2xl border border-white/5 group-focus-within:border-primary/30 transition-all duration-300">
                                     <MapPin className={cn(
                                         "w-4 h-4 transition-colors duration-300",
-                                        manualLocation ? "text-emerald-500" : "text-neutral-600"
+                                        manualLocation ? "text-primary" : "text-muted-foreground"
                                     )} />
                                     <Input
                                         placeholder={`SPECIFY ${orderType === 'room_service' ? 'ROOM' : 'TABLE'}...`}
                                         value={manualLocation}
                                         onChange={(e) => setManualLocation(e.target.value.toUpperCase())}
-                                        className="bg-transparent border-0 focus-visible:ring-0 text-[11px] font-black uppercase tracking-[0.2em] p-0 h-auto text-white placeholder:text-neutral-700 focus:placeholder:text-neutral-600 transition-all"
+                                        className="bg-transparent border-0 focus-visible:ring-0 text-[11px] font-black uppercase tracking-[0.2em] p-0 h-auto text-foreground placeholder:text-muted-foreground focus:placeholder:text-muted-foreground transition-all"
                                     />
                                     {manualLocation && (
-                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-lg shadow-emerald-500/50" />
+                                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-lg shadow-primary/50" />
                                     )}
                                 </div>
                             </div>
@@ -506,11 +510,11 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                                     "px-3 py-1 rounded-lg border text-[9px] font-black uppercase tracking-widest transition-all",
                                     isPreorder
                                         ? "bg-amber-500/10 border-amber-500/20 text-amber-500"
-                                        : "bg-white/5 border-white/5 text-neutral-500"
+                                        : "bg-white/5 border-white/5 text-muted-foreground"
                                 )}>
                                     <Clock className="w-3 h-3" />
                                 </div>
-                                <span className="text-[10px] font-black text-white uppercase tracking-widest">Schedule Pre-order</span>
+                                <span className="text-[10px] font-black text-foreground uppercase tracking-widest">Schedule Pre-order</span>
                             </div>
                             <Button
                                 variant="ghost"
@@ -518,7 +522,7 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                                 onClick={() => setIsPreorder(!isPreorder)}
                                 className={cn(
                                     "h-8 px-4 rounded-lg text-[9px] font-black uppercase tracking-widest",
-                                    isPreorder ? "bg-amber-500 text-black hover:bg-amber-400" : "bg-white/5 text-neutral-500 hover:text-white"
+                                    isPreorder ? "bg-amber-500 text-black hover:bg-amber-400" : "bg-white/5 text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 {isPreorder ? 'Active' : 'Enable'}
@@ -529,7 +533,7 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                             <div className="px-2 pb-2 animate-in slide-in-from-top-2 duration-300">
                                 <input
                                     type="datetime-local"
-                                    className="w-full h-11 bg-black/40 border border-white/10 rounded-xl px-4 text-[10px] font-bold text-white outline-none focus:border-amber-500/50 transition-all [color-scheme:dark]"
+                                    className="w-full h-11 bg-sidebar/40 border border-white/10 rounded-xl px-4 text-[10px] font-bold text-foreground outline-none focus:border-amber-500/50 transition-all [color-scheme:dark]"
                                     value={scheduledTime}
                                     onChange={(e) => setScheduledTime(e.target.value)}
                                 />
@@ -538,7 +542,7 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                     </CardHeader>
                     <CardContent className="flex-1 min-h-0 p-6 sm:p-8 overflow-y-auto custom-scrollbar">
                         {Object.values(cart).length === 0 ? (
-                            <div className="h-full flex flex-col items-center justify-center text-neutral-600 opacity-10">
+                            <div className="h-full flex flex-col items-center justify-center text-muted-foreground opacity-10">
                                 <ShoppingCart className="w-24 h-24 mb-6" />
                                 <span className="font-black uppercase tracking-[0.3em] text-[10px]">Ready to Order</span>
                             </div>
@@ -548,34 +552,34 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                                     <div key={item.recipe.id} className="flex items-center justify-between group animate-in slide-in-from-right-4 duration-500 bg-white/[0.02] p-4 rounded-2xl border border-white/5 hover:border-white/10 transition-all">
                                         <div className="flex-1 space-y-3">
                                             <div className="flex items-center justify-between">
-                                                <div className="text-lg font-black text-white uppercase tracking-tight group-hover:text-emerald-500 transition-colors">
+                                                <div className="text-lg font-black text-foreground uppercase tracking-tight group-hover:text-primary transition-colors">
                                                     {item.recipe.name}
                                                 </div>
                                                 <button
                                                     onClick={() => deleteFromCart(item.recipe.id)}
-                                                    className="p-2 text-neutral-700 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                                                    className="p-2 text-muted-foreground hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
                                                     title="Remove from cart"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-3 bg-black/40 p-1 rounded-xl border border-white/5">
+                                                <div className="flex items-center gap-3 bg-sidebar/40 p-1 rounded-xl border border-white/5">
                                                     <button
                                                         onClick={() => removeFromCart(item.recipe.id)}
-                                                        className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-neutral-500 hover:bg-red-500/10 hover:text-red-500 transition-all active:scale-90"
+                                                        className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-muted-foreground hover:bg-red-500/10 hover:text-red-500 transition-all active:scale-90"
                                                     >
                                                         <Minus className="w-3.5 h-3.5" />
                                                     </button>
-                                                    <span className="text-[10px] font-black text-white uppercase tracking-widest tabular-nums min-w-[3ch] text-center">{item.quantity}</span>
+                                                    <span className="text-[10px] font-black text-foreground uppercase tracking-widest tabular-nums min-w-[3ch] text-center">{item.quantity}</span>
                                                     <button
                                                         onClick={() => addToCart(item.recipe)}
-                                                        className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-neutral-500 hover:bg-emerald-500/10 hover:text-emerald-500 transition-all active:scale-90"
+                                                        className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-muted-foreground hover:bg-primary/10 hover:text-primary transition-all active:scale-90"
                                                     >
                                                         <Plus className="w-3.5 h-3.5" />
                                                     </button>
                                                 </div>
-                                                <div className="text-xl font-black text-white tracking-tighter tabular-nums">
+                                                <div className="text-xl font-black text-foreground tracking-tighter tabular-nums">
                                                     ${(item.recipe.menu_price * item.quantity).toFixed(2)}
                                                 </div>
                                             </div>
@@ -585,18 +589,18 @@ export default function PosSystem({ recipes: initialRecipes = [] }: { recipes?: 
                             </div>
                         )}
                     </CardContent>
-                    <div className="p-6 sm:p-8 bg-black/40 border-t border-white/10 space-y-6 sm:space-y-8 backdrop-blur-3xl shrink-0">
+                    <div className="p-6 sm:p-8 bg-sidebar/40 border-t border-white/10 space-y-6 sm:space-y-8 backdrop-blur-3xl shrink-0">
                         <div className="flex justify-between items-end">
                             <div className="space-y-1">
-                                <div className="text-[11px] font-black text-neutral-600 uppercase tracking-[0.2em]">Gross Value Assessment</div>
-                                <div className="text-2xl font-black text-white tracking-tighter uppercase leading-none">Total Due</div>
+                                <div className="text-[11px] font-black text-muted-foreground uppercase tracking-[0.2em]">Gross Value Assessment</div>
+                                <div className="text-2xl font-black text-foreground tracking-tighter uppercase leading-none">Total Due</div>
                             </div>
-                            <div className="text-5xl font-black text-emerald-500 tracking-tighter tabular-nums leading-none">
+                            <div className="text-5xl font-black text-primary tracking-tighter tabular-nums leading-none">
                                 ${subtotal.toFixed(2)}
                             </div>
                         </div>
                         <Button
-                            className="w-full h-20 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xl tracking-tighter rounded-[32px] transition-all shadow-2xl shadow-emerald-600/20 active:scale-[0.98] group relative overflow-hidden"
+                            className="w-full h-20 bg-primary hover:bg-primary text-foreground font-black text-xl tracking-tighter rounded-[32px] transition-all shadow-2xl shadow-primary/20 active:scale-[0.98] group relative overflow-hidden"
                             disabled={Object.keys(cart).length === 0 || checkoutMutation.isPending}
                             onClick={() => checkoutMutation.mutate()}
                         >

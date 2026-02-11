@@ -126,84 +126,84 @@ export default function IrdDashboard() {
     if (isLoading) {
         return (
             <div className="h-full flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-emerald-500 animate-spin" />
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
             </div>
         )
     }
 
     return (
-        <div className="p-12 h-full flex flex-col gap-10 overflow-y-auto custom-scrollbar bg-neutral-950/50">
+        <div className="p-12 h-full flex flex-col gap-10 overflow-y-auto custom-scrollbar bg-sidebar/50">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-4xl font-black text-white tracking-tight uppercase leading-none">IRD Dashboard</h1>
-                    <p className="text-neutral-500 font-bold uppercase text-[11px] tracking-[0.3em] mt-3">Active Guest Service Queue</p>
+                    <h1 className="text-4xl font-black text-foreground tracking-tight uppercase leading-none">IRD Dashboard</h1>
+                    <p className="text-muted-foreground font-bold uppercase text-[11px] tracking-[0.3em] mt-3">Active Guest Service Queue</p>
                 </div>
 
                 <Dialog open={isManageRoomsOpen} onOpenChange={setIsManageRoomsOpen}>
                     <DialogTrigger asChild>
-                        <Button className="h-12 px-6 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest gap-2 shadow-lg shadow-emerald-900/20 transition-all active:scale-95">
+                        <Button className="h-12 px-6 rounded-xl bg-primary hover:bg-primary text-foreground font-black uppercase tracking-widest gap-2 shadow-lg shadow-[#5A4820]/20 transition-all active:scale-95">
                             <Plus className="w-4 h-4" /> Manage Rooms
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="bg-neutral-900 border-white/10 sm:max-w-md">
+                    <DialogContent className="bg-card border-white/10 sm:max-w-md">
                         <DialogHeader>
-                            <DialogTitle className="text-xl font-black text-white uppercase">Manage Hotel Rooms</DialogTitle>
+                            <DialogTitle className="text-xl font-black text-foreground uppercase">Manage Hotel Rooms</DialogTitle>
                         </DialogHeader>
 
                         <div className="space-y-6 pt-4">
                             {/* Add Room Form */}
                             <form onSubmit={handleAddRoom} className="space-y-4 p-4 rounded-xl bg-white/5 border border-white/5">
-                                <h3 className="text-xs font-black text-white uppercase tracking-widest">Add New Room</h3>
+                                <h3 className="text-xs font-black text-foreground uppercase tracking-widest">Add New Room</h3>
                                 <div className="grid grid-cols-3 gap-2">
                                     <div className="col-span-2 space-y-1">
-                                        <label className="text-[9px] font-bold text-neutral-500 uppercase">Room Number / Name</label>
+                                        <label className="text-[9px] font-bold text-muted-foreground uppercase">Room Number / Name</label>
                                         <Input
                                             placeholder="e.g. 101, Penthouse"
                                             value={newRoomNumber}
                                             onChange={e => setNewRoomNumber(e.target.value)}
-                                            className="bg-neutral-950 border-white/10 text-white font-bold"
+                                            className="bg-sidebar border-white/10 text-foreground font-bold"
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-[9px] font-bold text-neutral-500 uppercase">Capacity</label>
+                                        <label className="text-[9px] font-bold text-muted-foreground uppercase">Capacity</label>
                                         <Input
                                             type="number"
                                             value={newRoomCapacity}
                                             onChange={e => setNewRoomCapacity(e.target.value)}
-                                            className="bg-neutral-950 border-white/10 text-white font-bold"
+                                            className="bg-sidebar border-white/10 text-foreground font-bold"
                                         />
                                     </div>
                                 </div>
-                                <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase">
+                                <Button type="submit" className="w-full bg-primary hover:bg-primary text-foreground font-black uppercase">
                                     Add Room
                                 </Button>
                             </form>
 
                             {/* Existing Rooms List */}
                             <div className="space-y-2">
-                                <h3 className="text-xs font-black text-neutral-400 uppercase tracking-widest border-b border-white/10 pb-2 mb-2">Existing Rooms ({rooms.length})</h3>
+                                <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest border-b border-white/10 pb-2 mb-2">Existing Rooms ({rooms.length})</h3>
                                 <div className="max-h-[300px] overflow-y-auto custom-scrollbar space-y-2">
                                     {rooms.length === 0 ? (
-                                        <div className="text-neutral-500 text-xs italic text-center py-4">No rooms added yet.</div>
+                                        <div className="text-muted-foreground text-xs italic text-center py-4">No rooms added yet.</div>
                                     ) : (
                                         rooms.map(room => (
                                             <div key={room.id} className="flex justify-between items-center p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors group">
                                                 <div className="flex flex-col">
-                                                    <span className="font-bold text-white text-sm">{room.name}</span>
-                                                    <span className="text-[10px] text-neutral-500 uppercase">Cap: {room.capacity}</span>
+                                                    <span className="font-bold text-foreground text-sm">{room.name}</span>
+                                                    <span className="text-[10px] text-muted-foreground uppercase">Cap: {room.capacity}</span>
                                                 </div>
 
                                                 <div className="flex items-center gap-1">
                                                     <button
                                                         onClick={() => handleUpdateCapacity(room.id, room.capacity, -1)}
-                                                        className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-[10px] font-black transition-colors"
+                                                        className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 text-foreground flex items-center justify-center text-[10px] font-black transition-colors"
                                                     >
                                                         -
                                                     </button>
-                                                    <span className="w-6 text-center text-[10px] font-bold text-neutral-400">CAP</span>
+                                                    <span className="w-6 text-center text-[10px] font-bold text-muted-foreground">CAP</span>
                                                     <button
                                                         onClick={() => handleUpdateCapacity(room.id, room.capacity, 1)}
-                                                        className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-[10px] font-black transition-colors"
+                                                        className="w-6 h-6 rounded bg-white/10 hover:bg-white/20 text-foreground flex items-center justify-center text-[10px] font-black transition-colors"
                                                     >
                                                         +
                                                     </button>
@@ -220,7 +220,7 @@ export default function IrdDashboard() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 {orders.length === 0 ? (
-                    <div className="col-span-full py-48 flex flex-col items-center justify-center border border-white/5 bg-black/20 rounded-[48px] text-neutral-600 shadow-inner">
+                    <div className="col-span-full py-48 flex flex-col items-center justify-center border border-white/5 bg-sidebar/20 rounded-[48px] text-muted-foreground shadow-inner">
                         <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center mb-6">
                             <Coffee className="w-10 h-10 opacity-20" />
                         </div>
@@ -228,21 +228,21 @@ export default function IrdDashboard() {
                     </div>
                 ) : (
                     orders.map((order) => (
-                        <Card key={order.id} className="glass-card overflow-hidden rounded-[32px] border-white/10 shadow-2xl transition-all hover:scale-[1.02] hover:border-emerald-500/30">
+                        <Card key={order.id} className="glass-card overflow-hidden rounded-[32px] border-white/10 shadow-2xl transition-all hover:scale-[1.02] hover:border-primary/30">
                             <CardHeader className="p-8 border-b border-white/5 flex flex-row items-center justify-between space-y-0 bg-white/[0.02]">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
                                         <Bell className="w-6 h-6 text-amber-500 animate-pulse" />
                                     </div>
                                     <div>
-                                        <h3 className="text-xl font-black text-white leading-none uppercase tracking-tighter">{order.table_or_room}</h3>
-                                        <span className="text-[9px] text-neutral-500 font-black uppercase tracking-widest mt-1 block">In-Room</span>
+                                        <h3 className="text-xl font-black text-foreground leading-none uppercase tracking-tighter">{order.table_or_room}</h3>
+                                        <span className="text-[9px] text-muted-foreground font-black uppercase tracking-widest mt-1 block">In-Room</span>
                                     </div>
                                 </div>
                                 <Badge className={cn(
                                     "px-4 h-7 border-0 text-[9px] font-black uppercase tracking-widest rounded-full",
                                     order.preparation_status === 'received' ? 'bg-amber-500/20 text-amber-500' :
-                                        order.preparation_status === 'preparing' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-emerald-600 text-white'
+                                        order.preparation_status === 'preparing' ? 'bg-primary/20 text-primary' : 'bg-primary text-foreground'
                                 )}>
                                     {order.preparation_status}
                                 </Badge>
@@ -251,8 +251,8 @@ export default function IrdDashboard() {
                                 <div className="space-y-4 mb-10">
                                     {order.order_items?.map((item: any) => (
                                         <div key={item.id} className="flex justify-between items-center group">
-                                            <span className="text-neutral-400 font-bold uppercase tracking-tight text-sm group-hover:text-white transition-colors">{item.recipe?.name}</span>
-                                            <span className="text-neutral-600 font-black tabular-nums text-sm">X{item.quantity}</span>
+                                            <span className="text-muted-foreground font-bold uppercase tracking-tight text-sm group-hover:text-foreground transition-colors">{item.recipe?.name}</span>
+                                            <span className="text-muted-foreground font-black tabular-nums text-sm">X{item.quantity}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -260,7 +260,7 @@ export default function IrdDashboard() {
                                 <div className="flex gap-3 pt-6 border-t border-white/5">
                                     {order.preparation_status === 'received' && (
                                         <Button
-                                            className="flex-1 bg-white/5 hover:bg-emerald-600 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl h-14 transition-all active:scale-95"
+                                            className="flex-1 bg-white/5 hover:bg-primary text-foreground font-black text-[10px] uppercase tracking-widest rounded-2xl h-14 transition-all active:scale-95"
                                             onClick={() => updateStatus(order.id, 'preparing')}
                                         >
                                             Engage Prep
@@ -268,7 +268,7 @@ export default function IrdDashboard() {
                                     )}
                                     {order.preparation_status === 'preparing' && (
                                         <Button
-                                            className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl h-14 transition-all shadow-lg shadow-emerald-600/20 active:scale-95"
+                                            className="flex-1 bg-primary hover:bg-primary text-foreground font-black text-[10px] uppercase tracking-widest rounded-2xl h-14 transition-all shadow-lg shadow-primary/20 active:scale-95"
                                             onClick={() => updateStatus(order.id, 'ready')}
                                         >
                                             Ready for Service
@@ -276,7 +276,7 @@ export default function IrdDashboard() {
                                     )}
                                     {order.preparation_status === 'ready' && (
                                         <Button
-                                            className="flex-1 bg-neutral-800 hover:bg-neutral-700 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl h-14 transition-all active:scale-95"
+                                            className="flex-1 bg-secondary hover:bg-muted text-foreground font-black text-[10px] uppercase tracking-widest rounded-2xl h-14 transition-all active:scale-95"
                                             onClick={() => updateStatus(order.id, 'delivered')}
                                         >
                                             <CheckCircle2 className="w-5 h-5 mr-3" />
