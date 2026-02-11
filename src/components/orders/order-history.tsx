@@ -69,7 +69,7 @@ export function OrderHistory({ orders }: OrderHistoryProps) {
                 <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                     <History className="w-12 h-12 text-muted-foreground mb-4" />
                     <h3 className="text-xl font-bold text-foreground">No Order History</h3>
-                    <p className="text-muted-foreground mt-2">You haven't placed any orders yet.</p>
+                    <p className="text-muted-foreground mt-2">You haven&apos;t placed any orders yet.</p>
                 </CardContent>
             </Card>
         )

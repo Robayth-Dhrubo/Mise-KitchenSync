@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
-    Calendar, Clock, Search, Plus, Users, MapPin,
-    Filter, MoreHorizontal, CheckCircle2, XCircle,
-    UtensilsCrossed, ArrowRight, Table
+    Calendar, Clock, Search, Plus, Users,
+    CheckCircle2, XCircle, UtensilsCrossed, ArrowRight, Table
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
@@ -47,8 +46,8 @@ export default function ReservationsView() {
         notes: ''
     })
 
-    const fetchData = async () => {
-        setIsLoading(true)
+    const fetchData = useCallback(async () => {
+        // setIsLoading(true)
 
         // Fetch Reservations
         let query = supabase
@@ -103,11 +102,12 @@ export default function ReservationsView() {
         if (ingData) setRecipeIngredients(ingData)
 
         setIsLoading(false)
-    }
+    }, [supabase, filter])
 
     useEffect(() => {
-        fetchData()
-    }, [filter])
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        void fetchData()
+    }, [fetchData])
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -540,7 +540,7 @@ export default function ReservationsView() {
                                             {res.notes && (
                                                 <div className="mt-3 text-xs text-muted-foreground bg-white/5 p-2 rounded-lg border border-white/5 flex items-start gap-2">
                                                     <UtensilsCrossed className="w-3 h-3 mt-0.5 text-primary" />
-                                                    <span className="italic">"{res.notes}"</span>
+                                                    <span className="italic">&quot;{res.notes}&quot;</span>
                                                 </div>
                                             )}
                                         </div>

@@ -1,0 +1,292 @@
+
+> mise-kitchen-sync@0.1.0 lint
+> eslint
+
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/analytics/page.tsx
+  5:10  warning  'cn' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/dashboard/page.tsx
+  2:1   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-explicit-any')
+  8:23  warning  'Store' is defined but never used. Allowed unused vars must match /^_/u                                @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/integrations/page.tsx
+   18:29  warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   18:41  warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  127:18  warning  'error' is defined but never used                                             @typescript-eslint/no-unused-vars
+  151:18  warning  'error' is defined but never used                                             @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/inventory/client.tsx
+     7:41   warning  'Minus' is defined but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+     8:39   warning  'Truck' is defined but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+     9:5    warning  'ChevronRight' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+     9:19   warning  'Filter' is defined but never used. Allowed unused vars must match /^_/u                       @typescript-eslint/no-unused-vars
+     9:45   warning  'ThumbsUp' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+     9:55   warning  'ThumbsDown' is defined but never used. Allowed unused vars must match /^_/u                   @typescript-eslint/no-unused-vars
+    13:10   warning  'VendorPriceManager' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+    14:25   warning  'Supplier' is defined but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+    93:18   warning  'error' is defined but never used                                                              @typescript-eslint/no-unused-vars
+   123:12   warning  'isSmartSearchOpen' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+   124:12   warning  'smartSearchQuery' is assigned a value but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+   288:25   warning  'err' is defined but never used. Allowed unused args must match /^_/u                          @typescript-eslint/no-unused-vars
+   348:11   warning  'handleAddSmartItem' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   881:80   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                react/no-unescaped-entities
+   881:106  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                react/no-unescaped-entities
+  1046:87   error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                react/no-unescaped-entities
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/inventory/scanner/page.tsx
+   4:26  warning  'FileText' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   6:10  warning  'Button' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  36:18  warning  'error' is defined but never used                                           @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/menu/[id]/edit/page.tsx
+   11:5   warning  'ChefHat' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+   13:5   warning  'DollarSign' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+   14:5   warning  'Percent' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+   15:5   warning  'AlertTriangle' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   34:10  warning  'IngredientForm' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   49:5   warning  'Dialog' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   50:5   warning  'DialogContent' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   51:5   warning  'DialogHeader' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   52:5   warning  'DialogTitle' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   53:5   warning  'DialogTrigger' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   57:10  warning  'cn' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   74:11  warning  'queryClient' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+   75:12  warning  'isAddIngredientOpen' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   75:33  warning  'setIsAddIngredientOpen' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  323:53  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/menu/[id]/page.tsx
+   4:37  warning  'DollarSign' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  16:10  warning  'Package' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/menu/new/page.tsx
+   11:5   warning  'ChefHat' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  306:53  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/recipes/[id]/page.tsx
+  21:11  warning  'Recipe' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/recipes/page.tsx
+  4:26  warning  'Search' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  6:10  warning  'Input' is defined but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/service-desk/page.tsx
+    4:95  warning  'Globe' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   35:14  warning  'e' is defined but never used                                            @typescript-eslint/no-unused-vars
+  123:18  warning  'error' is defined but never used                                        @typescript-eslint/no-unused-vars
+  141:18  warning  'error' is defined but never used                                        @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/settings/page.tsx
+  54:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/settings/page.tsx:54:13
+  52 |     useEffect(() => {
+  53 |         if (profile && (profile.restaurant_name !== formData.restaurant_name || profile.currency_symbol !== formData.currency_symbol)) {
+> 54 |             setFormData({
+     |             ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  55 |                 restaurant_name: profile.restaurant_name || '',
+  56 |                 currency_symbol: profile.currency_symbol || '$',
+  57 |             })  react-hooks/set-state-in-effect
+  59:8   warning  React Hook useEffect has missing dependencies: 'formData.currency_symbol' and 'formData.restaurant_name'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/exhaustive-deps
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/weekly-schedule/page.tsx
+    7:51  warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u                                         @typescript-eslint/no-unused-vars
+    7:58  warning  'User' is defined but never used. Allowed unused vars must match /^_/u                                          @typescript-eslint/no-unused-vars
+  119:8   warning  React Hook useEffect has a missing dependency: 'fetchShifts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/actions/vendor-discovery.ts
+  20:11  warning  'PlacesV1Response' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/admin/team/page.tsx
+  5:63  warning  'Mail' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+  5:69  warning  'Filter' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+  8:29  warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  8:41  warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  8:52  warning  'CardDescription' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/api/integrations/quickbooks/sync/route.ts
+  8:28  warning  'request' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/api/integrations/square/sync/route.ts
+  8:28  warning  'request' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/api/integrations/toast/sync/route.ts
+  6:28  warning  'request' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/api/webhooks/pos-order/route.ts
+  15:40  warning  'api_key' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/guest/[room]/page.tsx
+   3:10  warning  'notFound' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+   7:11  warning  'supabase' is assigned a value but never used. Allowed unused vars must match /^_/u   @typescript-eslint/no-unused-vars
+  32:56  warning  'listError' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/page.tsx
+  3:66  warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u       @typescript-eslint/no-unused-vars
+  3:73  warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  3:85  warning  'Star' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/pos/ledger/page.tsx
+  30:27  warning  'error' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/smart-order/client-board.tsx
+  41:18  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/PopupNavigation.tsx
+  6:37   warning  'UtensilsCrossed' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  6:84   warning  'MessageSquare' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  6:122  warning  'Scan' is defined but never used. Allowed unused vars must match /^_/u             @typescript-eslint/no-unused-vars
+  6:138  warning  'ShoppingBag' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/dashboard/foh-dashboard.tsx
+  217:53  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/kitchen/kitchen-display.tsx
+  105:24  warning  'payload' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+  116:8   warning  React Hook useEffect has a missing dependency: 'refetchOrders'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+  121:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/kitchen/kitchen-display.tsx:121:13
+  119 |     useEffect(() => {
+  120 |         if (viewMode === 'history') {
+> 121 |             fetchHistory()
+      |             ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  122 |         }
+  123 |     }, [viewMode])
+  124 |  react-hooks/set-state-in-effect
+  123:8   warning  React Hook useEffect has a missing dependency: 'fetchHistory'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/orders/order-history.tsx
+   3:10  warning  'useState' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+   5:23  warning  'useQueryClient' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  18:19  warning  'PackageCheck' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  18:33  warning  'Truck' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/action-panel.tsx
+  5:29  warning  'CheckCircle2' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/guest-support.tsx
+   5:44  warning  'ExternalLink' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+   6:29  warning  'CardHeader' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   6:41  warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  44:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/guest-support.tsx:44:9
+  42 |
+  43 |     useEffect(() => {
+> 44 |         fetchAllOrders()
+     |         ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  45 |
+  46 |         const channel = supabase
+  47 |             .channel('guest_support_sync')  react-hooks/set-state-in-effect
+  52:8   warning  React Hook useEffect has a missing dependency: 'fetchAllOrders'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/ird-dashboard.tsx
+   5:38  warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+   6:41  warning  'CardTitle' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  35:23  warning  'error' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  56:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/ird-dashboard.tsx:56:9
+  54 |
+  55 |     useEffect(() => {
+> 56 |         fetchOrders()
+     |         ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  57 |         fetchRooms()
+  58 |         const channel = supabase
+  59 |             .channel('ird_orders')  react-hooks/set-state-in-effect
+  72:8   warning  React Hook useEffect has missing dependencies: 'fetchOrders' and 'fetchRooms'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/live-ticket.tsx
+   6:10  warning  'cn' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  37:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/live-ticket.tsx:37:9
+  35 |
+  36 |     useEffect(() => {
+> 37 |         fetchItems()
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  38 |         const channel = supabase
+  39 |             .channel(`ticket_${orderId}`)
+  40 |             .on('postgres_changes', { event: '*', schema: 'public', table: 'order_items', filter: `order_id=eq.${orderId}` }, fetchItems)  react-hooks/set-state-in-effect
+  43:8   warning  React Hook useEffect has a missing dependency: 'fetchItems'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react-hooks/exhaustive-deps
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/location-ledger.tsx
+   6:12  warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   6:28  warning  'History' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   6:37  warning  'AlertCircle' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+   7:5   warning  'Calendar' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+   7:15  warning  'CheckCircle2' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   8:14  warning  'CreditCard' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   8:26  warning  'UtensilsCrossed' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  10:10  warning  'Card' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  10:16  warning  'CardContent' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+  44:14  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/location-ledger.tsx:44:14
+  42 |
+  43 |     useEffect(() => {
+> 44 |         void fetchData()
+     |              ^^^^^^^^^ Avoid calling setState() directly within an effect
+  45 |
+  46 |         const channel = supabase
+  47 |             .channel(`location_ledger_${location.id}`)  react-hooks/set-state-in-effect
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/reservations-view.tsx
+  108:14  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/reservations-view.tsx:108:14
+  106 |
+  107 |     useEffect(() => {
+> 108 |         void fetchData()
+      |              ^^^^^^^^^ Avoid calling setState() directly within an effect
+  109 |     }, [fetchData])
+  110 |
+  111 |     const handleCreate = async (e: React.FormEvent) => {  react-hooks/set-state-in-effect
+
+✖ 113 problems (10 errors, 103 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+

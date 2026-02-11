@@ -302,7 +302,6 @@ export function ReportsDashboard({ salesLogs, recipes }: ReportsDashboardProps) 
                                 <Tooltip
                                     cursor={{ fill: 'rgba(255, 255, 255, 0.02)' }}
                                     contentStyle={{ backgroundColor: 'rgba(23, 23, 23, 0.9)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', backdropFilter: 'blur(10px)' }}
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     formatter={(value: number | undefined, name: string | undefined, props: any) => [`${value} ${props?.payload?.unit || ''}`, 'Amount Consumed']}
                                 />
                                 <Bar dataKey="amount" fill="#8b5cf6" radius={[12, 12, 0, 0]} fillOpacity={0.8} />

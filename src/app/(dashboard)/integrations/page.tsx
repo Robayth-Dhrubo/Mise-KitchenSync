@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
     ArrowLeft,
     Link2,
@@ -105,12 +106,13 @@ export default function IntegrationsPage() {
     // In production, this would come from the database
     const [connections, setConnections] = useState<ConnectedIntegrations>({})
     const [connecting, setConnecting] = useState<string | null>(null)
+    const router = useRouter()
 
     const handleConnect = async (integrationId: string) => {
         setConnecting(integrationId)
 
         // Redirect to OAuth flow
-        window.location.href = `/api/integrations/${integrationId}/auth`
+        router.push(`/api/integrations/${integrationId}/auth`)
     }
 
     const handleDisconnect = async (integrationId: string) => {
@@ -342,7 +344,7 @@ export default function IntegrationsPage() {
                     <AlertCircle className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
                     <h3 className="font-medium text-foreground mb-1">Need a different integration?</h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                        We're always adding new integrations. Let us know what you need.
+                        We&apos;re always adding new integrations. Let us know what you need.
                     </p>
                     <Button variant="outline" className="border-white/10 text-foreground">
                         Request Integration

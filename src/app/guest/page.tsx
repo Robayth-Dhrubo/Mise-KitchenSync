@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -61,7 +62,7 @@ export default function GuestLoginPage() {
 
                 <div className="flex flex-col items-center gap-3">
                     <div className="h-px w-10 bg-secondary" />
-                    <a href="/" className="text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-[0.25em]">Powered by Mise</a>
+                    <Link href="/" className="text-[10px] font-medium text-muted-foreground hover:text-foreground transition-colors uppercase tracking-[0.25em]">Powered by Mise</Link>
                 </div>
             </div>
         </div>

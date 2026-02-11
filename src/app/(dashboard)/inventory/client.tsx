@@ -201,11 +201,7 @@ export default function ProcurementPage() {
         setIsCreatingIngredient(true) // Reuse modal
     }
 
-    useEffect(() => {
-        fetchAllData()
-    }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-    async function fetchAllData() {
+    const fetchAllData = useCallback(async () => {
         setLoading(true)
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) return
@@ -259,7 +255,11 @@ export default function ProcurementPage() {
         } finally {
             setLoading(false)
         }
-    }
+    }, [supabase])
+
+    useEffect(() => {
+        fetchAllData()
+    }, [fetchAllData])
 
     const handleDiscover = async () => {
         setIsDiscovering(true)
@@ -878,7 +878,7 @@ export default function ProcurementPage() {
                                         <CheckCircle className="w-16 h-16 text-primary mx-auto mb-4 opacity-50" />
                                         <h3 className="text-xl font-bold text-primary mb-2">All Clear!</h3>
                                         <p className="text-muted-foreground max-w-sm mx-auto">
-                                            Your smart order list is empty. You're fully stocked or haven't started your procurement run yet.
+                                            Your smart order list is empty. You&apos;re fully stocked or haven&apos;t started your procurement run yet.
                                         </p>
                                     </div>
                                 ) : (
@@ -1043,7 +1043,7 @@ export default function ProcurementPage() {
                                         </div>
                                         <div>
                                             <h4 className="text-foreground font-medium">Location Services Disabled</h4>
-                                            <p className="text-sm text-red-300">We can't find nearby vendors without your location. Please check your browser settings.</p>
+                                            <p className="text-sm text-red-300">We can&apos;t find nearby vendors without your location. Please check your browser settings.</p>
                                         </div>
                                     </div>
                                 )}

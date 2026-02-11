@@ -5,8 +5,8 @@ import { useState, useEffect, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
     Search, Plus, Minus, CreditCard, ChevronLeft,
-    ShoppingCart, Zap, ListOrdered, Utensils,
-    MapPin, Coffee, Loader2, Trash2, Clock,
+    ShoppingCart, Zap, Utensils,
+    MapPin, Loader2, Trash2, Clock,
     Info, Pencil, Eye, ZapOff
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -115,7 +115,6 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
             const current = prev[recipeId]
             if (!current) return prev
             if (current.quantity === 1) {
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { [recipeId]: _removed, ...rest } = prev
                 return rest
             }
@@ -128,7 +127,6 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
 
     const deleteFromCart = (recipeId: string) => {
         setCart(prev => {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { [recipeId]: _removed, ...rest } = prev
             return rest
         })

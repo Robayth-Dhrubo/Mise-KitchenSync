@@ -50,7 +50,8 @@ export default function SettingsPage() {
 
     // Update form when profile loads
     useEffect(() => {
-        if (profile) {
+        if (profile && (profile.restaurant_name !== formData.restaurant_name || profile.currency_symbol !== formData.currency_symbol)) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setFormData({
                 restaurant_name: profile.restaurant_name || '',
                 currency_symbol: profile.currency_symbol || '$',

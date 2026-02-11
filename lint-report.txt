@@ -1,0 +1,224 @@
+
+> mise-kitchen-sync@0.1.0 lint
+> eslint --quiet
+
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/integrations/page.tsx
+  113:9   error  Error: This value cannot be modified
+
+Modifying a variable defined outside a component or hook is not allowed. Consider using an effect.
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/integrations/page.tsx:113:9
+  111 |
+  112 |         // Redirect to OAuth flow
+> 113 |         window.location.href = `/api/integrations/${integrationId}/auth`
+      |         ^^^^^^^^^^^^^^^ value cannot be modified
+  114 |     }
+  115 |
+  116 |     const handleDisconnect = async (integrationId: string) => {  react-hooks/immutability
+  345:27  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                   react/no-unescaped-entities
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/inventory/client.tsx
+   881:80   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   881:106  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  1046:87   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/settings/page.tsx
+  54:13  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/(dashboard)/settings/page.tsx:54:13
+  52 |     useEffect(() => {
+  53 |         if (profile) {
+> 54 |             setFormData({
+     |             ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  55 |                 restaurant_name: profile.restaurant_name || '',
+  56 |                 currency_symbol: profile.currency_symbol || '$',
+  57 |             })  react-hooks/set-state-in-effect
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/admin/team/page.tsx
+  174:83  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  272:73  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  272:86  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/app/guest/page.tsx
+  64:21  error  Do not use an `<a>` element to navigate to `/`. Use `<Link />` from `next/link` instead. See: https://nextjs.org/docs/messages/no-html-link-for-pages  @next/next/no-html-link-for-pages
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/dashboard/foh-dashboard.tsx
+  115:31   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  192:31   error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  284:129  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/kitchen/kitchen-display.tsx
+  76:27  error  Error: Cannot access variable before it is declared
+
+`refetchOrders` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/kitchen/kitchen-display.tsx:76:27
+  74 |                     }
+  75 |                     // Refetch to get full order with items
+> 76 |                     await refetchOrders()
+     |                           ^^^^^^^^^^^^^ `refetchOrders` accessed before it is declared
+  77 |                 }
+  78 |             )
+  79 |             .on(
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/kitchen/kitchen-display.tsx:114:5
+  112 |     }
+  113 |
+> 114 |     const refetchOrders = async () => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 115 |         const { data } = await supabase
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 116 |             .from('orders')
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 117 |             .select('*, order_items(*, recipe:recipes(name))')
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 118 |             .eq('status', 'paid')
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 119 |             .neq('preparation_status', 'delivered')
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 120 |             .order('created_at', { ascending: true })
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 121 |
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 122 |         if (data) setOrders(data)
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 123 |     }
+      | ^^^^^^ `refetchOrders` is declared here
+  124 |
+  125 |     const updateOrderStatus = async (orderId: string, currentStatus: string) => {
+  126 |         const config = statusConfig[currentStatus as keyof typeof statusConfig]  react-hooks/immutability
+  98:13  error  Error: Cannot access variable before it is declared
+
+`fetchHistory` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/kitchen/kitchen-display.tsx:98:13
+   96 |     useEffect(() => {
+   97 |         if (viewMode === 'history') {
+>  98 |             fetchHistory()
+      |             ^^^^^^^^^^^^ `fetchHistory` accessed before it is declared
+   99 |         }
+  100 |     }, [viewMode])
+  101 |
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/kitchen/kitchen-display.tsx:102:5
+  100 |     }, [viewMode])
+  101 |
+> 102 |     const fetchHistory = async () => {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 103 |         const { data } = await supabase
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 104 |             .from('orders')
+      …
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 111 |         if (data) setHistoryOrders(data)
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 112 |     }
+      | ^^^^^^ `fetchHistory` is declared here
+  113 |
+  114 |     const refetchOrders = async () => {
+  115 |         const { data } = await supabase                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/immutability
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/orders/order-history.tsx
+  72:72  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/guest-support.tsx
+  44:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/guest-support.tsx:44:9
+  42 |
+  43 |     useEffect(() => {
+> 44 |         fetchAllOrders()
+     |         ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  45 |
+  46 |         const channel = supabase
+  47 |             .channel('guest_support_sync')  react-hooks/set-state-in-effect
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/ird-dashboard.tsx
+  56:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/ird-dashboard.tsx:56:9
+  54 |
+  55 |     useEffect(() => {
+> 56 |         fetchOrders()
+     |         ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  57 |         fetchRooms()
+  58 |         const channel = supabase
+  59 |             .channel('ird_orders')  react-hooks/set-state-in-effect
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/live-ticket.tsx
+  37:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/live-ticket.tsx:37:9
+  35 |
+  36 |     useEffect(() => {
+> 37 |         fetchItems()
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  38 |         const channel = supabase
+  39 |             .channel(`ticket_${orderId}`)
+  40 |             .on('postgres_changes', { event: '*', schema: 'public', table: 'order_items', filter: `order_id=eq.${orderId}` }, fetchItems)  react-hooks/set-state-in-effect
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/location-ledger.tsx
+  45:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/location-ledger.tsx:45:9
+  43 |
+  44 |     useEffect(() => {
+> 45 |         fetchData()
+     |         ^^^^^^^^^ Avoid calling setState() directly within an effect
+  46 |
+  47 |         const channel = supabase
+  48 |             .channel(`location_ledger_${location.id}`)  react-hooks/set-state-in-effect
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/reservations-view.tsx
+  109:9   error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/Users/robaythshahrindhrubo/Mise-KitchenSync/src/components/pos/reservations-view.tsx:109:9
+  107 |
+  108 |     useEffect(() => {
+> 109 |         fetchData()
+      |         ^^^^^^^^^ Avoid calling setState() directly within an effect
+  110 |     }, [filter])
+  111 |
+  112 |     const handleCreate = async (e: React.FormEvent) => {  react-hooks/set-state-in-effect
+  543:78  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  react/no-unescaped-entities
+  543:90  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  react/no-unescaped-entities
+
+✖ 23 problems (23 errors, 0 warnings)
+

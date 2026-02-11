@@ -112,7 +112,7 @@ export function FohDashboard({ userName, stats, soldOutItems, activeOrders, sale
                             "text-[10px] font-black uppercase tracking-[0.2em]",
                             soldOutItems.length > 0 ? "text-red-500" : "text-muted-foreground"
                         )}>
-                            86'd Items
+                            86&apos;d Items
                         </CardTitle>
                         <UtensilsCrossed className={cn("w-4 h-4", soldOutItems.length > 0 ? "text-red-500" : "text-muted-foreground")} />
                     </CardHeader>
@@ -189,7 +189,7 @@ export function FohDashboard({ userName, stats, soldOutItems, activeOrders, sale
                     <div className="flex items-center justify-between">
                         <h2 className="text-lg font-black text-foreground uppercase tracking-tight flex items-center gap-2">
                             <AlertTriangle className="w-5 h-5 text-red-500" />
-                            86'd Board
+                            86&apos;d Board
                         </h2>
                         <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                             DO NOT SELL
@@ -281,7 +281,7 @@ export function FohDashboard({ userName, stats, soldOutItems, activeOrders, sale
                     </h2>
                     <Card className="bg-card/50 border-white/5">
                         <CardHeader className="pb-2">
-                            <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Today's Revenue</CardTitle>
+                            <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Today&apos;s Revenue</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <div className="text-4xl font-black text-primary mb-2 tabular-nums">

@@ -47,6 +47,29 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
     const [exitingOrders, setExitingOrders] = useState<Set<string>>(new Set())
     const audioRef = useRef<HTMLAudioElement | null>(null)
 
+    const fetchHistory = async () => {
+        const { data } = await supabase
+            .from('orders')
+            .select('*, order_items(*, recipe:recipes(name))')
+            .eq('status', 'paid')
+            .eq('preparation_status', 'delivered')
+            .order('created_at', { ascending: false })
+            .limit(50)
+
+        if (data) setHistoryOrders(data)
+    }
+
+    const refetchOrders = async () => {
+        const { data } = await supabase
+            .from('orders')
+            .select('*, order_items(*, recipe:recipes(name))')
+            .eq('status', 'paid')
+            .neq('preparation_status', 'delivered')
+            .order('created_at', { ascending: true })
+
+        if (data) setOrders(data)
+    }
+
     // Clock update
     useEffect(() => {
         const interval = setInterval(() => setCurrentTime(new Date()), 1000)
@@ -95,32 +118,12 @@ export function KitchenDisplay({ initialOrders }: KdsProps) {
     // Load history when tab is switched
     useEffect(() => {
         if (viewMode === 'history') {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             fetchHistory()
         }
     }, [viewMode])
 
-    const fetchHistory = async () => {
-        const { data } = await supabase
-            .from('orders')
-            .select('*, order_items(*, recipe:recipes(name))')
-            .eq('status', 'paid')
-            .eq('preparation_status', 'delivered')
-            .order('created_at', { ascending: false })
-            .limit(50)
 
-        if (data) setHistoryOrders(data)
-    }
-
-    const refetchOrders = async () => {
-        const { data } = await supabase
-            .from('orders')
-            .select('*, order_items(*, recipe:recipes(name))')
-            .eq('status', 'paid')
-            .neq('preparation_status', 'delivered')
-            .order('created_at', { ascending: true })
-
-        if (data) setOrders(data)
-    }
 
     const updateOrderStatus = async (orderId: string, currentStatus: string) => {
         const config = statusConfig[currentStatus as keyof typeof statusConfig]

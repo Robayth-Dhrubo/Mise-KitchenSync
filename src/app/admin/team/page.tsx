@@ -171,7 +171,7 @@ export default function AdminTeamPage() {
                             <DialogHeader>
                                 <DialogTitle>Invite New Team Members</DialogTitle>
                                 <DialogDescription className="text-muted-foreground">
-                                    Send email invitations to join your restaurant's workspace.
+                                    Send email invitations to join your restaurant&apos;s workspace.
                                 </DialogDescription>
                             </DialogHeader>
                             <div className="space-y-4 mt-4">
@@ -269,7 +269,7 @@ export default function AdminTeamPage() {
                                     {filteredUsers.length === 0 ? (
                                         <TableRow>
                                             <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
-                                                No users found matching "{searchTerm}"
+                                                No users found matching &quot;{searchTerm}&quot;
                                             </TableCell>
                                         </TableRow>
                                     ) : (

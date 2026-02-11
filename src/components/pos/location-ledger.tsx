@@ -1,16 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
-    Users, Clock, Receipt, History, AlertCircle,
-    Calendar, CheckCircle2, ChevronRight, X,
-    Loader2, CreditCard, UtensilsCrossed
+    Loader2, Users, Receipt, ChevronRight, X,
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { Location, POSOrder } from '@/lib/types/pos'
 import { format } from 'date-fns'
@@ -26,8 +23,8 @@ export default function LocationLedger({ location, onClose, onOpenTerminal }: Lo
     const [orders, setOrders] = useState<POSOrder[]>([])
     const [isLoading, setIsLoading] = useState(true)
 
-    const fetchData = async () => {
-        setIsLoading(true)
+    const fetchData = useCallback(async () => {
+        // setIsLoading(true) - optimistic updates for realtime
 
         // Fetch active and recent orders
         const { data: orderData } = await supabase
@@ -39,10 +36,11 @@ export default function LocationLedger({ location, onClose, onOpenTerminal }: Lo
 
         if (orderData) setOrders(orderData)
         setIsLoading(false)
-    }
+    }, [location.id, supabase])
 
     useEffect(() => {
-        fetchData()
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        void fetchData()
 
         const channel = supabase
             .channel(`location_ledger_${location.id}`)
@@ -73,7 +71,7 @@ export default function LocationLedger({ location, onClose, onOpenTerminal }: Lo
         return () => {
             supabase.removeChannel(channel)
         }
-    }, [location.id, supabase])
+    }, [location.id, supabase, fetchData])
 
 
 

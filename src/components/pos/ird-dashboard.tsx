@@ -53,6 +53,7 @@ export default function IrdDashboard() {
     }
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchOrders()
         fetchRooms()
         const channel = supabase

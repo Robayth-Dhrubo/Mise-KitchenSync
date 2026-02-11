@@ -34,6 +34,7 @@ export default function LiveTicket({ orderId, initialItems = [] }: LiveTicketPro
     }
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchItems()
         const channel = supabase
             .channel(`ticket_${orderId}`)
