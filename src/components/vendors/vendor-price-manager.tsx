@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Plus, Trash2, Save, Store, DollarSign, Link as LinkIcon, Loader2, Globe } from 'lucide-react'
+import { Plus, Trash2, Store, DollarSign, Link as LinkIcon, Loader2, Globe } from 'lucide-react'
 import { toast } from 'sonner'
 import { Ingredient, VendorProduct, Supplier } from '@/lib/types/database'
 import { scrapeAndSaveProduct } from '@/app/actions/scrape-product'
@@ -52,7 +52,7 @@ export function VendorPriceManager({ ingredient, vendors, existingPrices, onUpda
             } else {
                 toast.error(`Scrape failed: ${result.error}`)
             }
-        } catch (error) {
+        } catch {
             toast.error('An unexpected error occurred')
         } finally {
             setIsLoading(false)

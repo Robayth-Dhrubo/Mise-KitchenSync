@@ -1,9 +1,9 @@
 'use client'
+/* eslint-disable @next/next/no-img-element */
 
-import { useState, useMemo, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import Link from 'next/link'
-import { Plus, Minus, ShoppingBag, ChevronRight, Star, Clock, CreditCard, ShieldCheck, ArrowLeft, CheckCircle2, Eye, Zap, ZapOff, Info, Pencil, BookOpen, LogOut, Receipt, Download, Share2, Trash2, MapPin, ChefHat, Utensils, X } from 'lucide-react'
+import { Plus, Minus, ShoppingBag, Clock, ArrowLeft, CheckCircle2, LogOut, ChefHat } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -12,8 +12,18 @@ import { toast } from 'sonner'
 import { isRecipeInStock } from '@/lib/calculations'
 import { cn } from '@/lib/utils'
 
+import { POSOrder, POSOrderItem } from '@/lib/types/pos'
+import { Recipe, RecipeItemWithIngredient } from '@/lib/types/database'
+
+interface ExtendedRecipe extends Recipe {
+    image: string
+    category: string
+    is_in_stock: boolean
+    max_servings: number
+}
+
 interface GuestPortalProps {
-    recipes: any[]
+    recipes: Recipe[]
     room: string
     hotelId: string
     locationId?: string
@@ -23,25 +33,20 @@ interface GuestPortalProps {
 
 type MenuStep = 'menu' | 'cart' | 'payment' | 'success' | 'tracking' | 'receipt'
 
-import { DEMO_ASSETS, ASSET_IMAGES } from './menu-data'
+import { ASSET_IMAGES } from './menu-data'
 
 export function GuestMenu({ recipes: initialRecipes, room, hotelId, locationId, locationType, isPreview = false }: GuestPortalProps) {
     const router = useRouter()
     const supabase = createClient()
-    const [cart, setCart] = useState<Record<string, any>>({})
+    const [cart, setCart] = useState<Record<string, { recipe: ExtendedRecipe; quantity: number }>>({})
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [isUpdating, setIsUpdating] = useState<string | null>(null)
     const [step, setStep] = useState<MenuStep>('menu')
     const [activeCategory, setActiveCategory] = useState<string>('all')
-    const [showPrintOptions, setShowPrintOptions] = useState(false)
-    const [hideRecipesForPrint, setHideRecipesForPrint] = useState(false)
-    const [activeOrders, setActiveOrders] = useState<any[]>([])
+    const [activeOrders, setActiveOrders] = useState<POSOrder[]>([])
     const [sessionId, setSessionId] = useState<string | null>(null)
     const [guestName, setGuestName] = useState<string>('')
-    const [recoveryPin, setRecoveryPin] = useState<string>('')
-    const [isRecovering, setIsRecovering] = useState(false)
     const [unlockedPins, setUnlockedPins] = useState<Set<string>>(new Set())
-    const [selectedOrderForReceipt, setSelectedOrderForReceipt] = useState<any>(null)
+    const [selectedOrderForReceipt, setSelectedOrderForReceipt] = useState<POSOrder | null>(null)
     const [lastTrackingPin, setLastTrackingPin] = useState<string | null>(null)
 
     // Handle deep-linking via PIN parameter
@@ -93,20 +98,13 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, locationId, 
         if (stored) {
             try {
                 setUnlockedPins(new Set(JSON.parse(stored)))
-            } catch (e) {
+            } catch {
                 console.error("Failed to parse unlocked pins")
             }
         }
     }, [])
 
-    const handlePrint = (withRecipes: boolean) => {
-        setHideRecipesForPrint(!withRecipes)
-        setShowPrintOptions(false)
-        setTimeout(() => {
-            window.print()
-            setTimeout(() => setHideRecipesForPrint(false), 500)
-        }, 100)
-    }
+
 
     // Realtime subscription
     useEffect(() => {
@@ -145,7 +143,7 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, locationId, 
                 schema: 'public',
                 table: 'orders',
                 filter: `location_id=eq.${locationId}`
-            }, (payload) => {
+            }, () => {
                 fetchOrders();
             })
             .subscribe()
@@ -153,30 +151,27 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, locationId, 
         return () => { supabase.removeChannel(channel) }
     }, [locationId, supabase, isPreview, sessionId])
 
-    const recipes = initialRecipes
+    const recipes = (initialRecipes
         .map(r => ({
             ...r,
-            image: r.image_url || r.image || ASSET_IMAGES.main,
+            image: r.image_url || ASSET_IMAGES.main,
             category: r.category || 'other',
             is_in_stock: isRecipeInStock(r.recipe_items || []),
-            max_servings: r.recipe_items?.length > 0
-                ? Math.min(...r.recipe_items.map((item: any) =>
+            max_servings: (r.recipe_items && r.recipe_items.length > 0)
+                ? Math.min(...r.recipe_items.map((item: RecipeItemWithIngredient) =>
                     item.ingredient?.current_stock
                         ? Math.floor(item.ingredient.current_stock / (item.quantity_needed || 1))
                         : 999
                 ))
                 : 999
-        }))
-        // We show all items, but mark OOS ones visually
-        .filter(r => true)
+        })) as ExtendedRecipe[]
+    ).filter(() => true)
 
     const categories = ['all', ...Array.from(new Set(recipes.map(r => r.category || 'other')))]
 
-    const filteredRecipes = activeCategory === 'all'
-        ? recipes
-        : recipes.filter(r => r.category === activeCategory)
 
-    const addToCart = (recipe: any) => {
+
+    const addToCart = (recipe: ExtendedRecipe) => {
         if (!isPreview && !recipe.is_in_stock) {
             toast.error('Item is currently sold out')
             return
@@ -269,8 +264,8 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, locationId, 
             setStep('success')
             setCart({}) // Clear cart
             toast.success('Order Placed Successfully')
-        } catch (err: any) {
-            toast.error(err.message)
+        } catch (err) {
+            toast.error((err as Error).message)
         } finally {
             setIsSubmitting(false)
         }
@@ -308,7 +303,7 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, locationId, 
         </div>
     )
 
-    const TrackingCard = ({ order }: { order: any }) => (
+    const TrackingCard = ({ order }: { order: POSOrder }) => (
         <Card className="bg-card/60 border-primary/15 backdrop-blur-md overflow-hidden group hover:border-primary/25 transition-all">
             <CardContent className="p-6">
                 <div className="flex justify-between items-start mb-4">
@@ -330,7 +325,7 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, locationId, 
                 </div>
 
                 <div className="space-y-3 mb-6">
-                    {order.order_items?.map((item: any, idx: number) => (
+                    {order.order_items?.map((item: POSOrderItem, idx: number) => (
                         <div key={idx} className="flex justify-between text-xs items-center">
                             <span className="text-foreground/80 font-medium">
                                 <span className="text-primary font-bold mr-2">{item.quantity}x</span>
@@ -396,7 +391,7 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, locationId, 
                     {/* Receipt Items */}
                     <div className="p-8 bg-background">
                         <div className="space-y-3">
-                            {selectedOrderForReceipt.order_items?.map((item: any, idx: number) => (
+                            {selectedOrderForReceipt.order_items?.map((item: POSOrderItem, idx: number) => (
                                 <div key={idx} className="flex justify-between text-xs group">
                                     <div className="flex gap-3">
                                         <span className="font-bold">{item.quantity}x</span>
@@ -664,7 +659,7 @@ export function GuestMenu({ recipes: initialRecipes, room, hotelId, locationId, 
                         {itemCount > 0 ? (
                             <div className="space-y-6">
                                 <div className="space-y-4">
-                                    {Object.values(cart).map((item: any) => (
+                                    {Object.values(cart).map((item) => (
                                         <Card key={item.recipe.id} className="bg-primary/5 border-primary/10 overflow-hidden">
                                             <div className="flex gap-4 p-4">
                                                 <div className="w-20 h-20 bg-muted rounded-lg overflow-hidden shrink-0">

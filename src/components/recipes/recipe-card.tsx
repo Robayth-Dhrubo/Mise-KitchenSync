@@ -22,8 +22,7 @@ import {
     AlertDialogCancel,
     AlertDialogContent,
     AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
+
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
@@ -168,7 +167,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
                                     <div className="space-y-2">
                                         <AlertDialogTitle className="text-3xl font-black text-foreground tracking-tighter">Decommission Asset?</AlertDialogTitle>
                                         <AlertDialogDescription className="text-muted-foreground font-medium">
-                                            This action is irreversible. "{recipe.name}" will be purged from the vault.
+                                            This action is irreversible. &quot;{recipe.name}&quot; will be purged from the vault.
                                         </AlertDialogDescription>
                                     </div>
                                     <div className="flex gap-4 w-full pt-4">

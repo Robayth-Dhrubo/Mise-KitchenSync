@@ -33,12 +33,21 @@ export default async function ReportsPage() {
         .select(`
             id,
             name,
+            menu_price,
             recipe_items (
+                id,
+                recipe_id,
+                ingredient_id,
                 quantity_needed,
                 unit_used,
                 ingredient:ingredients (
                     id,
-                    name
+                    name,
+                    user_id,
+                    purchase_price,
+                    purchase_unit,
+                    conversion_ratio,
+                    current_stock
                 )
             )
         `)
@@ -62,7 +71,7 @@ export default async function ReportsPage() {
                 </div>
             </div>
 
-            <ReportsDashboard salesLogs={salesLogs || []} recipes={recipes || []} />
+            <ReportsDashboard salesLogs={salesLogs as any} recipes={recipes as any} />
         </div>
     )
 }

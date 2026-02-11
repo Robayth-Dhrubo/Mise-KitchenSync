@@ -1,11 +1,12 @@
 'use client'
+/* eslint-disable @next/next/no-img-element */
 
 import { useState, useEffect, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import {
     Search, Plus, Minus, CreditCard, ChevronLeft,
     ShoppingCart, Zap, ListOrdered, Utensils,
-    MapPin, Coffee, UtensilsCrossed, Loader2, Trash2, Clock,
+    MapPin, Coffee, Loader2, Trash2, Clock,
     Info, Pencil, Eye, ZapOff
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -16,17 +17,19 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
+import { Recipe, RecipeItemWithIngredient } from '@/lib/types/database'
+import { Location } from '@/lib/types/pos'
 
-const categorize = (recipe: any) => {
+const categorize = (recipe: Recipe | any) => {
     if (typeof recipe.category === 'object' && recipe.category !== null) {
         return (recipe.category as any).name || 'Main'
     }
     return recipe.category || 'Main'
 }
 
-const isRecipeInStock = (recipeItems: any[]) => {
-    return recipeItems.every((item: any) => {
+const isRecipeInStock = (recipeItems: RecipeItemWithIngredient[]) => {
+    return recipeItems.every((item) => {
         if (!item.ingredient) return true
         const currentStock = item.ingredient.current_stock ?? 0
         const ratio = item.ingredient.conversion_ratio ?? 1
@@ -35,16 +38,16 @@ const isRecipeInStock = (recipeItems: any[]) => {
     })
 }
 
-export default function PosSystem({ recipes: initialRecipes = [], initialLocation = null }: { recipes?: any[], initialLocation?: any }) {
+export default function PosSystem({ recipes: initialRecipes = [], initialLocation = null }: { recipes?: Recipe[], initialLocation?: Location | null }) {
     const router = useRouter()
     const supabase = useMemo(() => createClient(), [])
-    const queryClient = useQueryClient()
-    const [cart, setCart] = useState<Record<string, { recipe: any, quantity: number }>>({})
+    // const queryClient = useQueryClient()
+    const [cart, setCart] = useState<Record<string, { recipe: Recipe, quantity: number }>>({})
     const [searchQuery, setSearchQuery] = useState('')
     const [category, setCategory] = useState<string>('All')
     const [orderType, setOrderType] = useState<'dine_in' | 'takeaway' | 'room_service'>('dine_in')
-    const [recipes, setRecipes] = useState<any[]>(initialRecipes)
-    const [location, setLocation] = useState<any>(initialLocation)
+    const [recipes, setRecipes] = useState<Recipe[]>(initialRecipes)
+    const [location, setLocation] = useState<Location | null>(initialLocation)
     const [manualLocation, setManualLocation] = useState('')
     const [showMobileCart, setShowMobileCart] = useState(false)
     const [isPreorder, setIsPreorder] = useState(false)
@@ -75,7 +78,7 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
                         setRecipes(current =>
                             current.map(recipe =>
                                 recipe.id === payload.new.id
-                                    ? { ...recipe, ...payload.new }
+                                    ? { ...recipe, ...payload.new } as Recipe
                                     : recipe
                             )
                         )
@@ -89,14 +92,7 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
         }
     }, [supabase])
 
-    const categorizedRecipes = useMemo(() => {
-        return recipes.reduce((acc, recipe) => {
-            const cat = categorize(recipe)
-            if (!acc[cat]) acc[cat] = []
-            acc[cat].push(recipe)
-            return acc
-        }, {} as Record<string, any[]>)
-    }, [recipes])
+
 
     const filteredRecipes = recipes.filter(r => {
         const matchesSearch = r.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -104,7 +100,7 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
         return matchesSearch && matchesCategory
     })
 
-    const addToCart = (recipe: any) => {
+    const addToCart = (recipe: Recipe) => {
         setCart(prev => ({
             ...prev,
             [recipe.id]: {
@@ -119,7 +115,8 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
             const current = prev[recipeId]
             if (!current) return prev
             if (current.quantity === 1) {
-                const { [recipeId]: _, ...rest } = prev
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { [recipeId]: _removed, ...rest } = prev
                 return rest
             }
             return {
@@ -131,7 +128,8 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
 
     const deleteFromCart = (recipeId: string) => {
         setCart(prev => {
-            const { [recipeId]: _, ...rest } = prev
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { [recipeId]: _removed, ...rest } = prev
             return rest
         })
     }
@@ -140,7 +138,7 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
 
 
 
-    const toggleAvailability = async (recipe: any) => {
+    const toggleAvailability = async (recipe: Recipe) => {
         const newStatus = !recipe.is_available
         // Optimistic update
         setRecipes(current =>
@@ -311,8 +309,8 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
                                 const inStock = isRecipeInStock(recipe.recipe_items || [])
                                 const isAvailable = recipe.is_available !== false && inStock
 
-                                const maxServings = recipe.recipe_items?.length > 0
-                                    ? Math.min(...recipe.recipe_items.map((item: any) =>
+                                const maxServings = (recipe.recipe_items && recipe.recipe_items.length > 0)
+                                    ? Math.min(...recipe.recipe_items.map((item) =>
                                         item.ingredient?.current_stock
                                             ? Math.floor(item.ingredient.current_stock / (item.quantity_needed || 1))
                                             : 999
@@ -380,16 +378,16 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
                                                 </div>
 
                                                 {/* Composition Manifest */}
-                                                {recipe.recipe_items?.length > 0 && (
+                                                {(recipe.recipe_items?.length ?? 0) > 0 && (
                                                     <div className="pt-2 space-y-2 border-t border-white/5 mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                                         <div className="flex items-center gap-2 text-[8px] font-black text-muted-foreground uppercase tracking-widest">
                                                             <Info className="w-3 h-3" />
                                                             Composition Manifest
                                                         </div>
                                                         <div className="flex flex-wrap gap-1.5">
-                                                            {recipe.recipe_items.map((item: any, idx: number) => (
+                                                            {recipe.recipe_items?.map((item, idx) => (
                                                                 <Badge key={idx} variant="outline" className="bg-white/5 border-white/5 text-[7px] text-muted-foreground font-medium px-1.5 py-0.5 lowercase">
-                                                                    {item.quantity_needed}{item.ingredient?.unit} {item.ingredient?.name}
+                                                                    {item.quantity_needed}{item.unit_used} {item.ingredient?.name}
                                                                 </Badge>
                                                             ))}
                                                         </div>

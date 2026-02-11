@@ -16,7 +16,7 @@ export interface Location {
     height: number
     rotation: number
     capacity: number
-    metadata?: any
+    metadata?: Record<string, unknown>
     created_at?: string
 }
 
@@ -56,6 +56,7 @@ export interface POSOrderItem {
     quantity: number
     unit_price: number
     notes?: string
+    recipe_name?: string
     recipe?: {
         name: string
         image_url?: string

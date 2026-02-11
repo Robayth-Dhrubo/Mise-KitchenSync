@@ -64,7 +64,7 @@ export function isRecipeInStock(items: RecipeItemWithIngredient[]): boolean {
 
         const currentStock = item.ingredient.current_stock ?? 0
         const ratio = item.ingredient.conversion_ratio ?? 1
-        const needed = item.quantity_needed ?? (item as any).quantity ?? 0
+        const needed = item.quantity_needed ?? item.quantity ?? 0
 
         const stockInBaseUnits = currentStock * ratio
         return stockInBaseUnits >= needed

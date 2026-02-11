@@ -17,13 +17,24 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { TrendingUp, Package, Users, DollarSign } from 'lucide-react'
 import { MenuMatrixChart } from '@/components/reports/MenuMatrixChart'
 import { calculateRecipeCost } from '@/lib/calculations'
+import { Recipe, RecipeItemWithIngredient } from '@/lib/types/database'
 
-interface ReportsDashboardProps {
-    salesLogs: any[]
-    recipes: any[]
+interface SalesLog {
+    recipe_id: string
+    quantity_sold: number
+    sale_date: string
+    recipe?: {
+        name: string
+        menu_price: number
+    }
 }
 
-import { cn } from '@/lib/utils'
+interface ReportsDashboardProps {
+    salesLogs: SalesLog[]
+    recipes: Recipe[]
+}
+
+
 
 export function ReportsDashboard({ salesLogs, recipes }: ReportsDashboardProps) {
 
@@ -56,7 +67,7 @@ export function ReportsDashboard({ salesLogs, recipes }: ReportsDashboardProps) 
         salesLogs.forEach(log => {
             const recipe = recipes.find(r => r.id === log.recipe_id)
             if (recipe && recipe.recipe_items) {
-                recipe.recipe_items.forEach((item: any) => {
+                recipe.recipe_items.forEach((item: RecipeItemWithIngredient) => {
                     const name = item.ingredient?.name || 'Unknown'
                     if (!ingredientUsage[name]) {
                         ingredientUsage[name] = { name, amount: 0, unit: item.unit_used }
@@ -291,7 +302,8 @@ export function ReportsDashboard({ salesLogs, recipes }: ReportsDashboardProps) 
                                 <Tooltip
                                     cursor={{ fill: 'rgba(255, 255, 255, 0.02)' }}
                                     contentStyle={{ backgroundColor: 'rgba(23, 23, 23, 0.9)', border: '1px solid rgba(255, 255, 255, 0.05)', borderRadius: '16px', backdropFilter: 'blur(10px)' }}
-                                    formatter={(value, name, props: any) => [`${value} ${props.payload.unit}`, 'Amount Consumed']}
+                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                                    formatter={(value: number | undefined, name: string | undefined, props: any) => [`${value} ${props?.payload?.unit || ''}`, 'Amount Consumed']}
                                 />
                                 <Bar dataKey="amount" fill="#8b5cf6" radius={[12, 12, 0, 0]} fillOpacity={0.8} />
                             </BarChart>

@@ -64,6 +64,7 @@ export interface RecipeItemWithIngredient {
     quantity_needed: number
     unit_used: string
     ingredient: Ingredient
+    quantity?: number // For compatibility with non-standard queries
 }
 
 export interface Recipe {

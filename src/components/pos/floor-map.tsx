@@ -3,13 +3,11 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { Users, Clock, Loader2, AlertCircle, Calendar, Receipt, ChevronRight, X, ExternalLink, History, Bell } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Users, Clock, Loader2, AlertCircle, Calendar, X, Bell } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Location, POSOrder, Reservation } from '@/lib/types/pos'
-import { Separator } from '@/components/ui/separator'
 import LocationLedger from './location-ledger'
 
 // Removed local Location interface
@@ -25,7 +23,7 @@ export default function FloorMap() {
     const [preOrders, setPreOrders] = useState<POSOrder[]>([])
     const [activeOrders, setActiveOrders] = useState<POSOrder[]>([])
     const [isLoading, setIsLoading] = useState(true)
-    const [isSaving, setIsSaving] = useState(false)
+
 
     // Architect Logic
     const containerRef = useRef<HTMLDivElement>(null)
@@ -42,12 +40,31 @@ export default function FloorMap() {
         handle?: 'e' | 's' | 'se'
     } | null>(null)
 
+    const handleInteractionEnd = async () => {
+        if (!interactionState) return
+        const location = locations.find(l => l.id === interactionState.id)
+        if (location) {
+            const { error } = await supabase.from('locations').update({
+                x_pos: location.x_pos,
+                y_pos: location.y_pos,
+                width: location.width,
+                height: location.height,
+                rotation: location.rotation
+            }).eq('id', location.id)
+            if (error) {
+                console.error('Error updating location:', error.message, error.details, error.hint)
+            }
+        }
+        setInteractionState(null)
+    }
+
     useEffect(() => {
         const handleGlobalMouseUp = () => {
             if (interactionState) handleInteractionEnd()
         }
         window.addEventListener('mouseup', handleGlobalMouseUp)
         return () => window.removeEventListener('mouseup', handleGlobalMouseUp)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [interactionState])
 
     const handleInteractionStart = (e: React.MouseEvent | React.TouchEvent, location: Location, type: 'drag' | 'resize' | 'rotate', handle?: 'e' | 's' | 'se') => {
@@ -109,23 +126,7 @@ export default function FloorMap() {
         }))
     }
 
-    const handleInteractionEnd = async () => {
-        if (!interactionState) return
-        const location = locations.find(l => l.id === interactionState.id)
-        if (location) {
-            const { error } = await supabase.from('locations').update({
-                x_pos: location.x_pos,
-                y_pos: location.y_pos,
-                width: location.width,
-                height: location.height,
-                rotation: location.rotation
-            }).eq('id', location.id)
-            if (error) {
-                console.error('Error updating location:', error.message, error.details, error.hint)
-            }
-        }
-        setInteractionState(null)
-    }
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -186,15 +187,7 @@ export default function FloorMap() {
     const floorElements = useMemo(() => locations.filter(l => l.type !== 'room'), [locations])
     const rooms = useMemo(() => locations.filter(l => l.type === 'room'), [locations])
 
-    const getStatusColor = (status: Location['status']) => {
-        switch (status) {
-            case 'available': return 'bg-primary/10 text-primary border-primary/20'
-            case 'occupied': return 'bg-amber-500/10 text-amber-500 border-amber-500/20'
-            case 'dirty': return 'bg-red-500/10 text-red-500 border-red-500/20'
-            case 'reserved': return 'bg-purple-500/10 text-purple-500 border-purple-500/20'
-            default: return 'bg-muted-foreground/10 text-muted-foreground border-border/20'
-        }
-    }
+
 
     const checkCollision = (x: number, y: number, w: number, h: number, existing: Location[]) => {
         // Assume rough percentages for conversion validity
@@ -220,14 +213,12 @@ export default function FloorMap() {
     }
 
     const handleAddLocation = async (type: Location['type'] = 'table', w?: number, h?: number, subtype?: string) => {
-        setIsSaving(true)
         const { data: { user } } = await supabase.auth.getUser()
         if (!user) {
-            setIsSaving(false)
             return
         }
 
-        const isArchitectural = ['wall', 'kitchen', 'restroom', 'bar', 'entrance', 'obstacle'].includes(type)
+
         const baseName = type === 'wall' ? 'Wall' : type === 'table' ? 'T' : type.charAt(0).toUpperCase() + type.slice(1)
 
         // Determine dimensions
@@ -274,23 +265,18 @@ export default function FloorMap() {
 
         const { error } = await supabase.from('locations').insert(newLocation)
         if (error) console.error('Error adding location:', error)
-        setIsSaving(false)
+        if (error) console.error('Error adding location:', error)
     }
 
     const handleDeleteLocation = async (id: string, e: React.MouseEvent) => {
         e.stopPropagation()
         if (!confirm('Are you sure you want to delete this location?')) return
 
-        setIsSaving(true)
         const { error } = await supabase.from('locations').delete().eq('id', id)
         if (error) console.error('Error deleting location:', error)
-        setIsSaving(false)
     }
 
-    const handleUpdatePosition = async (id: string, x: number, y: number) => {
-        const { error } = await supabase.from('locations').update({ x_pos: x, y_pos: y }).eq('id', id)
-        if (error) console.error('Error updating position:', error)
-    }
+
 
     const handleUpdateCapacity = async (id: string, capacity: number, e: React.MouseEvent) => {
         e.stopPropagation()
@@ -436,9 +422,9 @@ export default function FloorMap() {
                                             style={style}
                                             onMouseDown={(e) => handleInteractionStart(e, element, 'drag')}
                                             onTouchStart={(e) => handleInteractionStart(e, element, 'drag')}
-                                            onClick={(e) => {
+                                            onClick={() => {
                                                 if (interactionState) return
-                                                !isEditMode && setSelectedLocation(element)
+                                                if (!isEditMode) setSelectedLocation(element)
                                             }}
                                         >
                                             {/* Handles for Edit Mode */}
@@ -511,15 +497,15 @@ export default function FloorMap() {
                                             {/* --- CONTENT FOR ZONES --- */}
                                             {['kitchen', 'restroom', 'bar', 'entrance'].includes(element.type) && (
                                                 <div className="flex flex-col items-center justify-center opacity-40 group-hover:opacity-100 transition-opacity">
-                                                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">{element.type === 'entrance' ? element.metadata?.subtype || 'DOOR' : element.type}</span>
+                                                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.3em]">{element.type === 'entrance' ? (element.metadata?.subtype as string) || 'DOOR' : element.type}</span>
                                                     {element.type !== 'entrance' && <span className="text-xs font-black text-foreground tracking-tight uppercase">{element.name}</span>}
                                                     {element.type === 'entrance' && (
                                                         <div className={cn(
                                                             "mt-1 px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest",
-                                                            element.metadata?.subtype === 'entry' ? "bg-primary text-black" :
-                                                                element.metadata?.subtype === 'exit' ? "bg-red-500 text-foreground" : "bg-white/10 text-foreground"
+                                                            (element.metadata?.subtype as string) === 'entry' ? "bg-primary text-black" :
+                                                                (element.metadata?.subtype as string) === 'exit' ? "bg-red-500 text-foreground" : "bg-white/10 text-foreground"
                                                         )}>
-                                                            {element.metadata?.subtype === 'entry' ? 'ENTER' : element.metadata?.subtype === 'exit' ? 'EXIT' : 'DOOR'}
+                                                            {(element.metadata?.subtype as string) === 'entry' ? 'ENTER' : (element.metadata?.subtype as string) === 'exit' ? 'EXIT' : 'DOOR'}
                                                         </div>
                                                     )}
                                                 </div>

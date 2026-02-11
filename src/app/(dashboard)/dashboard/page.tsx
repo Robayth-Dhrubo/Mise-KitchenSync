@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable @typescript-eslint/no-explicit-any, @next/next/no-img-element */
 
 import { useState, useEffect, useMemo, useCallback } from 'react'
 import {
@@ -270,12 +271,10 @@ export default function DashboardPage() {
                     const ordersResult = results[resultIndex + 2]
 
                     if (occupiedResult?.status === 'fulfilled') {
-                        // @ts-ignore
-                        setFohStats(prev => ({ ...prev, occupiedTables: occupiedResult.value.count || 0 }))
+                        setFohStats(prev => ({ ...prev, occupiedTables: (occupiedResult.value as any).count || 0 }))
                     }
                     if (reservationsResult?.status === 'fulfilled') {
-                        // @ts-ignore
-                        setFohStats(prev => ({ ...prev, totalReservations: reservationsResult.value.count || 0 }))
+                        setFohStats(prev => ({ ...prev, totalReservations: (reservationsResult.value as any).count || 0 }))
                     }
                     if (ordersResult.status === 'rejected' || (ordersResult.status === 'fulfilled' && ordersResult.value.error)) {
                         const error = ordersResult.status === 'rejected' ? ordersResult.reason : ordersResult.value.error;
@@ -791,7 +790,7 @@ export default function DashboardPage() {
                                                 <div className="flex items-center justify-between">
                                                     <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
                                                         <UtensilsCrossed className={cn("w-4 h-4", soldOutItems.length > 0 ? "text-red-500" : "text-primary")} />
-                                                        86'd Board
+                                                        86&apos;d Board
                                                     </CardTitle>
                                                     <Badge variant="outline" className={cn(
                                                         "font-mono text-[9px] border-white/10",

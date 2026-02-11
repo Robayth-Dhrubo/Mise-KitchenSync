@@ -105,7 +105,7 @@ describe('isRecipeInStock', () => {
     })
 
     it('returns true if ingredient is missing (current behavior)', () => {
-        const missingIngredientItem = { ...mockItem, ingredient: undefined } as any
+        const missingIngredientItem = { ...mockItem, ingredient: undefined } as unknown as RecipeItemWithIngredient
         expect(isRecipeInStock([missingIngredientItem])).toBe(true)
     })
 

@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Upload, Camera, FileText, Loader2, CheckCircle2 } from 'lucide-react'
+import { Upload, Camera, Loader2, CheckCircle2 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
@@ -13,9 +12,23 @@ interface InvoiceScannerProps {
     onInvoiceProcessed?: () => void
 }
 
+interface InvoiceItem {
+    name: string
+    qty: number
+    unit: string
+    price: number
+    original_name?: string
+}
+
+interface InvoiceResult {
+    vendor: string
+    total: number
+    items: InvoiceItem[]
+}
+
 export function InvoiceScanner({ onInvoiceProcessed }: InvoiceScannerProps) {
     const [isUploading, setIsUploading] = useState(false)
-    const [scanResult, setScanResult] = useState<any>(null)
+    const [scanResult, setScanResult] = useState<InvoiceResult | null>(null)
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
@@ -27,8 +40,8 @@ export function InvoiceScanner({ onInvoiceProcessed }: InvoiceScannerProps) {
 
         try {
             const result = await processInvoiceAction(formData)
-            if (result.success) {
-                setScanResult(result.data)
+            if (result.success && result.data) {
+                setScanResult(result.data as InvoiceResult)
                 toast.success('Invoice processed successfully!', {
                     description: `Identified ${result.data?.items.length} items.`
                 })
@@ -40,7 +53,7 @@ export function InvoiceScanner({ onInvoiceProcessed }: InvoiceScannerProps) {
                     description: result.error
                 })
             }
-        } catch (error) {
+        } catch {
             toast.error('Error uploading file')
         } finally {
             setIsUploading(false)
@@ -115,7 +128,7 @@ export function InvoiceScanner({ onInvoiceProcessed }: InvoiceScannerProps) {
 
                                 <div className="space-y-2 mt-4">
                                     <p className="text-xs font-bold uppercase text-muted-foreground tracking-wider">Extracted Items</p>
-                                    {scanResult.items.map((item: any, i: number) => (
+                                    {scanResult.items.map((item, i) => (
                                         <div key={i} className="flex justify-between items-center p-3 rounded-lg bg-card border border-border">
                                             <div>
                                                 <p className="text-sm font-medium text-foreground">{item.name}</p>
