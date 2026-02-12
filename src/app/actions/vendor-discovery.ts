@@ -69,11 +69,6 @@ export async function discoverLocalVendors(radiusKm: number = 50) {
         }
     }
 
-    const apiKey = process.env.GOOGLE_PLACES_API_KEY
-    if (!apiKey) {
-        return { success: false, error: 'Google Places API key not configured service-side' }
-    }
-
     // Get blacklisted place IDs
     const { data: blacklist } = await supabase
         .from('vendor_blacklist')
@@ -91,127 +86,155 @@ export async function discoverLocalVendors(radiusKm: number = 50) {
 
     const existingIds = new Set(existingSuppliers?.map(s => s.google_place_id) || [])
 
-    const radiusMeters = radiusKm * 1000
-    // Using New Places API Types
-    // Using New Places API Types - strictly valid ones
-    const includedTypes = ['grocery_store', 'supermarket', 'convenience_store']
-
     let allPlaces: PlaceV1[] = []
 
-    // Try New Places API first
-    try {
-        console.log('Attempting New Places API (v1)...')
-        const nearbyUrl = 'https://places.googleapis.com/v1/places:searchNearby'
-        const textUrl = 'https://places.googleapis.com/v1/places:searchText'
-
-        // 1. Nearby Search (Retail/Local)
-        const nearbyPromise = fetch(nearbyUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Goog-Api-Key': apiKey,
-                'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.websiteUri,places.nationalPhoneNumber'
+    const apiKey = process.env.GOOGLE_PLACES_API_KEY
+    if (!apiKey) {
+        console.warn('GOOGLE_PLACES_API_KEY missing, using mock discovery')
+        // MOCK FALLBACK
+        allPlaces = [
+            {
+                id: 'mock_place_1',
+                name: 'places/mock_place_1',
+                displayName: { text: 'Mock Sysco Distribution' },
+                formattedAddress: '123 Mock St, Food City, NY',
+                rating: 4.5,
+                location: { latitude: profile.restaurant_lat + 0.01, longitude: profile.restaurant_lng + 0.01 },
+                nationalPhoneNumber: '+15550199'
             },
-            body: JSON.stringify({
-                includedTypes: [...includedTypes, 'wholesaler', 'warehouse_store', 'market'],
-                maxResultCount: 20,
-                locationRestriction: {
-                    circle: {
-                        center: {
-                            latitude: profile.restaurant_lat,
-                            longitude: profile.restaurant_lng
-                        },
-                        radius: radiusMeters
-                    }
-                }
-            })
-        })
+            {
+                id: 'mock_place_2',
+                name: 'places/mock_place_2',
+                displayName: { text: 'Mock Local Farms' },
+                formattedAddress: '456 Green Way, Farmville, NY',
+                rating: 4.8,
+                location: { latitude: profile.restaurant_lat - 0.01, longitude: profile.restaurant_lng - 0.01 },
+                nationalPhoneNumber: '+15550188'
+            }
+        ]
+    } else {
 
-        // 2. Text Search (Major Distributors)
-        const textPromise = fetch(textUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Goog-Api-Key': apiKey,
-                'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.websiteUri,places.nationalPhoneNumber'
-            },
-            body: JSON.stringify({
-                textQuery: "Food Service Distributor",
-                maxResultCount: 10,
-                locationBias: {
-                    circle: {
-                        center: {
-                            latitude: profile.restaurant_lat,
-                            longitude: profile.restaurant_lng
-                        },
-                        radius: radiusMeters
-                    }
-                }
-            })
-        })
+        const radiusMeters = radiusKm * 1000
+        // Using New Places API Types
+        // Using New Places API Types - strictly valid ones
+        const includedTypes = ['grocery_store', 'supermarket', 'convenience_store']
 
-        // Run both in parallel
-        const [nearbyRes, textRes] = await Promise.all([nearbyPromise, textPromise])
-        const nearbyData = await nearbyRes.json()
-        const textData = await textRes.json()
-
-        if (nearbyData.places) {
-            allPlaces.push(...nearbyData.places)
-        }
-        if (textData.places) {
-            // Deduplicate by ID
-            const existingIds = new Set(allPlaces.map(p => p.id))
-            const newDistributors = textData.places.filter((p: PlaceV1) => !existingIds.has(p.id))
-            allPlaces.push(...newDistributors)
-        }
-
-        console.log(`Discovery complete. Found ${allPlaces.length} total vendors.`)
-
-    } catch (newApiError: any) {
-        console.warn('New Places API failed, attempting Legacy API fallback...', newApiError.message)
-
-        // FALLBACK: Legacy Places API
+        // ... (API calls continue inside the else block)
+        // Try New Places API first
         try {
-            const lat = profile.restaurant_lat
-            const lng = profile.restaurant_lng
-            // specific types for legacy
-            const legacyType = 'grocery_or_supermarket'
-            const legacyUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radiusMeters}&type=${legacyType}&key=${apiKey}`
+            console.log('Attempting New Places API (v1)...')
+            const nearbyUrl = 'https://places.googleapis.com/v1/places:searchNearby'
+            const textUrl = 'https://places.googleapis.com/v1/places:searchText'
 
-            const legacyRes = await fetch(legacyUrl)
-            const legacyData = await legacyRes.json()
+            // 1. Nearby Search (Retail/Local)
+            const nearbyPromise = fetch(nearbyUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Goog-Api-Key': apiKey,
+                    'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.websiteUri,places.nationalPhoneNumber'
+                },
+                body: JSON.stringify({
+                    includedTypes: [...includedTypes, 'wholesaler', 'warehouse_store', 'market'],
+                    maxResultCount: 20,
+                    locationRestriction: {
+                        circle: {
+                            center: {
+                                latitude: profile.restaurant_lat,
+                                longitude: profile.restaurant_lng
+                            },
+                            radius: radiusMeters
+                        }
+                    }
+                })
+            })
 
-            if (legacyData.status !== 'OK' && legacyData.status !== 'ZERO_RESULTS') {
-                console.error('Legacy Places API Error:', legacyData)
-                // If both fail, return original error or legacy error
-                return { success: false, error: `Both APIs failed. New: ${newApiError.message}. Legacy: ${legacyData.error_message || legacyData.status}` }
+            // 2. Text Search (Major Distributors)
+            const textPromise = fetch(textUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Goog-Api-Key': apiKey,
+                    'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location,places.rating,places.websiteUri,places.nationalPhoneNumber'
+                },
+                body: JSON.stringify({
+                    textQuery: "Food Service Distributor",
+                    maxResultCount: 10,
+                    locationBias: {
+                        circle: {
+                            center: {
+                                latitude: profile.restaurant_lat,
+                                longitude: profile.restaurant_lng
+                            },
+                            radius: radiusMeters
+                        }
+                    }
+                })
+            })
+
+            // Run both in parallel
+            const [nearbyRes, textRes] = await Promise.all([nearbyPromise, textPromise])
+            const nearbyData = await nearbyRes.json()
+            const textData = await textRes.json()
+
+            if (nearbyData.places) {
+                allPlaces.push(...nearbyData.places)
+            }
+            if (textData.places) {
+                // Deduplicate by ID
+                const existingIds = new Set(allPlaces.map(p => p.id))
+                const newDistributors = textData.places.filter((p: PlaceV1) => !existingIds.has(p.id))
+                allPlaces.push(...newDistributors)
             }
 
-            if (legacyData.results) {
-                console.log(`Legacy Places API found ${legacyData.results.length} results`)
-                // Map legacy format to PlaceV1 format
-                allPlaces = legacyData.results.map((r: any) => ({
-                    id: r.place_id,
-                    name: r.name, // Legacy doesn't use 'places/ID' resource name, but that's fine for our ID use
-                    displayName: { text: r.name },
-                    formattedAddress: r.vicinity, // Legacy uses vicinity
-                    rating: r.rating,
-                    location: {
-                        latitude: r.geometry.location.lat,
-                        longitude: r.geometry.location.lng
-                    },
-                    // Legacy search doesn't return phone/website in list view, requires detail fetch.
-                    // We'll leave them undefined for now or handle gracefully.
-                    nationalPhoneNumber: undefined,
-                    websiteUri: undefined
-                }))
-            }
+            console.log(`Discovery complete. Found ${allPlaces.length} total vendors.`)
 
-        } catch (legacyError) {
-            console.error('Legacy catch error:', legacyError)
-            return { success: false, error: `API Connection Failed: ${newApiError.message}` }
+        } catch (newApiError: any) {
+            console.warn('New Places API failed, attempting Legacy API fallback...', newApiError.message)
+
+            // FALLBACK: Legacy Places API
+            try {
+                const lat = profile.restaurant_lat
+                const lng = profile.restaurant_lng
+                // specific types for legacy
+                const legacyType = 'grocery_or_supermarket'
+                const legacyUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radiusMeters}&type=${legacyType}&key=${apiKey}`
+
+                const legacyRes = await fetch(legacyUrl)
+                const legacyData = await legacyRes.json()
+
+                if (legacyData.status !== 'OK' && legacyData.status !== 'ZERO_RESULTS') {
+                    console.error('Legacy Places API Error:', legacyData)
+                    // If both fail, return original error or legacy error
+                    return { success: false, error: `Both APIs failed. New: ${newApiError.message}. Legacy: ${legacyData.error_message || legacyData.status}` }
+                }
+
+                if (legacyData.results) {
+                    console.log(`Legacy Places API found ${legacyData.results.length} results`)
+                    // Map legacy format to PlaceV1 format
+                    allPlaces = legacyData.results.map((r: any) => ({
+                        id: r.place_id,
+                        name: r.name, // Legacy doesn't use 'places/ID' resource name, but that's fine for our ID use
+                        displayName: { text: r.name },
+                        formattedAddress: r.vicinity, // Legacy uses vicinity
+                        rating: r.rating,
+                        location: {
+                            latitude: r.geometry.location.lat,
+                            longitude: r.geometry.location.lng
+                        },
+                        // Legacy search doesn't return phone/website in list view, requires detail fetch.
+                        // We'll leave them undefined for now or handle gracefully.
+                        nationalPhoneNumber: undefined,
+                        websiteUri: undefined
+                    }))
+                }
+
+            } catch (legacyError) {
+                console.error('Legacy catch error:', legacyError)
+                return { success: false, error: `API Connection Failed: ${newApiError.message}` }
+            }
         }
-    }
+    } // End else block for API Key check
 
     // Filter and process results
     const vendorsToAdd: Array<{

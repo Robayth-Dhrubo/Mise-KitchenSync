@@ -29,9 +29,25 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        // TODO: Validate API key for security
-        // For now, we trust the user_id provided
-        // In production, implement proper API key validation
+        // Check for API key in header first, then body
+        const headerKey = request.headers.get('x-api-key')
+        const providedKey = headerKey || api_key
+        const secretKey = process.env.POS_API_KEY
+
+        if (!secretKey) {
+            console.warn('POS_API_KEY not configured on server')
+            return NextResponse.json(
+                { success: false, error: 'Server configuration error' },
+                { status: 503 }
+            )
+        }
+
+        if (providedKey !== secretKey) {
+            return NextResponse.json(
+                { success: false, error: 'Unauthorized: Invalid API Key' },
+                { status: 401 }
+            )
+        }
 
         const supabase = await createClient()
 

@@ -118,9 +118,9 @@ export default function ProcurementPage() {
 
 
 
-    // Smart Search State - Temporarily disabled due to unused lint error
-    // const [isSmartSearchOpen, setIsSmartSearchOpen] = useState(false)
-    // const [smartSearchQuery, setSmartSearchQuery] = useState('')
+    // Smart Search State - Restored and implemented
+    const [isSmartSearchOpen, setIsSmartSearchOpen] = useState(false)
+    const [smartSearchQuery, setSmartSearchQuery] = useState('')
 
     // Stats
     const [criticalCount, setCriticalCount] = useState(0)
@@ -344,12 +344,12 @@ export default function ProcurementPage() {
         setLoading(false)
     }
 
-    /*
     const handleAddSmartItem = (vendorId: string, ingredientId: string, price: number, unit: string) => {
         const vendor = vendors.find(v => v.id === vendorId)
         if (!vendor) return
 
         const ingredient = ingredients.find(i => i.id === ingredientId)
+        // Check if ingredient exists, or allow creating on the fly
         const name = ingredient?.name || 'Unknown Item'
 
         setOrders(prev => {
@@ -385,7 +385,6 @@ export default function ProcurementPage() {
         setIsSmartSearchOpen(false)
         setSmartSearchQuery('')
     }
-    */
 
     const handleUpdateOrderQuantity = (vendorName: string, ingredientId: string, change: number) => {
         setOrders(prev => {
@@ -865,7 +864,7 @@ export default function ProcurementPage() {
                                         <div className="h-8 w-1 bg-primary rounded-full" />
                                         <h2 className="text-lg font-semibold">Draft Purchase Orders</h2>
                                     </div>
-                                    {/* Smart Search Button - Temporarily disabled
+                                    {/* Smart Search Button - Restored */}
                                     <button
                                         onClick={() => setIsSmartSearchOpen(true)}
                                         className="flex items-center gap-2 bg-primary hover:bg-primary text-foreground px-4 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-[#5A4820]/20"
@@ -873,7 +872,6 @@ export default function ProcurementPage() {
                                         <Search className="w-4 h-4" />
                                         Find Products
                                     </button>
-                                    */}
                                 </div>
 
                                 {Object.keys(orders).length === 0 ? (
@@ -1296,6 +1294,84 @@ export default function ProcurementPage() {
                             </div>
                         )}
                     </>
+                )}
+
+                {/* Smart Search Modal */}
+                {isSmartSearchOpen && (
+                    <div
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-sidebar/80 backdrop-blur-sm animate-in fade-in"
+                        onClick={() => setIsSmartSearchOpen(false)}
+                    >
+                        <div
+                            className="w-full max-w-2xl bg-card border border-border rounded-xl p-6 relative animate-in zoom-in-95 duration-200 h-[600px] flex flex-col"
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div className="flex items-center justify-between mb-6">
+                                <h3 className="text-xl font-bold flex items-center gap-2">
+                                    <Sparkles className="w-5 h-5 text-primary" />
+                                    Smart Product Search
+                                </h3>
+                                <button onClick={() => setIsSmartSearchOpen(false)} className="text-muted-foreground hover:text-foreground">
+                                    <div className="sr-only">Close</div>
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                                </button>
+                            </div>
+
+                            <div className="relative mb-6">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                                <input
+                                    type="text"
+                                    autoFocus
+                                    placeholder="Search for any product (e.g. 'Organic Tomatoes')..."
+                                    className="w-full bg-sidebar border border-border rounded-xl pl-12 pr-4 py-4 text-lg focus:border-primary focus:ring-1 focus:ring-primary outline-none transition shadow-inner"
+                                    value={smartSearchQuery}
+                                    onChange={e => setSmartSearchQuery(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="flex-grow overflow-y-auto space-y-2 pr-2">
+                                {smartSearchQuery ? (
+                                    <>
+                                        {/* Local Matches */}
+                                        <div className="mb-4">
+                                            <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 px-2">In Your Inventory</h4>
+                                            {ingredients.filter(i => i.name.toLowerCase().includes(smartSearchQuery.toLowerCase())).map(item => (
+                                                <button
+                                                    key={item.id}
+                                                    onClick={() => handleAddSmartItem(getPreferredVendor(item.id)?.supplier?.id || 'Unknown Vendor', item.id, item.purchase_price, item.purchase_unit)}
+                                                    className="w-full flex items-center justify-between p-3 rounded-lg hover:bg-secondary transition-colors text-left group"
+                                                >
+                                                    <div>
+                                                        <div className="font-medium text-foreground">{item.name}</div>
+                                                        <div className="text-xs text-muted-foreground">{item.category} • {item.purchase_unit}</div>
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="text-right">
+                                                            <div className="font-mono text-sm">${item.purchase_price.toFixed(2)}</div>
+                                                            {getPreferredVendor(item.id) ? (
+                                                                <div className="text-[10px] text-primary">{getPreferredVendor(item.id)?.supplier?.name}</div>
+                                                            ) : (
+                                                                <div className="text-[10px] text-muted-foreground">No Vendor</div>
+                                                            )}
+                                                        </div>
+                                                        <Plus className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                                                    </div>
+                                                </button>
+                                            ))}
+                                            {ingredients.filter(i => i.name.toLowerCase().includes(smartSearchQuery.toLowerCase())).length === 0 && (
+                                                <div className="p-4 text-sm text-muted-foreground text-center italic">No local inventory matches</div>
+                                            )}
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground opacity-50">
+                                        <Search className="w-12 h-12 mb-4" />
+                                        <p>Type to search your inventory and catalog</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 )}
 
                 {/* Manual Order Modal */}
