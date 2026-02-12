@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { supabaseConfig } from '@/lib/supabase/config'
 import { notFound } from 'next/navigation'
 import { GuestMenu } from '@/components/guest/guest-menu'
 
@@ -18,8 +19,11 @@ export default async function GuestPage({ params }: { params: Promise<{ room: st
     let location = locations?.[0]
 
     // AUTO-PROVISION: If room doesn't exist, create it for the primary owner
-    // RESTRICTED: Only allowed in development environment
-    if (!location && !locError && process.env.NODE_ENV === 'development') {
+    // RESTRICTED: Only allowed in development environment AND on localhost to prevent leaks
+    const isLocalhost = supabaseConfig.url.includes('127.0.0.1') || supabaseConfig.url.includes('localhost')
+    const shouldAutoProvision = process.env.NODE_ENV === 'development' && isLocalhost
+
+    if (!location && !locError && shouldAutoProvision) {
         // Get the first user (main restaurant owner) to assign the location to
         const { data: users } = await adminSupabase.from('profiles').select('id').limit(1)
         let ownerId = users?.[0]?.id
@@ -120,8 +124,8 @@ export default async function GuestPage({ params }: { params: Promise<{ room: st
         .order('menu_price', { ascending: false })
 
     // AUTO-SEED RECIPES: If no recipes found, create sample ones for this owner
-    // RESTRICTED: Only allowed in development environment
-    if ((!recipesResponse.data || recipesResponse.data.length === 0) && process.env.NODE_ENV === 'development') {
+    // RESTRICTED: Only allowed when auto-provisioning is active
+    if ((!recipesResponse.data || recipesResponse.data.length === 0) && shouldAutoProvision) {
         console.log('🔓 Unlocking the Vault: Seeding sample recipes...')
         await adminSupabase.from('recipes').insert([
             {

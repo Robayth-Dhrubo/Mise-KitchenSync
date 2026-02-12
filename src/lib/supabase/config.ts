@@ -23,14 +23,17 @@ const isServer = typeof window === 'undefined'
 const parsed = envSchema.safeParse(processEnv)
 
 if (!parsed.success) {
-    console.error(
-        '❌ Invalid environment variables:',
-        JSON.stringify(parsed.error.format(), null, 4)
-    )
-    // In development, we might want to crash to alert the dev
-    // In production, maybe we fallback or crash depending on strictness
+    const errorDetails = JSON.stringify(parsed.error.format(), null, 4)
+    console.error('❌ Invalid environment variables:', errorDetails)
+
+    // In production or CI, we want to be very clear about why it failed
+    if (process.env.NODE_ENV === 'production' && !process.env.CI) {
+        throw new Error(`Critical environment variables missing. Details: ${errorDetails}`)
+    }
+
+    // In development, crash early
     if (process.env.NODE_ENV === 'development') {
-        throw new Error('Invalid environment variables')
+        throw new Error('Supabase environment variables are not configured correctly. Check your .env.local file.')
     }
 }
 

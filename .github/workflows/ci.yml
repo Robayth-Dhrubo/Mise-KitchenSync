@@ -26,17 +26,19 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
+    - name: Run Typecheck
+      run: npm run typecheck
+      
+    - name: Run Tests
+      run: npm run test -- --run
+      
     - name: Run Lint
       run: npm run lint
       
-    - name: Run Typecheck
-      run: npm run typecheck
-
-    - name: Run Tests
-      run: npm run test
-
     - name: Build
       run: npm run build
       env:
-        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        # Use placeholders for build-time validation unless secrets are provided
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder' }}
+        POS_API_KEY: ${{ secrets.POS_API_KEY || 'placeholder' }}

@@ -1,5 +1,5 @@
 
-import { createAdminClient } from '../src/lib/supabase/admin'
+import { createAdminClient } from '../../src/lib/supabase/admin'
 
 async function checkUsers() {
     const supabase = createAdminClient()
