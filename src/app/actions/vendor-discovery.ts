@@ -122,7 +122,7 @@ export async function discoverLocalVendors(radiusKm: number = 50) {
         // ... (API calls continue inside the else block)
         // Try New Places API first
         try {
-            console.log('Attempting New Places API (v1)...')
+            // console.log('Attempting New Places API (v1)...')
             const nearbyUrl = 'https://places.googleapis.com/v1/places:searchNearby'
             const textUrl = 'https://places.googleapis.com/v1/places:searchText'
 
@@ -187,7 +187,7 @@ export async function discoverLocalVendors(radiusKm: number = 50) {
                 allPlaces.push(...newDistributors)
             }
 
-            console.log(`Discovery complete. Found ${allPlaces.length} total vendors.`)
+            // console.log(`Discovery complete. Found ${allPlaces.length} total vendors.`)
 
         } catch (newApiError: any) {
             console.warn('New Places API failed, attempting Legacy API fallback...', newApiError.message)
@@ -210,7 +210,7 @@ export async function discoverLocalVendors(radiusKm: number = 50) {
                 }
 
                 if (legacyData.results) {
-                    console.log(`Legacy Places API found ${legacyData.results.length} results`)
+                    // console.log(`Legacy Places API found ${legacyData.results.length} results`)
                     // Map legacy format to PlaceV1 format
                     allPlaces = legacyData.results.map((r: any) => ({
                         id: r.place_id,

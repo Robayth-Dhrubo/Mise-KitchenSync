@@ -1,0 +1,17 @@
+sequenceDiagram
+  participant Guest as Guest UI (browser)
+  participant Anon as Browser Supabase Client
+  participant API as Next.js API or Server
+  participant DB as Postgres
+  participant Realtime as Supabase Realtime
+  participant KDS as Kitchen Display
+
+  Guest->>Anon: create order (INSERT orders + order_items)
+  Anon->>DB: INSERT into orders (subject to RLS)
+  DB-->>Realtime: trigger/emit order-created event
+  Realtime-->>KDS: deliver event
+  KDS->>KDS: render ticket
+  DB->>API: (optional) webhook/trigger calls server function for inventory decrement
+  API->>DB: update inventory
+  API->>Realtime: emit inventory/availability updates
+  Realtime-->>Guest: update menu availability

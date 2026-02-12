@@ -1,3 +1,21 @@
+#!/usr/bin/env ts-node
+import { createAdminClient } from '@/lib/supabase/admin'
+import seedDevForRoom from '@/lib/dev/seed'
+
+async function main() {
+  const room = process.argv[2] || 'Local Room'
+  const admin = createAdminClient()
+  try {
+    const loc = await seedDevForRoom(admin, room)
+    if (loc) console.log('Seeded location:', loc.name || loc.id)
+    else console.log('Seeding did not create a location')
+  } catch (e) {
+    console.error('Seeding failed', e)
+    process.exit(1)
+  }
+}
+
+main()
 import { createAdminClient } from '../src/lib/supabase/admin'
 
 /**

@@ -21,11 +21,11 @@ import { useMutation } from '@tanstack/react-query'
 import { Recipe, RecipeItemWithIngredient } from '@/lib/types/database'
 import { Location } from '@/lib/types/pos'
 
-const categorize = (recipe: Recipe | any) => {
+const categorize = (recipe: Recipe) => {
     if (typeof recipe.category === 'object' && recipe.category !== null) {
-        return (recipe.category as any).name || 'Main'
+        return recipe.category.name || 'Main'
     }
-    return recipe.category || 'Main'
+    return (recipe.category as string) || 'Main'
 }
 
 const isRecipeInStock = (recipeItems: RecipeItemWithIngredient[]) => {
@@ -33,7 +33,7 @@ const isRecipeInStock = (recipeItems: RecipeItemWithIngredient[]) => {
         if (!item.ingredient) return true
         const currentStock = item.ingredient.current_stock ?? 0
         const ratio = item.ingredient.conversion_ratio ?? 1
-        const needed = item.quantity_needed ?? (item as any).quantity ?? 0
+        const needed = item.quantity_needed ?? item.quantity ?? 0
         return (currentStock * ratio) >= needed
     })
 }
@@ -73,7 +73,7 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
             .on(
                 'postgres_changes',
                 { event: '*', schema: 'public', table: 'recipes' },
-                (payload: any) => {
+                (payload) => {
                     if (payload.eventType === 'UPDATE') {
                         setRecipes(current =>
                             current.map(recipe =>
@@ -158,7 +158,7 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
             router.refresh()
             const action = newStatus ? "put on air" : "taken off air"
             toast.success(`Dish ${action}`)
-        } catch (error: any) {
+        } catch (error) {
             // Revert on error
             setRecipes(current =>
                 current.map(r =>
@@ -167,7 +167,7 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
                         : r
                 )
             )
-            toast.error('Failed to update availability: ' + error.message)
+            toast.error('Failed to update availability: ' + (error instanceof Error ? error.message : 'Unknown error'))
         }
     }
 
@@ -218,7 +218,7 @@ export default function PosSystem({ recipes: initialRecipes = [], initialLocatio
             setCart({})
             // router.push('/pos/ledger') // Stay on terminal
         },
-        onError: (err: any) => toast.error('Transaction failed: ' + err.message)
+        onError: (err) => toast.error('Transaction failed: ' + (err instanceof Error ? err.message : 'Unknown error'))
     })
 
     return (

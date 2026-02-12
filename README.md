@@ -58,6 +58,20 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000)
 
+### 5. Seed local development data (optional)
+
+If you want to auto-provision a room/location and sample recipes for local development, run:
+
+```bash
+# using ts-node (already a dev dependency)
+npx ts-node scripts/seed-dev.ts "Local Room"
+
+# or, if you added an npm script, use:
+# npm run seed:dev -- "Local Room"
+```
+
+Note: The app will only auto-provision from the guest page when `NODE_ENV==='development'` and your Supabase URL points to localhost. Alternatively, run the script directly to seed data.
+
 ## 📁 Project Structure
 
 ```

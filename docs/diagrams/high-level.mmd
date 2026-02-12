@@ -1,0 +1,38 @@
+flowchart LR
+  subgraph CLIENTS
+    Browser[Guest / POS / Admin UI (Next.js)]
+    Kitchen[KDS Display]
+    Mobile[Manager App]
+  end
+
+  subgraph NEXT_SERVER[Next.js App]
+    Pages[App Router pages & server components]
+    Middleware[Edge Middleware]
+    APIRoutes[/api/* server routes]
+  end
+
+  subgraph SUPABASE[Supabase (Postgres + Realtime)]
+    DB[(Postgres DB)]
+    Realtime[(Realtime channels)]
+    Auth[(Auth)]
+    Storage[(Storage)]
+  end
+
+  subgraph SCRIPTS[Admin Scripts]
+    Seed[scripts/seed-dev.ts]
+    Tools[scripts/check-*.ts]
+  end
+
+  Browser -->|Anon client| Pages
+  Pages -->|Server client| DB
+  APIRoutes -->|Admin/client| DB
+
+  Pages -->|Realtime subscriptions| Realtime
+  Kitchen -->|Realtime subscribe| Realtime
+  Mobile -->|Realtime subscribe| Realtime
+
+  Seed -->|Service-role admin| DB
+  Tools -->|Service-role admin| DB
+
+  Auth --> DB
+  Pages --> Auth

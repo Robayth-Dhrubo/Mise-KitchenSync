@@ -1,0 +1,9 @@
+flowchart LR
+  PR[Pull Request]
+  PR --> CI[GitHub Actions: checks]
+  CI -->|pass| Merge[Merge to main]
+  Merge --> Build[Build job]
+  Build -->|pass| Deploy[Deploy to Vercel/prod]
+  Deploy --> Prod[Production site]
+
+  CI -->|fail| PR

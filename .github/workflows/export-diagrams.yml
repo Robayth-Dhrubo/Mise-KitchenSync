@@ -1,0 +1,26 @@
+name: Export Diagrams
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install deps
+        run: npm ci
+      - name: Export diagrams
+        run: npm run export:diagrams
+      - name: Commit diagrams
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/diagrams/*.png || true
+          git commit -m "chore: export diagrams" || true
+          git push origin HEAD:main || true

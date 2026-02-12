@@ -70,7 +70,7 @@ export interface RecipeItemWithIngredient {
 export interface Recipe {
     id: string
     name: string
-    category?: string
+    category?: string | { name: string; id?: string }
     menu_price: number
     is_available?: boolean
     created_at?: string

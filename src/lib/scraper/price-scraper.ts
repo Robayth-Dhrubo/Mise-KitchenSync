@@ -118,7 +118,7 @@ export async function batchScrapeProducts(
         for (let i = 0; i < products.length; i++) {
             const product = products[i]
 
-            console.log(`[Scraper] Processing ${i + 1}/${products.length}: ${product.url}`)
+            // console.log(`[Scraper] Processing ${i + 1}/${products.length}: ${product.url}`)
 
             const result = await scrapePrice(product.url, product.selector, browser)
             results.set(product.id, result)
