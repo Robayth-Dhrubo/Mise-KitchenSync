@@ -4,10 +4,10 @@ import dotenv from 'dotenv'
 
 dotenv.config({ path: '.env.local', override: true })
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+// const supabase = createClient(
+//     process.env.NEXT_PUBLIC_SUPABASE_URL!,
+//     process.env.SUPABASE_SERVICE_ROLE_KEY!
+// )
 
 async function inspectTriggers() {
     console.log('🔍 Inspecting Triggers on auth.users...')

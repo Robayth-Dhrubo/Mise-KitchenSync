@@ -1,13 +1,12 @@
-
-const { createClient } = require('@supabase/supabase-js')
-const dotenv = require('dotenv')
-const path = require('path')
+import { createClient } from '@supabase/supabase-js'
+import dotenv from 'dotenv'
+import path from 'path'
 
 dotenv.config({ path: path.resolve(__dirname, '../.env.local') })
 
 const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
 
 async function checkFullQuery() {

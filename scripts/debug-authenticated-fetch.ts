@@ -1,7 +1,4 @@
-
-const { createClient } = require('@supabase/supabase-js')
-const dotenv = require('dotenv')
-const path = require('path')
+import { createClient } from '@supabase/supabase-js'
 
 // Hardcoded Local Config (matching my browser patch)
 const SUPABASE_URL = 'http://127.0.0.1:54321'

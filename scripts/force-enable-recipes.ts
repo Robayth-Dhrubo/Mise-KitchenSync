@@ -6,7 +6,7 @@ const supabase = createClient(supabaseUrl, supabaseKey)
 
 async function forceEnableRecipes() {
     console.log('Force enabling all recipes...')
-    const { data, error } = await supabase
+    const { error } = await supabase
         .from('recipes')
         .update({ is_available: true })
         .not('is_available', 'eq', true) // Only update if not already true

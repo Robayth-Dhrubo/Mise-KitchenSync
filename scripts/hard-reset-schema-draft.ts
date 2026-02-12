@@ -9,12 +9,12 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-async function hardReset() {
+export async function hardReset() {
     console.log('☢️ Initiating Hard Schema Reset for Profiles...')
 
     // 1. Drop the column (ignore error if missing)
     console.log('- Dropping full_name...')
-    const { error: dropError } = await supabase.rpc('exec_sql', {
+    const { error: _dropError } = await supabase.rpc('exec_sql', {
         sql: `ALTER TABLE public.profiles DROP COLUMN IF EXISTS full_name CASCADE;`
     })
 

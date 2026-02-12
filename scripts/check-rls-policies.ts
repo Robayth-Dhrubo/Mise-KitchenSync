@@ -1,7 +1,6 @@
-
-const { createClient } = require('@supabase/supabase-js')
-const dotenv = require('dotenv')
-const path = require('path')
+import { createClient } from '@supabase/supabase-js'
+import dotenv from 'dotenv'
+import path from 'path'
 
 dotenv.config({ path: path.resolve(__dirname, '../.env.local') })
 
@@ -10,10 +9,10 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_
     process.exit(1)
 }
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_ROLE_KEY
-)
+// const supabase = createClient(
+//     process.env.NEXT_PUBLIC_SUPABASE_URL,
+//     process.env.SUPABASE_SERVICE_ROLE_KEY
+// )
 
 async function checkPolicies() {
     console.log('Checking RLS Policies...')
@@ -27,12 +26,12 @@ async function checkPolicies() {
     // To check RLS, we need an ANON client.
 
     const anonClient = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     )
 
     // Try to fetch active orders as ANON
-    const { data, error } = await anonClient
+    const { error } = await anonClient
         .from('orders')
         .select('count')
         .limit(1)
