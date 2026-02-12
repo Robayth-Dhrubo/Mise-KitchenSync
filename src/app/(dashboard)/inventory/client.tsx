@@ -4,9 +4,9 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import {
-    Package, ShoppingCart, Store, Plus, Minus, Search,
-    AlertTriangle, CheckCircle, Send, Truck, MapPin,
-    ChevronRight, Filter, RefreshCw, Globe, ThumbsUp, ThumbsDown, Trash2, Sparkles, Scan
+    Package, ShoppingCart, Store, Plus, Search,
+    AlertTriangle, CheckCircle, Send, MapPin,
+    RefreshCw, Globe, ThumbsUp, ThumbsDown, Trash2, Sparkles, Scan
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { discoverLocalVendors, approveDiscoveredVendor, banDiscoveredVendor, deleteVendor, updateRestaurantLocation } from '@/app/actions/vendor-discovery'

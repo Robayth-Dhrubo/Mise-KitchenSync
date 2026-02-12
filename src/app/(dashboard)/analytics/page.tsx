@@ -2,7 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ReportsDashboard } from '@/components/reports/reports-dashboard'
 
-import { cn } from '@/lib/utils'
+
 import { BarChart3 } from 'lucide-react'
 
 export default async function ReportsPage() {
