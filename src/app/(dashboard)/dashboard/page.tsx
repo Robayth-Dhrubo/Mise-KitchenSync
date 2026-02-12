@@ -5,7 +5,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react'
 import {
     Users, AlertCircle, Settings, Monitor, Activity,
     Database, Shield, TrendingUp, ArrowRight, ChefHat,
-    BarChart3, Gauge, Store, ShieldAlert,
+    BarChart3, Gauge, ShieldAlert,
     CheckCircle2, XCircle, RefreshCw, Package,
     CheckCircle, UtensilsCrossed,
     LayoutGrid, BedDouble, Receipt

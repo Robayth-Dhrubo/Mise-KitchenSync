@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Coffee, Bell, CheckCircle2, Clock, Loader2, Plus } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Coffee, Bell, CheckCircle2, Loader2, Plus } from 'lucide-react'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -32,7 +32,7 @@ export default function IrdDashboard() {
     const [newRoomCapacity, setNewRoomCapacity] = useState('2')
 
     const fetchOrders = async () => {
-        const { data, error } = await supabase
+        const { data } = await supabase
             .from('orders')
             .select('*, order_items(*, recipe:recipes(name))')
             .eq('type', 'room_service')

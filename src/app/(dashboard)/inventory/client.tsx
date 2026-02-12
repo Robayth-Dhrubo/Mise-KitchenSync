@@ -6,12 +6,11 @@ import { createClient } from '@/lib/supabase/client'
 import {
     Package, ShoppingCart, Store, Plus, Search,
     AlertTriangle, CheckCircle, Send, MapPin,
-    RefreshCw, Globe, ThumbsUp, ThumbsDown, Trash2, Sparkles, Scan
+    RefreshCw, Globe, Trash2, Sparkles, Scan
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { discoverLocalVendors, approveDiscoveredVendor, banDiscoveredVendor, deleteVendor, updateRestaurantLocation } from '@/app/actions/vendor-discovery'
-import { VendorPriceManager } from '@/components/vendors/vendor-price-manager'
-import { VendorProduct, Supplier } from '@/lib/types/database'
+import { VendorProduct } from '@/lib/types/database'
 import { Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { InvoiceScanner } from '@/components/procurement/invoice-scanner'
@@ -90,7 +89,7 @@ export default function ProcurementPage() {
             } else {
                 toast.error('Oracle Error', { description: data.error })
             }
-        } catch (error) {
+        } catch {
             toast.error('Failed to contact Oracle')
         } finally {
             setIsOracleRunning(false)
@@ -119,9 +118,9 @@ export default function ProcurementPage() {
 
 
 
-    // Smart Search State
-    const [isSmartSearchOpen, setIsSmartSearchOpen] = useState(false)
-    const [smartSearchQuery, setSmartSearchQuery] = useState('')
+    // Smart Search State - Temporarily disabled due to unused lint error
+    // const [isSmartSearchOpen, setIsSmartSearchOpen] = useState(false)
+    // const [smartSearchQuery, setSmartSearchQuery] = useState('')
 
     // Stats
     const [criticalCount, setCriticalCount] = useState(0)
@@ -285,7 +284,7 @@ export default function ProcurementPage() {
                         } else {
                             alert("Could not discover vendors even after setting location. Please check Settings.")
                         }
-                    }, (err) => {
+                    }, () => {
                         alert("Please enable location services or set your restaurant address in Settings to use discovery.")
                     });
                 } else {
@@ -345,6 +344,7 @@ export default function ProcurementPage() {
         setLoading(false)
     }
 
+    /*
     const handleAddSmartItem = (vendorId: string, ingredientId: string, price: number, unit: string) => {
         const vendor = vendors.find(v => v.id === vendorId)
         if (!vendor) return
@@ -385,6 +385,7 @@ export default function ProcurementPage() {
         setIsSmartSearchOpen(false)
         setSmartSearchQuery('')
     }
+    */
 
     const handleUpdateOrderQuantity = (vendorName: string, ingredientId: string, change: number) => {
         setOrders(prev => {
@@ -864,6 +865,7 @@ export default function ProcurementPage() {
                                         <div className="h-8 w-1 bg-primary rounded-full" />
                                         <h2 className="text-lg font-semibold">Draft Purchase Orders</h2>
                                     </div>
+                                    {/* Smart Search Button - Temporarily disabled
                                     <button
                                         onClick={() => setIsSmartSearchOpen(true)}
                                         className="flex items-center gap-2 bg-primary hover:bg-primary text-foreground px-4 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-[#5A4820]/20"
@@ -871,6 +873,7 @@ export default function ProcurementPage() {
                                         <Search className="w-4 h-4" />
                                         Find Products
                                     </button>
+                                    */}
                                 </div>
 
                                 {Object.keys(orders).length === 0 ? (

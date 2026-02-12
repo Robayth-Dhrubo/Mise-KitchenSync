@@ -124,7 +124,7 @@ export default function IntegrationsPage() {
                 return newState
             })
             toast.success('Integration disconnected')
-        } catch (_error) {
+        } catch {
             toast.error('Failed to disconnect')
         }
     }
@@ -148,7 +148,7 @@ export default function IntegrationsPage() {
                 }
             }))
             toast.success(`Synced ${data.itemCount} items`)
-        } catch (_error) {
+        } catch {
             toast.error('Sync failed')
             setConnections(prev => ({
                 ...prev,

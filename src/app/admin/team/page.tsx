@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react'
 import {
-    Users, UserPlus, RefreshCw, AlertTriangle, Check, Search, Mail, Filter, Loader2
+    Users, UserPlus, RefreshCw, AlertTriangle, Check, Search, Loader2
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import {
     Select,

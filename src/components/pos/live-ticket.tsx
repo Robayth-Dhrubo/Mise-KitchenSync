@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { Trash2, Pencil, Plus, Minus, ChefHat } from 'lucide-react'
-import { cn } from '@/lib/utils'
+
 
 interface OrderItem {
     id: string
