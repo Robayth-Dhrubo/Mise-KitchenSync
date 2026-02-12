@@ -33,7 +33,7 @@ async function main() {
     console.log('Checking orders table schema...')
 
     // Check if column exists by trying to select it
-    const { data, error } = await supabase
+    const { error } = await supabase
         .from('orders')
         .select('preparation_status')
         .limit(1)
@@ -51,7 +51,7 @@ async function main() {
     console.log('✅ Column `preparation_status` exists.')
 
     // Check count of active orders
-    const { count, error: countError } = await supabase
+    const { count, error: _countError } = await supabase
         .from('orders')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'paid')

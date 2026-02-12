@@ -124,7 +124,7 @@ async function reseed() {
     ].map(r => ({ ...r, user_id: userId }));
 
     console.log(`🚀 Injecting ${recipes.length} high-fidelity assets into the Digital Menu...`);
-    const { data, error } = await supabase.from('recipes').insert(recipes);
+    const { error } = await supabase.from('recipes').insert(recipes);
 
     if (error) {
         console.error('❌ Insertion failed:', error.message);

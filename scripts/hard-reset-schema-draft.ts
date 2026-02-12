@@ -26,4 +26,6 @@ export async function hardReset() {
     // Instead of RPC, let's just use the Migration Tool again, but this time with a specific DROP then ADD
 }
 
+hardReset().catch(console.error)
+
 // Abandoning TS script for SQL Migration which is safer and supported in this env.

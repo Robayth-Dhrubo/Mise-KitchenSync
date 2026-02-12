@@ -1,5 +1,5 @@
 
-import { createAdminClient } from '@/lib/supabase/admin'
+import { createAdminClient } from '../src/lib/supabase/admin'
 
 async function checkUsers() {
     const supabase = createAdminClient()
@@ -11,11 +11,11 @@ async function checkUsers() {
     }
 
     console.log('Existing Auth Users:', users.users.length)
-    users.users.forEach(u => console.log(`- ${u.email} (${u.id})`))
+    users.users.forEach((u: any) => console.log(`- ${u.email} (${u.id})`))
 
     const { data: profiles } = await supabase.from('profiles').select('*')
     console.log('\nExisting Profiles:', profiles?.length)
-    profiles?.forEach(p => console.log(`- ${p.full_name} [${p.role}] (${p.id})`))
+    profiles?.forEach((p: any) => console.log(`- ${p.name || 'No Name'} [${p.role}] (${p.id})`))
 }
 
 checkUsers()
