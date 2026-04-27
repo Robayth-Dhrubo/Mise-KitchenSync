@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { batchScrapeProducts, isPriceSpike } from '@/lib/scraper/price-scraper'
+import { captureException } from '@/lib/monitoring/sentry'
 
 /**
  * Nightly Price Scraping Cron Job
@@ -15,6 +16,10 @@ export async function GET(request: Request) {
         // Verify cron secret (for Vercel Cron)
         const authHeader = request.headers.get('authorization')
         const cronSecret = process.env.CRON_SECRET
+        
+        // Configuration
+        const batchSize = parseInt(process.env.SCRAPE_BATCH_SIZE || '50')
+        const requestDelay = parseInt(process.env.SCRAPE_REQUEST_DELAY_MS || '2000')
 
         if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -26,10 +31,10 @@ export async function GET(request: Request) {
         const { data: products, error: fetchError } = await supabase
             .from('view_vendors_to_scrape')
             .select('*')
-            .limit(50) // Process max 50 per run to avoid timeout
+            .limit(batchSize) // Process configurable batch size
 
         if (fetchError) {
-            console.error('Failed to fetch products:', fetchError)
+            captureException(fetchError)
             return NextResponse.json({ error: fetchError.message }, { status: 500 })
         }
 
@@ -50,7 +55,7 @@ export async function GET(request: Request) {
                 url: p.product_url,
                 selector: p.scraper_selector || '.price'
             })),
-            2000 // 2 second delay between requests
+            requestDelay // Configurable delay between requests
         )
 
         // Process results
@@ -103,7 +108,7 @@ export async function GET(request: Request) {
         })
 
     } catch (error) {
-        console.error('[Cron] Scrape job failed:', error)
+        captureException(error)
         return NextResponse.json(
             { error: error instanceof Error ? error.message : 'Unknown error' },
             { status: 500 }

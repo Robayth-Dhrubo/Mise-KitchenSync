@@ -7,7 +7,8 @@ export async function initSentry() {
   const dsn = process.env.SENTRY_DSN
   if (!dsn) return
   try {
-    const mod = await import('@sentry/node')
+    // Use Function indirection to hide this import from bundler static analysis
+    const mod = await (new Function('return import("@sentry/node")')())
     _Sentry = (mod as any).default ?? mod
     _Sentry.init({ dsn, tracesSampleRate: 0.05 })
   } catch {

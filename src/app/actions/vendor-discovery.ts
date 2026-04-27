@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { captureException } from '@/lib/monitoring/sentry'
 
 interface PlaceV1 {
     name: string // resource name: places/PLACE_ID
@@ -89,8 +90,9 @@ export async function discoverLocalVendors(radiusKm: number = 50) {
     let allPlaces: PlaceV1[] = []
 
     const apiKey = process.env.GOOGLE_PLACES_API_KEY
+    const using_mock_data = !apiKey
+
     if (!apiKey) {
-        console.warn('GOOGLE_PLACES_API_KEY missing, using mock discovery')
         // MOCK FALLBACK
         allPlaces = [
             {
@@ -190,7 +192,8 @@ export async function discoverLocalVendors(radiusKm: number = 50) {
             // console.log(`Discovery complete. Found ${allPlaces.length} total vendors.`)
 
         } catch (newApiError: any) {
-            console.warn('New Places API failed, attempting Legacy API fallback...', newApiError.message)
+            // Silently report to Sentry but try legacy
+            captureException(newApiError)
 
             // FALLBACK: Legacy Places API
             try {
@@ -204,7 +207,7 @@ export async function discoverLocalVendors(radiusKm: number = 50) {
                 const legacyData = await legacyRes.json()
 
                 if (legacyData.status !== 'OK' && legacyData.status !== 'ZERO_RESULTS') {
-                    console.error('Legacy Places API Error:', legacyData)
+                    captureException(legacyData)
                     // If both fail, return original error or legacy error
                     return { success: false, error: `Both APIs failed. New: ${newApiError.message}. Legacy: ${legacyData.error_message || legacyData.status}` }
                 }
@@ -303,6 +306,7 @@ export async function discoverLocalVendors(radiusKm: number = 50) {
     return {
         success: true,
         discovered: vendorsToAdd.length,
+        using_mock_data,
         message: `Found ${vendorsToAdd.length} new vendors within ${radiusKm}km`
     }
 }
@@ -490,7 +494,7 @@ export async function resetVendors() {
     const { error } = await supabase.from('suppliers').delete().eq('user_id', user.id)
 
     if (error) {
-        console.error('Reset Vendor Error:', error)
+        captureException(error)
         return { success: false, error: error.message }
     }
 

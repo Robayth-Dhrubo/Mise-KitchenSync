@@ -2,7 +2,8 @@
 
 > Automate recipe costing, track inventory in real-time, and prevent profit loss due to ingredient price fluctuations.
 
-![Next.js](https://img.shields.io/badge/Next.js-14-black?style=flat-square&logo=next.js)
+![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)
+![React](https://img.shields.io/badge/React-19-blue?style=flat-square&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?style=flat-square&logo=typescript)
 ![Supabase](https://img.shields.io/badge/Supabase-Postgres-green?style=flat-square&logo=supabase)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-06B6D4?style=flat-square&logo=tailwindcss)
@@ -13,13 +14,13 @@
 - **Smart Unit Conversion** - Buy in bulk, cook with precision. Mise handles the math
 - **86 Dashboard** - Real-time stock tracking to prevent out-of-stock during service
 - **Live Cost Preview** - See profit margins update in real-time as you build recipes
-- **Beautiful Dark UI** - Designed for kitchen environments with high contrast and large touch targets
+- **Security First** - Comprehensive [security policy](./SECURITY.md) and server-side validation
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20+
 - Supabase Account
 
 ### 1. Clone & Install
@@ -38,77 +39,36 @@ npm install
 
 ### 3. Configure Environment
 
-```bash
-cp .env.local.example .env.local
-```
+Edit `.env.local` with your credentials:
 
-Edit `.env.local` with your Supabase credentials:
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | Yes |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anon key | Yes |
+| `OPENAI_API_KEY` | For AI Invoice Scanning | Optional (Demo fallback) |
+| `GOOGLE_PLACES_API_KEY` | For Vendor Discovery | Optional (Demo fallback) |
+| `CRON_SECRET` | Bearer token for cron jobs | Yes (Production) |
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key # Required for admin features
-```
-
-### 4. Run Development Server
+### 4. Development & Quality
 
 ```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000)
-
-### 5. Seed local development data (optional)
-
-If you want to auto-provision a room/location and sample recipes for local development, run:
-
-```bash
-# using ts-node (already a dev dependency)
-npx ts-node scripts/seed-dev.ts "Local Room"
-
-# or, if you added an npm script, use:
-# npm run seed:dev -- "Local Room"
-```
-
-Note: The app will only auto-provision from the guest page when `NODE_ENV==='development'` and your Supabase URL points to localhost. Alternatively, run the script directly to seed data.
-
-## 📁 Project Structure
-
-```
-/src
-├── app
-│   ├── (auth)            # Login/Signup pages
-│   ├── (dashboard)       # Protected dashboard routes
-│   │   ├── dashboard     # Main analytics dashboard
-│   │   ├── pantry        # Ingredient management
-│   │   ├── menu          # Recipe creation & costing
-│   │   ├── inventory     # Stock tracking
-│   │   └── settings      # Profile & preferences
-│   ├── layout.tsx        # Root layout with providers
-│   └── page.tsx          # Landing page
-├── components
-│   └── ui                # Shadcn UI components
-├── lib
-│   ├── calculations.ts   # Core costing algorithms
-│   ├── validations.ts    # Zod schemas
-│   ├── types/            # TypeScript types
-│   ├── providers/        # React Query provider
-│   └── supabase/         # Supabase client setup
-└── middleware.ts         # Auth protection
+npm run dev        # Start dev server
+npm run typecheck  # Run TypeScript valuation
+npm run test       # Run unit tests
+npm run lint       # Run ESLint validation
 ```
 
 ## 🛠️ Tech Stack
 
 | Category | Technology |
 |----------|------------|
-| Framework | Next.js 14 (App Router) |
-| Language | TypeScript |
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript 5 |
+| UI Library | React 19 |
 | Database | Supabase (PostgreSQL) |
-| Auth | Supabase Auth |
-| Styling | Tailwind CSS + Shadcn/UI |
-| State | TanStack Query |
-| Forms | React Hook Form + Zod |
-| Charts | Recharts |
+| Styling | Tailwind CSS 4 + Shadcn/UI |
+| Monitoring | Sentry (Optional) |
+| Testing | Vitest + Playwright |
 
 ## 📊 Database Schema
 

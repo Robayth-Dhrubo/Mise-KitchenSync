@@ -112,17 +112,10 @@ export default function DashboardPage() {
             try {
                 const { data: { user } } = await supabase.auth.getUser()
 
-                console.log('[Dashboard] Auth Check:', {
-                    user_id: user?.id,
-                    role: user?.role,
-                    aud: user?.aud,
-                    email: user?.email,
-                    configUrl: (supabase as any).supabaseUrl
-                });
+                // Auth check logging removed for production
 
                 if (!user) {
-                    console.error('[Dashboard] No active user found')
-                    // return // Don't return yet, let it redirect or fail explicit
+                    // console.error('[Dashboard] No active user found')
                 }
 
                 if (!user) return
@@ -286,7 +279,6 @@ export default function DashboardPage() {
                             code: error?.code
                         });
                     } else if (ordersResult.status === 'fulfilled' && ordersResult.value.data) {
-                        console.log('[Dashboard] Active Orders Fetched:', ordersResult.value.data)
                         setActiveOrders(ordersResult.value.data)
                     }
                 }
