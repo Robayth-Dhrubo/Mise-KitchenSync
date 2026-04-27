@@ -3,6 +3,8 @@ name: Export Diagrams
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'docs/diagrams/*.mmd'
 
 jobs:
   export:
@@ -13,10 +15,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: 'npm'
       - name: Install deps
         run: npm ci
       - name: Export diagrams
-        run: npm run export:diagrams
+        run: |
+          npx mmdc -p puppeteer-config.json -i docs/diagrams/high-level.mmd -o docs/diagrams/high-level.png
+          npx mmdc -p puppeteer-config.json -i docs/diagrams/order-sequence.mmd -o docs/diagrams/order-sequence.png
+          npx mmdc -p puppeteer-config.json -i docs/diagrams/ci-flow.mmd -o docs/diagrams/ci-flow.png
       - name: Commit diagrams
         run: |
           git config user.name "github-actions[bot]"
