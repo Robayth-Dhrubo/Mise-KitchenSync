@@ -13,7 +13,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [22.x]
 
     steps:
     - uses: actions/checkout@v4
@@ -39,7 +39,6 @@ jobs:
     - name: Build Application
       run: npm run build
       env:
-        # Use placeholders for build-time validation unless secrets are provided
         NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder' }}
         POS_API_KEY: ${{ secrets.POS_API_KEY || 'placeholder' }}
