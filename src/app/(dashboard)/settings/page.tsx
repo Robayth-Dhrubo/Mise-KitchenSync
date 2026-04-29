@@ -25,17 +25,21 @@ export default function SettingsPage() {
     const { data: profile, isLoading } = useQuery({
         queryKey: ['profile'],
         queryFn: async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            if (!user) return null
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+                if (!user) return null
 
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', user.id)
-                .single()
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', user.id)
+                    .single()
 
-            if (error) throw error
-            return data
+                if (error) return null
+                return data
+            } catch (e) {
+                return null
+            }
         },
     })
 
@@ -43,8 +47,12 @@ export default function SettingsPage() {
     const { data: user } = useQuery({
         queryKey: ['user'],
         queryFn: async () => {
-            const { data: { user } } = await supabase.auth.getUser()
-            return user
+            try {
+                const { data: { user } } = await supabase.auth.getUser()
+                return user
+            } catch (e) {
+                return null
+            }
         },
     })
 

@@ -130,46 +130,51 @@ export default function FloorMap() {
 
     useEffect(() => {
         const fetchData = async () => {
-            // Fetch locations
-            const { data: locData } = await supabase
-                .from('locations')
-                .select('*')
-                .order('name')
+            try {
+                // Fetch locations
+                const { data: locData } = await supabase
+                    .from('locations')
+                    .select('*')
+                    .order('name')
 
-            // Fetch upcoming reservations for today
-            const today = new Date()
-            today.setHours(0, 0, 0, 0)
-            const tonight = new Date()
-            tonight.setHours(23, 59, 59, 999)
+                // Fetch upcoming reservations for today
+                const today = new Date()
+                today.setHours(0, 0, 0, 0)
+                const tonight = new Date()
+                tonight.setHours(23, 59, 59, 999)
 
-            const { data: resData } = await supabase
-                .from('reservations')
-                .select('*')
-                .gte('reservation_time', today.toISOString())
-                .lte('reservation_time', tonight.toISOString())
-                .eq('status', 'confirmed')
+                const { data: resData } = await supabase
+                    .from('reservations')
+                    .select('*')
+                    .gte('reservation_time', today.toISOString())
+                    .lte('reservation_time', tonight.toISOString())
+                    .eq('status', 'confirmed')
 
-            // Fetch pending pre-orders for today
-            const { data: orderData } = await supabase
-                .from('orders')
-                .select('*')
-                .eq('is_preorder', true)
-                .eq('preparation_status', 'pending')
-                .gte('scheduled_for', today.toISOString())
-                .lte('scheduled_for', tonight.toISOString())
+                // Fetch pending pre-orders for today
+                const { data: orderData } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .eq('is_preorder', true)
+                    .eq('preparation_status', 'pending')
+                    .gte('scheduled_for', today.toISOString())
+                    .lte('scheduled_for', tonight.toISOString())
 
-            // Fetch active (non-delivered) orders
-            const { data: activeOrderData } = await supabase
-                .from('orders')
-                .select('*')
-                .neq('preparation_status', 'delivered')
-                .neq('preparation_status', 'cancelled')
+                // Fetch active (non-delivered) orders
+                const { data: activeOrderData } = await supabase
+                    .from('orders')
+                    .select('*')
+                    .neq('preparation_status', 'delivered')
+                    .neq('preparation_status', 'cancelled')
 
-            if (locData) setLocations(locData)
-            if (resData) setReservations(resData)
-            if (activeOrderData) setActiveOrders(activeOrderData)
-            if (orderData) setPreOrders(orderData)
-            setIsLoading(false)
+                if (locData) setLocations(locData)
+                if (resData) setReservations(resData)
+                if (activeOrderData) setActiveOrders(activeOrderData)
+                if (orderData) setPreOrders(orderData)
+            } catch (e) {
+                console.warn('Caught error fetching floor map data', e)
+            } finally {
+                setIsLoading(false)
+            }
         }
 
         fetchData()

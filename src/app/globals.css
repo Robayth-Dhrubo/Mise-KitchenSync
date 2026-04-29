@@ -318,3 +318,25 @@
     max-width: 100% !important;
   }
 }
+
+/* =========================================
+   OS Iframe Mode Overrides
+   ========================================= */
+html.is-iframe aside,
+html.is-iframe header {
+  display: none !important;
+}
+
+html.is-iframe main {
+  margin-left: 0 !important;
+  padding-top: 0 !important;
+}
+
+html.is-iframe body, 
+html.is-iframe main,
+html.is-iframe .bg-background,
+html.is-iframe .bg-sidebar,
+html.is-iframe .min-h-screen {
+  background-color: transparent !important;
+  background: transparent !important;
+}

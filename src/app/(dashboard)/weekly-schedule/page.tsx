@@ -97,7 +97,6 @@ export default function SchedulePage() {
         if (currentUserRole) fetchStaff()
     }, [currentUserRole])
 
-    // Fetch shifts for the current week
     const fetchShifts = async () => {
         setIsLoading(true)
         const start = format(currentWeekStart, 'yyyy-MM-dd')
@@ -105,10 +104,18 @@ export default function SchedulePage() {
 
         try {
             const res = await fetch(`/api/schedule?start=${start}&end=${end}`)
+            if (!res.ok) {
+                if (res.status === 401) {
+                    setShifts([]) // Gracefully handle no auth
+                    return
+                }
+                throw new Error('Failed to fetch shifts')
+            }
             const data = await res.json()
             if (data.shifts) setShifts(data.shifts)
         } catch (e) {
-            console.error('Failed to fetch shifts', e)
+            console.warn('Caught auth/db error fetching shifts.', e)
+            setShifts([])
         } finally {
             setIsLoading(false)
         }

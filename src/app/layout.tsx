@@ -27,7 +27,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if (window.self !== window.top) document.documentElement.classList.add('is-iframe');`
+          }}
+        />
+      </head>
       <body
         className={`${inter.variable} ${manrope.variable} font-sans antialiased bg-background text-foreground selection:bg-accent selection:text-accent-foreground overflow-auto`}
         suppressHydrationWarning

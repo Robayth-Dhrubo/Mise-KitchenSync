@@ -32,20 +32,27 @@ export function PopupNavigation() {
     const supabase = createClient()
     const [open, setOpen] = useState(false)
 
-    const isAuthPage = pathname === '/login' || pathname === '/signup'
-    const isLandingPage = pathname === '/'
-    const isDashboardPage = pathname.startsWith('/dashboard') ||
-        pathname.startsWith('/menu') ||
-        pathname.startsWith('/kitchen-manager') ||
-        pathname.startsWith('/weekly-schedule') ||
-        pathname.startsWith('/inventory') ||
-        pathname.startsWith('/analytics') ||
-        pathname.startsWith('/settings') ||
-        pathname.startsWith('/pos') ||
-        pathname.startsWith('/recipes') ||
-        pathname.startsWith('/admin') ||
-        pathname.startsWith('/guest')
-    if (isAuthPage || isLandingPage || isDashboardPage) return null
+    const pathname_ = pathname
+    const isAuthPage = pathname_ === '/login' || pathname_ === '/signup'
+    const isLandingPage = pathname_ === '/'
+    const isAppPage = pathname_.startsWith('/dashboard') ||
+        pathname_.startsWith('/menu') ||
+        pathname_.startsWith('/kitchen-manager') ||
+        pathname_.startsWith('/weekly-schedule') ||
+        pathname_.startsWith('/inventory') ||
+        pathname_.startsWith('/analytics') ||
+        pathname_.startsWith('/settings') ||
+        pathname_.startsWith('/pos') ||
+        pathname_.startsWith('/recipes') ||
+        pathname_.startsWith('/admin') ||
+        pathname_.startsWith('/guest') ||
+        pathname_.startsWith('/os') ||
+        pathname_.startsWith('/smart-order') ||
+        pathname_.startsWith('/finance') ||
+        pathname_.startsWith('/service-desk') ||
+        pathname_.startsWith('/integrations') ||
+        pathname_.startsWith('/approval-pending')
+    if (isAuthPage || isLandingPage || isAppPage) return null
 
     const handleSignOut = async () => {
         const { error } = await supabase.auth.signOut()

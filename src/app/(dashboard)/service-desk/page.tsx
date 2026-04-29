@@ -64,7 +64,13 @@ export default function ReportedIssuesPage() {
         setIsLoading(true)
         try {
             const res = await fetch('/api/admin/tickets')
-            if (!res.ok) throw new Error('Failed to fetch')
+            if (!res.ok) {
+                if (res.status === 401) {
+                    setIssues([]) // No auth, gracefully show empty
+                    return
+                }
+                throw new Error('Failed to fetch')
+            }
             const data = await res.json()
 
             // Transform data using creator role
@@ -77,7 +83,8 @@ export default function ReportedIssuesPage() {
 
             setIssues(transformed)
         } catch (error) {
-            console.error('Error loading issues:', error)
+            console.warn('Caught error loading issues. Serving empty UI.', error)
+            setIssues([])
         } finally {
             setIsLoading(false)
         }

@@ -64,6 +64,8 @@ SENTRY_DSN=              # error monitoring
 
 **Procurement** — vendor directory with Google Places discovery, price comparison across suppliers, smart ordering based on par levels, nightly price scraper cron job.
 
+**OS Environment** — a native desktop-like experience for employees. Features functional utility apps (Calculator, Notes with local storage, AI Assistant for operational queries) and isolated native routing for complex modules like the Floor Map to prevent iframe conflicts and ensure a seamless, glassmorphic UI.
+
 ## Project layout
 
 ```

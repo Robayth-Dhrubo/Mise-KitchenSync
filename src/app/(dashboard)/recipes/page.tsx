@@ -10,35 +10,39 @@ import { calculateRecipeCost, isRecipeInStock } from '@/lib/calculations'
 export default async function RecipesPage() {
     const supabase = await createClient()
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser()
+    let recipes: any[] = []
 
-    if (!user) {
-        redirect('/login')
-    }
+    try {
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (user) {
+            // Fetch recipes with their items and ingredients
+            const { data, error } = await supabase
+                .from('recipes')
+                .select(`
+            *,
+            recipe_items (
+                quantity_needed,
+                unit_used,
+                ingredient:ingredients (
+                name,
+                purchase_price,
+                purchase_unit,
+                current_stock,
+                conversion_ratio
+                )
+            )
+            `)
+                .order('created_at', { ascending: false })
 
-    // Fetch recipes with their items and ingredients
-    const { data: recipes, error } = await supabase
-        .from('recipes')
-        .select(`
-      *,
-      recipe_items (
-        quantity_needed,
-        unit_used,
-        ingredient:ingredients (
-          name,
-          purchase_price,
-          purchase_unit,
-          current_stock,
-          conversion_ratio
-        )
-      )
-    `)
-        .order('created_at', { ascending: false })
-
-    if (error) {
-        console.error('Error fetching recipes:', error)
+            if (error) {
+                console.error('Error fetching recipes:', error)
+            } else if (data) {
+                recipes = data
+            }
+        }
+    } catch (e) {
+        console.warn('Caught auth/db error in Recipes page. Serving empty UI for presentation.', e)
     }
 
     const recipesWithCost: RecipeWithCost[] = (recipes || []).map((recipe: any) => {
