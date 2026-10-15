@@ -1,7 +1,9 @@
-import { type NextRequest } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
+    if (['/product','/demo','/privacy','/terms','/help','/api/billing','/api/billing/webhook'].includes(request.nextUrl.pathname)) return NextResponse.next({ request })
+    if (request.nextUrl.pathname === '/api/faberge' || request.nextUrl.pathname.startsWith('/api/faberge/')) return NextResponse.next({ request })
     return await updateSession(request)
 }
 

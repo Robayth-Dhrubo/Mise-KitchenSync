@@ -1,23 +1,12 @@
 import type { Metadata } from "next";
-import { Manrope, Inter } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/lib/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { PopupNavigation } from "@/components/PopupNavigation";
 
-const manrope = Manrope({
-  variable: "--font-display",
-  subsets: ["latin"],
-});
-
-const inter = Inter({
-  variable: "--font-primary",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Mise - The Operating System for Profitable Service Operations",
-  description: "Automate recipe costing, track inventory in real-time, and prevent profit loss due to ingredient price fluctuations.",
+  title: "Mise · KitchenSync",
+  description: "Kitchen operations in sync: inventory, recipe costing, prep, purchasing, annual labour planning and menu launches.",
   keywords: ["restaurant", "service management", "recipe costing", "food cost", "inventory", "mise en place"],
 };
 
@@ -31,12 +20,12 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `if (window.self !== window.top) document.documentElement.classList.add('is-iframe');`
+            __html: `if (window.self !== window.top && new URLSearchParams(window.location.search).get('os_iframe') === 'true') document.documentElement.classList.add('is-iframe');`
           }}
         />
       </head>
       <body
-        className={`${inter.variable} ${manrope.variable} font-sans antialiased bg-background text-foreground selection:bg-accent selection:text-accent-foreground overflow-auto`}
+        className="font-sans antialiased bg-background text-foreground overflow-auto"
         suppressHydrationWarning
       >
         <QueryProvider>

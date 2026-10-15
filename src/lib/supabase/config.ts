@@ -22,19 +22,15 @@ const isServer = typeof window === 'undefined'
 // Parse and validate
 const parsed = envSchema.safeParse(processEnv)
 
-if (!parsed.success) {
+export const isSupabaseConfigured = parsed.success
+
+if (!parsed.success && (processEnv.NEXT_PUBLIC_SUPABASE_URL || processEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY)) {
     const errorDetails = JSON.stringify(parsed.error.format(), null, 4)
     console.error('❌ Invalid environment variables:', errorDetails)
 
     // In production or CI, we want to be very clear about why it failed
-    if (process.env.NODE_ENV === 'production' && !process.env.CI) {
-        throw new Error(`Critical environment variables missing. Details: ${errorDetails}`)
-    }
-
-    // In development, crash early
-    if (process.env.NODE_ENV === 'development') {
-        throw new Error('Supabase environment variables are not configured correctly. Check your .env.local file.')
-    }
+    // The Sites workspace has its own durable storage. Legacy Supabase routes
+    // are gated by middleware until valid credentials are configured.
 }
 
 export const supabaseConfig = {

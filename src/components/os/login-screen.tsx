@@ -46,13 +46,6 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
     setLoading(true)
     setError('')
 
-    // Temporary Demo Bypass!
-    if (email === 'bypass' || password === 'bypass') {
-      setLoading(false)
-      onLogin('employee')
-      return
-    }
-
     if (!email || !password) {
       setError('Please enter credentials')
       setLoading(false)

@@ -29,12 +29,11 @@ const navItems = [
 export function PopupNavigation() {
     const pathname = usePathname()
     const router = useRouter()
-    const supabase = createClient()
     const [open, setOpen] = useState(false)
 
     const pathname_ = pathname
     const isAuthPage = pathname_ === '/login' || pathname_ === '/signup'
-    const isLandingPage = pathname_ === '/'
+    const isLandingPage = ['/', '/product', '/demo', '/privacy', '/terms', '/help'].includes(pathname_)
     const isAppPage = pathname_.startsWith('/dashboard') ||
         pathname_.startsWith('/menu') ||
         pathname_.startsWith('/kitchen-manager') ||
@@ -55,12 +54,13 @@ export function PopupNavigation() {
     if (isAuthPage || isLandingPage || isAppPage) return null
 
     const handleSignOut = async () => {
+        const supabase = createClient()
         const { error } = await supabase.auth.signOut()
         if (error) {
             toast.error('Error signing out', { description: error.message })
         } else {
             toast.success('Signed out successfully')
-            router.push('/login')
+            router.push('/os')
         }
     }
 

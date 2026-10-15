@@ -1,0 +1,8 @@
+{
+  "name": "mise-billing-receiver",
+  "main": "index.ts",
+  "compatibility_date": "2026-10-14",
+  "vars": {
+    "MISE_SITE_ORIGIN": "https://mise-kitchensync.earthy-swan-3457.chatgpt.site"
+  }
+}

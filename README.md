@@ -1,4 +1,40 @@
-# Mise
+# Mise · KitchenSync
+
+Kitchen operations in sync: purchase prices, recipe costing, prep, purchasing,
+waste and annual labour planning in a private restaurant workspace.
+
+## Commercial pilot 0.2
+
+- **Product tour:** `/product` — a professional overview and interactive plate-cost example.
+- **Working demo:** `/demo` — illustrative data saved only in a separate browser session.
+- **Live kitchen:** `/` — account-scoped records, setup guide, recipe costs, inventory and prep.
+- **Business tools:** annual hiring budget, break-even scenarios and saved menu-launch checklist.
+- **Subscription:** Stripe-hosted checkout and portal, actual configured pricing and signed lifecycle webhooks and server-verified access.
+
+The current deployment is a private pilot using ChatGPT sign-in. Payments are
+disabled until merchant billing and webhook delivery are configured. Customer Site access, approved
+commercial policies and live payment/browser checks are required before paid
+launch. Shared team accounts and automatic POS sync are not included.
+
+Read [the commercial release guide](docs/commercial-release.md) for merchant
+configuration, launch checks and the product's limits. See
+[the kitchen guide](docs/sites-workspace.md) for calculations, imports and backups.
+
+Fabergé's original files, payroll, sales and kitchen records stay in private
+runtime storage. They are not bundled into the demo or source repository.
+
+
+The signed webhook receiver is prepared in `workers/stripe-relay`. It is separate
+from the private kitchen and has not been deployed. See its setup guide before
+connecting any subscription payments.
+
+## Private KitchenSync workspace
+
+The default entry now opens a direct kitchen workspace with inventory, yield-aware recipe costing, a prep board, supplier contacts, purchase orders, and a waste log. Records are saved in Cloudflare D1 under the signed-in ChatGPT user's ID. The Site is private.
+
+The original Supabase modules are retained in source. Their live records are separate and have not been imported. They require valid Supabase configuration; legacy employee sign-in remains at `/os`. The temporary employee login and middleware bypasses have been removed. Chromium-based scraping stays available only on the original Node deployment target; Sites reports it as unavailable rather than inventing prices.
+
+See [the workspace guide](docs/sites-workspace.md) for deployment, calculations, imports, and backups. `npm run dev` and `npm run build` use the Sites Vinext runtime; `npm run dev:next` and `npm run build:next` retain the Next.js commands for source compatibility.
 
 [![CI](https://github.com/Robayth-Dhrubo/Mise-KitchenSync/actions/workflows/ci.yml/badge.svg)](https://github.com/Robayth-Dhrubo/Mise-KitchenSync/actions/workflows/ci.yml)
 
@@ -6,7 +42,7 @@ Restaurant operations platform. Tracks ingredient costs, calculates recipe margi
 
 The core problem: when a supplier raises the price of chicken by $0.50/lb, every dish using chicken is now less profitable. Most restaurants don't find out until month-end P&L. Mise recalculates margins instantly.
 
-## Architecture
+## Retained original application architecture
 
 ```
 Next.js 16 (App Router) → Supabase (Postgres + Auth + Realtime) → Vercel
@@ -54,7 +90,7 @@ GOOGLE_PLACES_API_KEY=   # vendor discovery
 SENTRY_DSN=              # error monitoring
 ```
 
-## What it does
+## Retained original modules
 
 **Recipe costing engine** (`src/lib/calculations.ts`) — the core of the app. Change an ingredient price → every recipe using it recalculates cost, margin, and profitability status (`excellent`/`good`/`warning`/`danger` based on food cost %).
 

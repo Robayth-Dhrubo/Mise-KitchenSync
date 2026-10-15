@@ -10,6 +10,10 @@ jobs:
   quality-check:
     name: Build and Test
     runs-on: ubuntu-latest
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: 'true'
+      CLOUDFLARE_CF_FETCH_ENABLED: 'false'
+      WRANGLER_SEND_METRICS: 'false'
 
     strategy:
       matrix:

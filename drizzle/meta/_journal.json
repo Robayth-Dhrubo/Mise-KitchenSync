@@ -1,0 +1,34 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1791593113299,
+      "tag": "0000_bright_warpath",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1791595394120,
+      "tag": "0001_confused_invaders",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1791672431695,
+      "tag": "0002_narrow_hercules",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1792025054713,
+      "tag": "0003_mixed_otto_octavius",
+      "breakpoints": true
+    }
+  ]
+}

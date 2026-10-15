@@ -14,7 +14,7 @@ export default function MiseOSPage() {
   const [phase, setPhase] = useState<OSPhase>('boot')
   const [role, setRole] = useState<UserRole | null>(null)
   const [userName, setUserName] = useState('Employee')
-  const [employeeRole, setEmployeeRole] = useState('admin') // Default safe fallback
+  const [employeeRole, setEmployeeRole] = useState('foh')
   const supabase = createClient()
 
   const handleBootComplete = () => setPhase('login')
@@ -26,6 +26,7 @@ export default function MiseOSPage() {
       try {
         // Get user info from Supabase
         const { data: { user } } = await supabase.auth.getUser()
+        if (!user) { setRole(null); setPhase('login'); return }
         if (user) {
           // Try to get profile name AND role
           const { data: profile } = await supabase
@@ -42,9 +43,9 @@ export default function MiseOSPage() {
           }
         }
       } catch (e) {
-        console.warn('Supabase offline or unreachable, switching to bypass identity.')
-        setUserName('Bypass Admin')
-        setEmployeeRole('admin')
+        setRole(null)
+        setPhase('login')
+        return
       }
     }
 

@@ -21,7 +21,7 @@ export async function GET(request: Request) {
         const batchSize = parseInt(process.env.SCRAPE_BATCH_SIZE || '50')
         const requestDelay = parseInt(process.env.SCRAPE_REQUEST_DELAY_MS || '2000')
 
-        if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+        if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 

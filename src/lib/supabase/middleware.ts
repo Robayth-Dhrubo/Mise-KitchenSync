@@ -1,8 +1,19 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import { supabaseConfig } from './config'
+import { supabaseConfig, isSupabaseConfigured } from './config'
 
 export async function updateSession(request: NextRequest) {
+    const pathname = request.nextUrl.pathname
+    // ChatGPT authenticates the private workspace. It never receives a mock
+    // Supabase identity, and legacy modules keep their own authentication.
+    if (pathname === '/' || pathname.startsWith('/api/workspace') || pathname.startsWith('/workspace')) return NextResponse.next({ request })
+    if (!isSupabaseConfigured) {
+        if (pathname.startsWith('/api/')) return NextResponse.json({ error: 'This legacy integration requires Supabase configuration.' }, { status: 503 })
+        const url = request.nextUrl.clone()
+        url.pathname = '/'
+        url.search = '?view=settings'
+        return NextResponse.redirect(url)
+    }
     let supabaseResponse = NextResponse.next({
         request,
     })
@@ -90,17 +101,9 @@ export async function updateSession(request: NextRequest) {
         const isProtected = protectedPaths.some(path => request.nextUrl.pathname.startsWith(path))
 
         if (isProtected) {
-            /* 
-             * TEMPORARY BYPASS: Auth guard disabled to allow testing UI without database running
-             */
-             
-            // const url = request.nextUrl.clone()
-            // if (request.nextUrl.searchParams.get('os_iframe') === 'true') {
-            //     url.pathname = '/os/session-expired'
-            // } else {
-            //     url.pathname = '/'
-            // }
-            // return NextResponse.redirect(url)
+            const url = request.nextUrl.clone()
+            url.pathname = request.nextUrl.searchParams.get('os_iframe') === 'true' ? '/os/session-expired' : '/os'
+            return NextResponse.redirect(url)
         }
     }
 
