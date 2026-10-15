@@ -30,5 +30,6 @@ export function demoWorkspace(){
     {id:'demo-sale-brioche',item:'Grilled breakfast brioche',quantity:20,netSales:300,recipeId:'demo-brioche'},
   ]}]
   state.operations.routines=suggestedRoutines.map((routine,index)=>({...routine,id:`demo-routine-${index}`}))
+  state.stockControl={stations:[{id:'demo-hot-line',name:'Hot line',assignee:'Alex',targets:[{recipeId:'sample-monte',par:24,onHand:6,countedOn:today},{recipeId:'demo-omelette',par:20,onHand:null,countedOn:null}]}]}
   return state
 }

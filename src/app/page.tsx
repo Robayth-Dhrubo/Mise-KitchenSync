@@ -7,5 +7,5 @@ export const dynamic = 'force-dynamic'
 export default async function RootPage() {
   const user = await getChatGPTUser()
   if (!user) return <ProductLanding signInHref={chatGPTSignInPath('/')} />
-  return <KitchenWorkspace displayName={user.displayName} />
+  return <KitchenWorkspace key={user.userId} displayName={user.displayName} offlineScope={user.userId} />
 }

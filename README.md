@@ -8,11 +8,16 @@ recipe costs, menu sales, prep, purchasing and staff planning.
 ## What it does
 
 - Records purchase packs, invoice prices, usable yields, stock counts and pars.
+- Converts purchasing and recipe units, with explicit US/Imperial volumes and optional measured density.
+- Saves stock-count drafts on the device, queues them offline and reviews conflicts after reconnecting.
 - Calculates recipe and portion costs, food-cost percentages and contribution.
-- Organises prep by station, person, quantity and date.
+- Builds dated prep tasks from station targets and freshly counted ready portions.
 - Creates purchase drafts from stock shortfalls and records received deliveries.
 - Stores supplier contacts, waste entries and a menu-launch checklist.
 - Compares reviewed sales snapshots with current recipe costs and tests prices.
+- Previews recipe usage, posts eligible sales once and compares counted usage with recipes and waste.
+- Suggests purchase drafts from average sales demand, counted stock, pars and open orders.
+- Keeps inventory events separate from editable kitchen records, with paged history and exports.
 - Plans Sunday–Saturday shifts and exports approved worked hours.
 - Keeps opening and closing checklists separate for each service date.
 - Models annual staffing costs and monthly break-even sales.
@@ -32,6 +37,10 @@ The hosted workspace at `/` is currently private and uses ChatGPT sign-in. Each
 account has its own records. Adding a staff record does not create a login.
 Shared team workspaces and automatic POS sync are
 not part of this version.
+
+For offline counting, open the app and start the count while connected. Keep the
+page open in the walk-in, then reconnect to sync. Launching the app from a closed
+browser without a connection is not supported.
 
 ## Run locally
 
@@ -54,7 +63,9 @@ diagram tools. The browser is not needed to run the kitchen app.
 ## Development
 
 The current app uses React, TypeScript and Vinext on Cloudflare Workers. D1 stores
-kitchen records and R2 stores imported files. Database changes are in `drizzle/`.
+kitchen snapshots and inventory events; R2 stores imported files. Database changes
+are append-only in `drizzle/`. The inventory event table uses authenticated owner
+and location keys. The current interface supports one location per account.
 
 ```sh
 npm run typecheck
@@ -82,7 +93,9 @@ and the [release guide](docs/commercial-release.md) before enabling payments.
 
 ## Documentation
 
-- [Product release and acceptance checks](docs/product-release-0.3.md)
+- [Current release and acceptance checks](docs/product-release-0.4.md)
+- [Architecture](docs/architecture.md)
+- [Integration backlog](docs/integration-roadmap.md)
 - [Kitchen setup, calculations and backups](docs/sites-workspace.md)
 - [Billing setup and release requirements](docs/commercial-release.md)
 - [Webhook receiver](workers/stripe-relay/README.md)

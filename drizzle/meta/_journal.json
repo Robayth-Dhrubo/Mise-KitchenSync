@@ -29,6 +29,13 @@
       "when": 1792025054713,
       "tag": "0003_mixed_otto_octavius",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1792081815480,
+      "tag": "0004_fantastic_metal_master",
+      "breakpoints": true
     }
   ]
 }

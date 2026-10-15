@@ -1,4 +1,4 @@
-# Mise KitchenSync — commercial pilot 0.2
+# Mise KitchenSync — commercial pilot 0.4
 
 Mise helps an independent restaurant operator maintain purchase prices, cost
 recipes, assign prep, create purchase drafts and plan annual kitchen labour.
@@ -6,6 +6,9 @@ The product tour is `/product`; `/demo` uses illustrative browser-session data.
 The live workspace remains at `/`.
 
 ## What this release delivers
+
+See the [0.4 acceptance criteria](product-release-0.4.md) and
+[integration backlog](integration-roadmap.md) for current stock-control scope.
 
 - A consistent responsive product interface, readable tables, focus indicators,
   labelled budget controls and keyboard skip links.
@@ -117,7 +120,7 @@ npm run build
 ```
 
 Billing migrations are append-only under `drizzle/`: `0002` stores owner/customer
-mappings and `0003` adds verified receipts and event deduplication. Existing
+mappings and `0003` adds verified receipts and event deduplication. Inventory migration `0004` adds the stock ledger and a nullable save token. Existing
 workspace backups stay valid; business-planning data is an optional addition.
 Hosted publication applies the migration. Source builds retain the Sites
 integration and its D1/R2 bindings.

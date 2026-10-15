@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { DatabaseSync } from 'node:sqlite'
 import { readFileSync, readdirSync } from 'node:fs'
 import { GET, PUT } from '../src/app/api/workspace/route'
+import { testD1 } from './helpers/d1'
 import { demoWorkspace } from '../src/lib/workspace/demo'
 
 const mock = vi.hoisted(() => ({ env: {} as Record<string, unknown>, user: { userId: 'owner-one', email: 'owner@example.test', displayName: 'Owner' } as { userId: string; email: string; displayName: string } | null }))
@@ -14,7 +15,7 @@ beforeEach(() => {
   database = new DatabaseSync(':memory:')
   for (const file of readdirSync('drizzle').filter(name => name.endsWith('.sql')).sort()) database.exec(readFileSync(`drizzle/${file}`, 'utf8'))
   mock.user = { userId: 'owner-one', email: 'owner@example.test', displayName: 'Owner' }
-  mock.env.DB = { prepare: (sql: string) => ({ bind: (...values: (string | number | null)[]) => ({ first: async () => database.prepare(sql).get(...values) ?? null, run: async () => ({ meta: { changes: Number(database.prepare(sql).run(...values).changes) } }) }) }) }
+  mock.env.DB = testD1(database)
 })
 afterEach(() => database.close())
 const request = (body: unknown, origin = 'https://mise.example') => new Request('https://mise.example/api/workspace', { method: 'PUT', headers: { 'Content-Type': 'application/json', Origin: origin }, body: JSON.stringify(body) })

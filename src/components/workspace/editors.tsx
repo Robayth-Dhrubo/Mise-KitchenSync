@@ -3,6 +3,7 @@
 import { useState, type ReactNode, type FormEvent } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import { X, Plus, Trash2, Info, ArrowRight } from 'lucide-react'
+import { convertMeasure, measureUnits, purchaseUnits, unitLabel } from '@/lib/workspace/measurements'
 import { costRecipe, ingredientSchema, recipeSchema, supplierSchema, prepSchema, logWaste, kitchenDay, money, quantity, type Ingredient, type Recipe, type Supplier, type PrepTask, type Workspace } from '@/lib/workspace/domain'
 
 export type EditorProps = { state: Workspace; id?: string; busy: boolean; save: (next: Workspace) => Promise<boolean>; close: () => void; notify: (message: string) => void }
@@ -23,12 +24,17 @@ export function IngredientEditor(props: EditorProps) {
   const { state, busy, close, save, notify } = props
   const existing = state.ingredients.find(i => i.id === props.id)
   const [value, setValue] = useState<Ingredient>(existing ?? { id: crypto.randomUUID(), name: '', category: 'Produce', supplierId: null, purchaseLabel: '', baseUnit: 'g', packQuantity: null, price: null, yieldPct: 100, stock: null, par: null, notes: '' })
+  const [packUnit,setPackUnit]=useState<string>(value.baseUnit)
+  const packUnits=purchaseUnits(value.baseUnit)
+  const displayPackUnit=packUnits.includes(packUnit as typeof packUnits[number])?packUnit:value.baseUnit
+  const packAmount=value.packQuantity===null?null:convertMeasure(value.packQuantity,value.baseUnit,displayPackUnit)
   const change = (key: keyof Ingredient, v: unknown) => setValue(old => ({ ...old, [key]: v }))
   const lockedUnit = existing && (state.recipes.some(r => r.items.some(i => i.ingredientId === existing.id)) || state.waste.some(w => w.ingredientId === existing.id) || state.orders.some(o => o.lines.some(l => l.ingredientId === existing.id)))
   async function submit(e: FormEvent) {
     e.preventDefault()
     const parsed = ingredientSchema.safeParse(value)
     if (!parsed.success) return notify(parsed.error.issues[0].message)
+    if (existing?.source && (value.price !== existing.price || value.packQuantity !== existing.packQuantity || value.yieldPct !== existing.yieldPct)) parsed.data.source = { ...existing.source, status: 'review', detail: 'Pricing changed in inventory. Confirm against the current supplier invoice.', priceDate: undefined }
     if (await save({ ...state, ingredients: existing ? state.ingredients.map(i => i.id === value.id ? parsed.data : i) : [...state.ingredients, parsed.data] })) close()
   }
   return <FormDialog title={existing ? 'Edit ingredient' : 'Add an ingredient'} description="Enter the full purchase pack. Recipe quantities and stock use the base unit." close={close} busy={busy}><form onSubmit={submit}><fieldset disabled={busy}><div className="form-grid">
@@ -37,13 +43,15 @@ export function IngredientEditor(props: EditorProps) {
     <Field label="Supplier"><select value={value.supplierId ?? ''} onChange={e => change('supplierId', e.target.value || null)}><option value="">Unassigned</option>{state.suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}</select></Field>
     <Field label="Purchase pack" hint="The unit on the supplier invoice."><input value={value.purchaseLabel} maxLength={300} onChange={e => change('purchaseLabel', e.target.value)} placeholder="e.g. 5 kg bag or case of 180"/></Field>
     <Field label="Price per full pack (CAD)"><input type="number" min="0" max="1000000000" step="any" value={value.price ?? ''} onChange={e => change('price', number(e.target.value))} placeholder="Leave blank if unknown"/></Field>
-    <Field label="Base unit" hint={lockedUnit ? 'Locked because this ingredient is used in saved records.' : 'Use grams, millilitres, or individual pieces.'}><select disabled={!!lockedUnit} value={value.baseUnit} onChange={e => change('baseUnit', e.target.value)}><option value="g">Grams (g)</option><option value="ml">Millilitres (ml)</option><option value="each">Pieces (each)</option></select></Field>
-    <Field label={`Quantity in one pack (${value.baseUnit})`} hint="A 5 kg bag contains 5,000 g."><input type="number" min="0.000001" step="any" value={value.packQuantity ?? ''} onChange={e => change('packQuantity', number(e.target.value))} placeholder="e.g. 5000"/></Field>
+    <Field label="Base unit" hint={lockedUnit ? 'Locked because this ingredient is used in saved records.' : 'Use grams, millilitres, or individual pieces.'}><select disabled={!!lockedUnit} value={value.baseUnit} onChange={e => {setPackUnit(e.target.value);setValue(old=>({...old,baseUnit:e.target.value as Ingredient['baseUnit'],packQuantity:null,stock:null,par:null}))}}><option value="g">Grams (g)</option><option value="ml">Millilitres (ml)</option><option value="each">Pieces (each)</option></select></Field>
+    <Field label="Purchase quantity unit" hint="Use the unit printed on the pack. US and Imperial volume units are named separately."><select value={displayPackUnit} onChange={e=>setPackUnit(e.target.value)}>{packUnits.map(unit=><option key={unit} value={unit}>{unitLabel(unit)}</option>)}</select></Field>
+    <Field label={`Quantity in one pack (${unitLabel(displayPackUnit)})`} hint={value.packQuantity===null?'Enter the whole pack quantity.':`Stored as ${value.packQuantity.toLocaleString('en-CA',{maximumFractionDigits:5})} ${value.baseUnit} before yield loss.`}><input type="number" min="0.000001" step="any" value={packAmount===null?'':Number(packAmount.toFixed(9))} onChange={e => change('packQuantity', e.target.value===''?null:convertMeasure(Number(e.target.value),displayPackUnit,value.baseUnit))} placeholder="e.g. 5"/></Field>
     <Field label="Usable yield (%)" hint="100% means no trimming or preparation loss."><input required type="number" min="0.01" max="100" step="any" value={value.yieldPct} onChange={e => change('yieldPct', number(e.target.value))}/></Field>
     <Field label={`Available usable stock (${value.baseUnit})`} hint="Leave blank until you count it. Zero means none."><input type="number" min="0" step="any" value={value.stock ?? ''} onChange={e => change('stock', number(e.target.value))}/></Field>
     <Field label={`Target stock / par (${value.baseUnit})`} hint="The usable quantity you want on hand."><input type="number" min="0" step="any" value={value.par ?? ''} onChange={e => change('par', number(e.target.value))}/></Field>
+    {value.baseUnit!=='each'&&<details className="ingredient-conversions wide"><summary>Optional: ingredient-specific weight / volume conversion</summary><Field label="Known density (grams per millilitre)" hint="Enter only a measured or supplier-confirmed density for this usable ingredient. Blank keeps weight and volume separate."><input type="number" min="0.000001" max="100" step="any" value={value.densityGPerMl??''} onChange={e=>change('densityGPerMl',number(e.target.value))}/></Field></details>}
     {value.source && <div className="source-stamp wide"><strong>Imported source: {value.source.file}</strong><p>{value.source.detail}</p><a className="text-button" href={`/api/faberge/file?id=${encodeURIComponent(value.source.fileId)}`}>Download original source</a></div>}<Field label="Notes" wide><textarea maxLength={300} rows={2} value={value.notes} onChange={e => change('notes', e.target.value)}/></Field>
-  </div><div className="inline-note"><Info size={16}/><span>Cost per usable unit = pack price ÷ (pack quantity × yield). Blank costs remain incomplete.</span></div></fieldset><Footer busy={busy} close={close}/></form></FormDialog>
+  </div><div className="inline-note"><Info size={16}/><span>Cost per usable unit = pack price ÷ (pack quantity × yield). Case and box counts use your full purchase pack; trimmed recipe quantities use usable units.</span></div></fieldset><Footer busy={busy} close={close}/></form></FormDialog>
 }
 
 export function RecipeEditor(props: EditorProps) {
@@ -60,7 +68,7 @@ export function RecipeEditor(props: EditorProps) {
     if (!parsed.success) return notify(parsed.error.issues[0].message)
     if (await save({ ...state, recipes: existing ? state.recipes.map(r => r.id === value.id ? parsed.data : r) : [...state.recipes, parsed.data] })) close()
   }
-  return <FormDialog title={existing ? 'Edit recipe costing' : 'Cost a new recipe'} description="Enter quantities for the whole batch, then the number of portions it produces." close={close} busy={busy}><form onSubmit={submit}><fieldset disabled={busy}><div className="form-grid">
+  return <FormDialog title={existing ? 'Edit recipe costing' : 'Cost a new recipe'} description="Enter usable quantities for the whole batch, then the portions produced. A purchase pack means its usable contents after yield." close={close} busy={busy}><form onSubmit={submit}><fieldset disabled={busy}><div className="form-grid">
     <Field label="Recipe name" wide><input required autoFocus maxLength={120} value={value.name} onChange={e => change('name', e.target.value)} placeholder="e.g. Monte Cristo"/></Field>
     <Field label="Category"><input maxLength={300} value={value.category} onChange={e => change('category', e.target.value)}/></Field>
     <Field label="Portions produced per batch"><input type="number" min="0.000001" step="any" value={value.portions ?? ''} onChange={e => change('portions', number(e.target.value))}/></Field>
@@ -71,7 +79,7 @@ export function RecipeEditor(props: EditorProps) {
   {value.items.map((item, index) => <div className="recipe-line" key={item.id}>
     <label><span className="sr-only">Ingredient {index + 1}</span><select value={item.ingredientId} onChange={e => { const ingredient = state.ingredients.find(i => i.id === e.target.value); setValue(old => ({ ...old, items: old.items.map((i, n) => n === index ? { ...i, ingredientId: e.target.value, unit: ingredient?.baseUnit ?? 'g' } : i) })) }}><option value="" disabled>Select ingredient</option>{state.ingredients.map(i => <option key={i.id} value={i.id}>{i.name}</option>)}</select></label>
     <label><span className="sr-only">Batch quantity for ingredient {index + 1}</span><input type="number" min="0.000001" step="any" placeholder="Qty" value={item.quantity ?? ''} onChange={e => changeItem(index, 'quantity', number(e.target.value))}/></label>
-    <label><span className="sr-only">Unit for ingredient {index + 1}</span><select value={item.unit} onChange={e => changeItem(index, 'unit', e.target.value)}>{['g','kg','oz','lb','ml','L','each'].map(u => <option key={u}>{u}</option>)}</select></label>
+    <label><span className="sr-only">Unit for ingredient {index + 1}</span><select value={item.unit} onChange={e => changeItem(index, 'unit', e.target.value)}>{measureUnits.map(u => <option key={u} value={u}>{unitLabel(u)}</option>)}</select></label>
     <span className="line-cost">{money(result.lines[index]?.cost ?? null)}</span><button className="icon-button" type="button" aria-label={`Remove ingredient ${index + 1}`} onClick={() => change('items', value.items.filter((_, n) => n !== index))}><Trash2 size={16}/></button>
   </div>)}
   <div className="cost-preview"><div><small>Batch cost</small><strong>{money(result.batchCost)}</strong></div><div><small>Cost per portion</small><strong>{money(result.portionCost)}</strong></div><div><small>Food cost</small><strong>{result.foodCost === null ? '—' : `${result.foodCost.toFixed(1)}%`}</strong></div><div><small>Price at target</small><strong>{money(result.suggestedPrice)}</strong></div></div>

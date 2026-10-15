@@ -1,6 +1,8 @@
 import { z } from 'zod'
 import { businessSchema } from './business'
 import { operationsSchema } from './operations'
+import { stockControlSchema } from './stock-control-schema'
+import { convertMeasure, ingredientQuantity, measureUnits } from './measurements'
 
 const id = z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/)
 const text = z.string().trim().max(300)
@@ -20,14 +22,14 @@ export const ingredientSchema = z.object({
   id, name, category: text, supplierId: id.nullable(), purchaseLabel: text,
   baseUnit: z.enum(['g', 'ml', 'each']), packQuantity: positiveNumber,
   price: optionalNumber, yieldPct: z.number().gt(0).max(100),
-  stock: optionalNumber, par: optionalNumber, notes: text, source: sourceSchema.optional(),
+  stock: optionalNumber, par: optionalNumber, notes: text, source: sourceSchema.optional(), densityGPerMl: z.number().finite().gt(0).max(100).nullable().optional(),
 })
 export const recipeSchema = z.object({
   id, name, category: text, portions: positiveNumber, sellingPrice: optionalNumber, notes: text,
-  items: z.array(z.object({ id, ingredientId: id, quantity: positiveNumber, unit: z.enum(['g', 'kg', 'oz', 'lb', 'ml', 'L', 'each']) })).max(100), source: sourceSchema.optional(),
+  items: z.array(z.object({ id, ingredientId: id, quantity: positiveNumber, unit: z.enum(measureUnits) })).max(100), source: sourceSchema.optional(),
 })
 export const supplierSchema = z.object({ id, name, contact: text, email: z.string().max(150).refine(v => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), 'Use a valid email'), phone: text, deliveryDays: text, notes: text, source: sourceSchema.optional() })
-export const prepSchema = z.object({ id, name, station: text, assignee: text, quantity: text, due: day.nullable(), priority: z.enum(['normal', 'high']), status: z.enum(['todo', 'doing', 'done']), source: sourceSchema.optional() })
+export const prepSchema = z.object({ id, name, station: text, assignee: text, quantity: text, due: day.nullable(), priority: z.enum(['normal', 'high']), status: z.enum(['todo', 'doing', 'done']), source: sourceSchema.optional(), stationTarget: z.object({ stationId: id, recipeId: id }).optional() })
 export const wasteSchema = z.object({ id, ingredientId: id, quantity: z.number().finite().gt(0).max(1e9), unit: z.enum(['g', 'ml', 'each']), reason: name, date: day, cost: optionalNumber })
 export const orderSchema = z.object({
   id, supplierId: id.nullable(), created: day, status: z.enum(['draft', 'ordered', 'received']), received: day.nullable(),
@@ -41,6 +43,7 @@ export const workspaceSchema = z.object({
   waste: z.array(wasteSchema).max(2000), orders: z.array(orderSchema).max(500),
   business: businessSchema.optional(),
   operations: operationsSchema.optional(),
+  stockControl: stockControlSchema.optional(),
 }).superRefine((state, ctx) => {
   for (const key of ['ingredients', 'recipes', 'suppliers', 'prep', 'waste', 'orders'] as const) {
     const ids = state[key].map(item => item.id)
@@ -65,6 +68,9 @@ export const workspaceSchema = z.object({
   }
   for (const report of state.operations?.salesReports ?? []) for (const row of report.rows) {
     if (row.recipeId && !state.recipes.some(recipe => recipe.id === row.recipeId)) ctx.addIssue({ code: 'custom', message: 'A sales item points to a missing recipe. Unlink it before deleting the recipe.' })
+  }
+  for (const station of state.stockControl?.stations ?? []) for (const target of station.targets) {
+    if (!state.recipes.some(recipe => recipe.id === target.recipeId)) ctx.addIssue({ code: 'custom', message: 'A station target points to a missing recipe.' })
   }
 })
 
@@ -93,13 +99,8 @@ export function unitCost(ingredient: Ingredient): number | null {
   if (ingredient.price === null || ingredient.packQuantity === null || ingredient.packQuantity <= 0 || ingredient.yieldPct <= 0) return null
   return ingredient.price / (ingredient.packQuantity * ingredient.yieldPct / 100)
 }
-const units: Record<string, { base: string; factor: number }> = {
-  g: { base: 'g', factor: 1 }, kg: { base: 'g', factor: 1000 }, oz: { base: 'g', factor: 28.349523125 }, lb: { base: 'g', factor: 453.59237 },
-  ml: { base: 'ml', factor: 1 }, L: { base: 'ml', factor: 1000 }, each: { base: 'each', factor: 1 },
-}
 export function convertQuantity(value: number, from: string, to: string): number | null {
-  const source = units[from], target = units[to]
-  return !source || !target || source.base !== target.base ? null : value * source.factor / target.factor
+  return convertMeasure(value, from, to)
 }
 export function costRecipe(recipe: Recipe, ingredients: Ingredient[], target = 30) {
   const issues: string[] = []
@@ -111,7 +112,7 @@ export function costRecipe(recipe: Recipe, ingredients: Ingredient[], target = 3
       const price = unitCost(ingredient)
       if (price === null) issues.push(`${ingredient.name}: enter pack price and quantity`)
       if (item.quantity === null || item.quantity <= 0) issues.push(`${ingredient.name}: enter recipe quantity`)
-      const amount = item.quantity === null ? null : convertQuantity(item.quantity, item.unit, ingredient.baseUnit)
+      const amount = item.quantity === null ? null : ingredientQuantity(item.quantity, item.unit, ingredient)
       if (amount === null && item.quantity !== null) issues.push(`${ingredient.name}: ${item.unit} cannot be converted to ${ingredient.baseUnit}`)
       if (price !== null && amount !== null && item.quantity !== null && item.quantity > 0) cost = price * amount
     }

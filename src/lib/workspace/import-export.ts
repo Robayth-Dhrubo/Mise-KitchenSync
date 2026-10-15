@@ -26,9 +26,9 @@ export function parseCsv(input: string): string[][] {
   row.push(field); if (row.some(v => v.trim())) rows.push(row)
   return rows
 }
-export const inventoryHeaders = ['name','category','purchase_pack','base_unit','pack_quantity','pack_price_cad','usable_yield_pct','stock','par','supplier','notes']
+export const inventoryHeaders = ['name','category','purchase_pack','base_unit','pack_quantity','pack_price_cad','usable_yield_pct','stock','par','supplier','notes','density_g_per_ml']
 export function inventoryCsv(state: Workspace): string {
-  return csv([inventoryHeaders, ...state.ingredients.map(i => [i.name,i.category,i.purchaseLabel,i.baseUnit,i.packQuantity,i.price,i.yieldPct,i.stock,i.par,state.suppliers.find(s => s.id === i.supplierId)?.name ?? '',i.notes])])
+  return csv([inventoryHeaders, ...state.ingredients.map(i => [i.name,i.category,i.purchaseLabel,i.baseUnit,i.packQuantity,i.price,i.yieldPct,i.stock,i.par,state.suppliers.find(s => s.id === i.supplierId)?.name ?? '',i.notes,i.densityGPerMl??''])])
 }
 export function importInventory(source: string, state: Workspace, newId = () => crypto.randomUUID()): Workspace {
   const [headers, ...rows] = parseCsv(source)
@@ -52,7 +52,9 @@ export function importInventory(source: string, state: Workspace, newId = () => 
     const supplier = state.suppliers.find(s => s.name.toLowerCase() === supplierName.toLowerCase())
     if (supplierName && !supplier) throw new Error(`Row ${index + 2}: add supplier "${supplierName}" before importing.`)
     if (existing && existing.baseUnit !== get('base_unit')) throw new Error(`Row ${index + 2}: the base unit for ${existing.name} cannot change during import.`)
-    const result = ingredientSchema.safeParse({ id: existing?.id ?? newId(), name: get('name'), category: get('category') || 'Other', supplierId: supplier?.id ?? null, purchaseLabel: get('purchase_pack'), baseUnit: get('base_unit'), packQuantity: num('pack_quantity'), price: num('pack_price_cad'), yieldPct: num('usable_yield_pct') ?? 100, stock: num('stock'), par: num('par'), notes: get('notes') })
+    const has = (key: string) => normal.includes(key)
+    const changedPricing = existing && (existing.price !== num('pack_price_cad') || existing.packQuantity !== num('pack_quantity') || has('usable_yield_pct') && existing.yieldPct !== (num('usable_yield_pct') ?? 100))
+    const result = ingredientSchema.safeParse({ ...existing, id: existing?.id ?? newId(), name: get('name'), category: has('category') ? get('category') || 'Other' : existing?.category ?? 'Other', supplierId: has('supplier') ? supplier?.id ?? null : existing?.supplierId ?? null, purchaseLabel: has('purchase_pack') ? get('purchase_pack') : existing?.purchaseLabel ?? '', baseUnit: get('base_unit'), packQuantity: num('pack_quantity'), price: num('pack_price_cad'), yieldPct: has('usable_yield_pct') ? num('usable_yield_pct') ?? 100 : existing?.yieldPct ?? 100, stock: has('stock') ? num('stock') : existing?.stock ?? null, par: has('par') ? num('par') : existing?.par ?? null, notes: has('notes') ? get('notes') : existing?.notes ?? '', densityGPerMl: has('density_g_per_ml') ? num('density_g_per_ml') : existing?.densityGPerMl, source: changedPricing && existing.source ? { ...existing.source, status: 'review', detail: 'Pricing changed by inventory CSV import. Confirm against the current supplier invoice.', priceDate: undefined } : existing?.source })
     if (!result.success) throw new Error(`Row ${index + 2}: ${result.error.issues[0].path.join('.')} — ${result.error.issues[0].message}`)
     if (existingIndex >= 0) ingredients[existingIndex] = result.data
     else ingredients.push(result.data)

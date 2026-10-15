@@ -5,7 +5,7 @@ This workspace builds on Mise-KitchenSync and is hosted as a private Site. It us
 ## First use
 
 1. In Settings, set the kitchen name and food-cost target. The initial 30% is an editable planning target, not an industry claim.
-2. Add suppliers, then inventory. Enter the cost of the whole purchase pack and the amount it contains in grams, millilitres, or individual pieces. For example, a 5 kg bag contains 5,000 g.
+2. Add suppliers, then inventory. Enter the cost and quantity of the whole purchase pack. Select the supplier’s weight or volume unit; the editor converts it into grams or millilitres. Individual pieces stay separate. For example, a 5 kg bag is stored as 5,000 g before yield loss.
 3. Record available usable stock and target usable stock (par). Leave unknown counts blank; zero means no stock.
 4. Cost recipe quantities for the whole batch and enter how many portions the batch produces. Selling prices are before sales tax.
 5. Assign prep tasks to stations and people. Today's view includes unfinished overdue tasks.
@@ -32,7 +32,7 @@ Contribution excludes labour, overhead, delivery costs, and taxes. It is not net
 
 Inventory accepts the CSV template downloadable from the Inventory page. Use numeric values without currency signs or thousands separators. Use `g`, `ml`, or `each` as base units. Matching ingredient names update existing records while preserving IDs; new names create records. Add suppliers before importing ingredients that reference their names. The importer validates the whole file before saving and does not change base units on existing ingredients. All table views export CSV; spreadsheet formula-like text is escaped.
 
-Settings downloads a complete JSON backup. Restoring validates its version, record IDs, dates, relationships, and quantities before showing a replacement confirmation. Download a current backup before restoring, clearing records, or loading samples.
+Settings downloads a JSON backup of current kitchen records. Inventory events have a separate history export; load all older pages before exporting the full history. The kitchen backup does not contain the native inventory ledger, original uploaded files or an unsynced device count. Restoring validates its version, record IDs, dates, relationships, and quantities before showing a replacement confirmation. Download a current backup before restoring, clearing records, or loading samples.
 
 ## Storage and concurrency
 
@@ -44,7 +44,7 @@ Use Node 22.13 or newer. Install dependencies with `PUPPETEER_SKIP_DOWNLOAD=1` b
 
 `npm run test` checks costing, units, incomplete inputs, purchasing, receipt idempotency, waste, import validation, and UI save-failure behavior, together with the original tests. `npm run typecheck` checks the project. `npm run build` creates the Worker and client assets. Browser QA was unavailable in the authoring environment and was not run.
 
-Source was cloned from GitHub and saved to the Site's own source repository. This does not configure automatic two-way GitHub synchronization or change the original GitHub branch.
+Release source is saved to the Site source repository and mirrored to GitHub through a separate reviewed source update. This does not configure automatic two-way GitHub synchronization. Production kitchen data and credentials remain outside both repositories.
 # Fabergé source import
 
 The private workspace includes a Library-file import with editable purchasing
@@ -98,3 +98,43 @@ a new routine item and retains the old one in history.
 
 Get started shows input-based setup progress. Help & guides and `/help` explain
 the workflows; the top bar offers contextual help and Ctrl/Cmd+K page search.
+
+## Stock control
+
+Version 0.4 adds optional station targets to the version-1 backup. Older backups
+still load. Migration `0004` adds an inventory event table and a transaction token;
+it does not invent historical events for existing records.
+
+1. While connected, open Stock control and start a count. The device saves a
+   minimal ingredient list and your measured quantities for that signed-in account.
+   Keep the page open while offline. Blank entries stay untouched; zero confirms
+   empty stock. Use opening/closing only when the count bookends service.
+2. Queue the count after checking units and timing. Reconnect to sync. If another
+   save changed the kitchen, review cloud stock and the retained measurements,
+   then create a new reviewed draft. Pack-definition changes clear incompatible
+   quantities. Historical counts cannot replace stock after later dated activity.
+3. Under Station prep, set target portions and enter ready portions for the actual
+   service date. Drafting prep creates tasks without consuming raw inventory.
+4. In Menu performance, import and review a complete sales snapshot. Under Sales
+   usage, preview its recipe quantities. Posting requires an earlier physical
+   baseline, enough counted stock and no later count or overlapping source period.
+   A preview changes nothing; a confirmed post reduces stock once.
+5. Compare opening and closing counts under Usage variance. Sales dates must
+   exactly fit the service interval. Actual usage is opening plus receipts minus
+   closing. The unexplained difference subtracts recipe usage and logged waste.
+   Missing counts or conversions remain unresolved. Investigate differences.
+6. Under Order forecast, choose cover days and a demand multiplier. The estimate
+   uses average daily recipe quantities and subtracts counted stock and open orders.
+   Review delivery timing yourself. Purchase drafts are never sent automatically.
+7. Under Stock history, load older pages as needed and export the loaded events.
+   Counts and posted usage keep their original quantities, units and price basis.
+
+Density is optional and ingredient-specific. Without a measured grams-per-ml
+value, weight and volume cannot convert. `pack` means the usable contents of the
+full purchase pack after yield loss. US and Imperial volumes have separate names.
+
+On shared devices, sync or export the count and clear it before signing out. The
+app asks before clearing a pending draft. Clearing a device draft does not reverse
+a count that has already reached the server. A draft export is a review copy; it
+is not an importable kitchen backup. Launching a closed browser offline is not
+supported.
