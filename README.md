@@ -1,7 +1,7 @@
 # Mise KitchenSync
 
 A web app for the day-to-day work behind a restaurant kitchen: supplier prices,
-recipe costs, prep, purchasing and staffing budgets.
+recipe costs, menu sales, prep, purchasing and staff planning.
 
 [![CI](https://github.com/Robayth-Dhrubo/Mise-KitchenSync/actions/workflows/ci.yml/badge.svg)](https://github.com/Robayth-Dhrubo/Mise-KitchenSync/actions/workflows/ci.yml)
 
@@ -12,7 +12,11 @@ recipe costs, prep, purchasing and staffing budgets.
 - Organises prep by station, person, quantity and date.
 - Creates purchase drafts from stock shortfalls and records received deliveries.
 - Stores supplier contacts, waste entries and a menu-launch checklist.
+- Compares reviewed sales snapshots with current recipe costs and tests prices.
+- Plans Sunday–Saturday shifts and exports approved worked hours.
+- Keeps opening and closing checklists separate for each service date.
 - Models annual staffing costs and monthly break-even sales.
+- Includes guided setup, searchable help and explanations beside each workflow.
 
 Missing prices, counts and recipe quantities stay marked as missing. The app does
 not turn an unknown value into zero. Recipe contribution excludes labour,
@@ -25,7 +29,8 @@ touch a live account. `/product` explains the tools and includes a plate-cost
 calculator.
 
 The hosted workspace at `/` is currently private and uses ChatGPT sign-in. Each
-account has its own records. Shared team workspaces and automatic POS sync are
+account has its own records. Adding a staff record does not create a login.
+Shared team workspaces and automatic POS sync are
 not part of this version.
 
 ## Run locally
@@ -77,6 +82,7 @@ and the [release guide](docs/commercial-release.md) before enabling payments.
 
 ## Documentation
 
+- [Product release and acceptance checks](docs/product-release-0.3.md)
 - [Kitchen setup, calculations and backups](docs/sites-workspace.md)
 - [Billing setup and release requirements](docs/commercial-release.md)
 - [Webhook receiver](workers/stripe-relay/README.md)

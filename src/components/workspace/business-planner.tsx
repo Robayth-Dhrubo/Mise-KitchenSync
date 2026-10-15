@@ -4,6 +4,8 @@ import { useId, useState, type FormEvent } from 'react'
 import { ArrowRight, Check, CheckCircle2, Download, Info, Plus, Save, Trash2, Users, Wallet, TrendingUp, CalendarDays } from 'lucide-react'
 import { businessSchema, businessTotals, emptyBusinessPlan, annualRoleCost, menuLaunchSteps, type BusinessPlan } from '@/lib/workspace/business'
 import { costRecipe, money, type Workspace } from '@/lib/workspace/domain'
+import { useUnsavedChanges } from './operations-ui'
+import { setupSteps } from '@/lib/workspace/readiness'
 import { csv, download } from '@/lib/workspace/import-export'
 
 type Props={state:Workspace;busy:boolean;save:(next:Workspace)=>Promise<boolean>;demo?:boolean}
@@ -22,6 +24,7 @@ export function BusinessPlanner({state,busy,save,demo=false}:Props) {
   if(source!==state.business){setSource(state.business);setPlan(state.business??emptyBusinessPlan())}
   const totals=businessTotals(plan)
   const dirty=JSON.stringify(plan)!==JSON.stringify(state.business??emptyBusinessPlan())
+  useUnsavedChanges(dirty)
   const change=<K extends keyof BusinessPlan>(key:K,value:BusinessPlan[K])=>setPlan(p=>({...p,[key]:value}))
   async function submit(e:FormEvent){e.preventDefault();const result=businessSchema.safeParse(plan);if(!result.success){setMessage(result.error.issues[0].message);return}if(await save({...state,business:result.data}))setMessage('Budget saved to your kitchen.')}
   async function importRoster(){
@@ -64,23 +67,18 @@ export function MenuLaunch({state,busy,save}:Props){
   const [message,setMessage]=useState('')
   const [source,setSource]=useState(state.business?.launch)
   if(source!==state.business?.launch){setSource(state.business?.launch);setLaunch(state.business?.launch??emptyBusinessPlan().launch)}
+  useUnsavedChanges(JSON.stringify(launch)!==JSON.stringify(state.business?.launch??emptyBusinessPlan().launch))
   const count=menuLaunchSteps.filter(s=>launch.done.includes(s.id)).length
   const ready=state.recipes.filter(r=>costRecipe(r,state.ingredients,state.settings.targetFoodCost).status!=='incomplete').length
   async function submit(e:FormEvent){e.preventDefault();if(await save({...state,business:{...(state.business??emptyBusinessPlan()),launch}}))setMessage('Menu launch plan saved.')}
   return <form className="menu-launch" onSubmit={submit}><section className="business-hero"><div><span className="eyebrow">FROM RECIPE TO SERVICE</span><h2>Launch with the team ready.</h2><p>A practical sequence for approving, rehearsing and reviewing your next menu.</p></div><span className="hero-emblem"><CalendarDays size={34}/></span></section><section className="panel launch-settings"><label className="plan-field"><span>Launch name</span><input value={launch.name} maxLength={120} onChange={e=>setLaunch(l=>({...l,name:e.target.value}))}/></label><label className="plan-field"><span>Service launch date</span><input type="date" value={launch.date??''} onChange={e=>setLaunch(l=>({...l,date:e.target.value||null}))}/></label><div className="launch-progress"><span>{count} / {menuLaunchSteps.length} steps complete</span><div><i style={{width:`${count/menuLaunchSteps.length*100}%`}}/></div><small>{ready} of {state.recipes.length} recipes have complete costing inputs</small></div></section><div className="launch-stages">{['Prepare','Rehearse','Launch','Review'].map((stage,index)=><section className="panel launch-stage" key={stage}><div className="launch-stage-title"><span>0{index+1}</span><h2>{stage}</h2></div>{menuLaunchSteps.filter(s=>s.stage===stage).map(step=><label className={`launch-step ${launch.done.includes(step.id)?'complete':''}`} key={step.id}><input type="checkbox" checked={launch.done.includes(step.id)} onChange={e=>setLaunch(l=>({...l,done:e.target.checked?[...l.done,step.id]:l.done.filter(id=>id!==step.id)}))}/><span className="launch-checkbox">{launch.done.includes(step.id)&&<Check size={13}/>}</span><div><strong>{step.title}</strong><p>{step.detail}</p></div></label>)}</section>)}</div>{message&&<p role="status" className="plan-feedback">{message}</p>}<div className="plan-save"><span>Completion is confirmed by you and your team.</span><button type="submit" className="button primary" disabled={busy}><Save size={16}/>Save launch plan</button></div></form>
 }
-export function SetupGuide({state,navigate}:{state:Workspace;navigate:(view:'inventory'|'recipes'|'suppliers'|'prep'|'budget'|'launch')=>void}){
-  const steps=[
-    {title:'Connect your suppliers',detail:'Contacts and delivery days',done:state.suppliers.length>0,view:'suppliers' as const},
-    {title:'Enter invoice prices',detail:'Purchase pack, usable yield and cost',done:state.ingredients.some(i=>i.price!==null&&i.packQuantity!==null),view:'inventory' as const},
-    {title:'Count stock and set pars',detail:'Enable reliable order suggestions',done:state.ingredients.length>0&&state.ingredients.every(i=>i.stock!==null&&i.par!==null),view:'inventory' as const},
-    {title:'Cost your first recipe',detail:'Batch quantities and portion yield',done:state.recipes.some(r=>costRecipe(r,state.ingredients,state.settings.targetFoodCost).status!=='incomplete'),view:'recipes' as const},
-    {title:'Assign service prep',detail:'A dated task with an owner',done:state.prep.some(p=>p.due!==null&&p.assignee.length>0),view:'prep' as const},
-    {title:'Plan your labour budget',detail:'Positions and employer costs',done:!!state.business&&businessTotals(state.business).hiringBudget!==null,view:'budget' as const},
-  ]
-  const complete=steps.filter(s=>s.done).length
-  if(complete===steps.length)return null
-  return <section className="panel setup-guide"><div className="setup-heading"><span className="setup-symbol"><CheckCircle2 size={22}/></span><div><h2>Make Mise work for your kitchen</h2><p>Finish the essentials for reliable costs and a calmer service.</p></div><span className="setup-count">{complete} of {steps.length} ready</span></div><div className="setup-steps">{steps.map((s,index)=><button key={s.title} onClick={()=>navigate(s.view)} className={s.done?'done':''}><span>{s.done?<Check size={14}/>:String(index+1).padStart(2,'0')}</span><div><strong>{s.title}</strong><small>{s.detail}</small></div><ArrowRight size={16}/></button>)}</div></section>
+export function SetupGuide({state,navigate}:{state:Workspace;navigate:(view:string)=>void}){
+  const steps=setupSteps(state)
+  const complete=steps.filter(step=>step.done).length
+  const next=steps.find(step=>!step.done)
+  if(!next)return null
+  return <section className="setup-compact"><span><CheckCircle2 size={19}/></span><div><h2>Your kitchen setup<span className="setup-count">{complete} / {steps.length} inputs ready</span></h2><p>Next: {next.title.toLowerCase()}.</p></div><button className="text-button" onClick={()=>navigate('start')}>Continue setup<ArrowRight size={14}/></button></section>
 }
 
 export function FirstKitchen({state,busy,save}:Props){

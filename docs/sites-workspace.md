@@ -70,3 +70,31 @@ historical menu costs keep their source labels. POS report controls are separate
 and never added together. The roster uses work days for the salaried chef and
 hours for hourly staff. The separately listed Management payroll column is not
 added to the owner's reported total.
+
+
+## Menu sales, staffing and service routines
+
+Version 0.3 adds an optional `operations` object to the existing version-1 kitchen
+backup. Older backups still load. It contains employees, dated shifts, weekly
+assumptions, separate sales snapshots, routine templates and dated completion
+records. Existing owner scoping, billing access checks and revision protection
+apply to the entire save. No database migration or live data backfill is needed.
+
+The sales CSV template uses `item,quantity,net_sales_cad`. Imports are previewed
+before saving and each sold item is explicitly linked to a recipe. Current
+ingredient costs are applied to recorded sales; this is an estimate of ingredient
+contribution, not a historical cost-of-sales or net-profit report. Snapshots are
+analysed separately. Missing sold-item costs keep the total incomplete.
+
+The Staff planner uses Sunday–Saturday weeks and local clock hours. Hourly rates
+are copied onto shifts, so employee-rate edits do not rewrite existing wages.
+Overlaps are rejected across overnight boundaries. Manager-entered actual hours
+are separate from planned hours; only approved records are included in the
+approved-hours export. Salary and employer-cost scenarios stay in Labour & budget.
+
+Service routines are editable. Completion records keep their service date, time,
+recorded name and original wording. Changing a previously completed action creates
+a new routine item and retains the old one in history.
+
+Get started shows input-based setup progress. Help & guides and `/help` explain
+the workflows; the top bar offers contextual help and Ctrl/Cmd+K page search.

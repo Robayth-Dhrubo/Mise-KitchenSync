@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { businessSchema } from './business'
+import { operationsSchema } from './operations'
 
 const id = z.string().min(1).max(100).regex(/^[a-zA-Z0-9_-]+$/)
 const text = z.string().trim().max(300)
@@ -39,6 +40,7 @@ export const workspaceSchema = z.object({
   suppliers: z.array(supplierSchema).max(200), prep: z.array(prepSchema).max(1000),
   waste: z.array(wasteSchema).max(2000), orders: z.array(orderSchema).max(500),
   business: businessSchema.optional(),
+  operations: operationsSchema.optional(),
 }).superRefine((state, ctx) => {
   for (const key of ['ingredients', 'recipes', 'suppliers', 'prep', 'waste', 'orders'] as const) {
     const ids = state[key].map(item => item.id)
@@ -60,6 +62,9 @@ export const workspaceSchema = z.object({
     if (order.supplierId && !supplierIds.has(order.supplierId)) ctx.addIssue({ code: 'custom', message: 'An order supplier is missing' })
     for (const line of order.lines) if (!ingredientIds.has(line.ingredientId)) ctx.addIssue({ code: 'custom', message: 'An order ingredient is missing' })
     if ((order.status === 'received') !== (order.received !== null)) ctx.addIssue({ code: 'custom', message: 'Order receipt status is inconsistent' })
+  }
+  for (const report of state.operations?.salesReports ?? []) for (const row of report.rows) {
+    if (row.recipeId && !state.recipes.some(recipe => recipe.id === row.recipeId)) ctx.addIssue({ code: 'custom', message: 'A sales item points to a missing recipe. Unlink it before deleting the recipe.' })
   }
 })
 
